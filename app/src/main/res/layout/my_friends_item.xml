@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:layout_margin="5dp"
+    android:elevation="10dp"
+    android:orientation="horizontal"
+    app:cardCornerRadius="10dp">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight=".5"
+        android:scaleType="centerCrop"
+        android:src="@drawable/profile" />
+
+
+    <TextView
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1.5"
+        android:gravity="left"
+        android:text="Sayed Md. Kaif"
+        android:textColor="@color/black" />
+
+    <ImageView
+        android:layout_gravity="center_vertical"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_weight=".3"
+        android:src="@drawable/ic_more" />
+
+
+</LinearLayout>

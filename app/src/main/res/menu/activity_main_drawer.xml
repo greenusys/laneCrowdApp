@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            
+            android:iconTint="#fff"
+            android:id="@+id/notification"
+            android:icon="@drawable/notification_icon"
+            android:title="@string/notification" />
+        <item
+            android:id="@+id/friends"
+            android:icon="@drawable/friend_icon"
+            android:title="@string/friends" />
+        <item
+            android:id="@+id/photos"
+            android:icon="@drawable/photo_icon"
+            android:title="@string/photos" />
+        <item
+            android:id="@+id/videos"
+            android:icon="@drawable/video_icon"
+            android:title="@string/videos" />
+
+
+        <item
+            android:id="@+id/pages"
+            android:icon="@drawable/pages_icon"
+            android:title="@string/pages" />
+
+
+
+    </group>
+
+    <item
+        android:id="@+id/more_nav"
+        android:title="More">
+        <menu>
+            <item
+                android:checkable="true"
+                android:id="@+id/setting_privacy"
+                android:icon="@drawable/setting_pri_icon"
+                android:title="@string/setting_privacy" />
+            <item
+                android:id="@+id/share"
+                android:checkable="true"
+                android:icon="@drawable/share_icon"
+                android:title="@string/share" />
+
+            <item
+                android:id="@+id/rate_me"
+                android:checkable="true"
+                android:icon="@drawable/rate_me_icon"
+                android:title="@string/rate_me" />
+            <item
+                android:id="@+id/logout"
+                android:checkable="true"
+                android:icon="@drawable/logout_icon"
+                android:title="@string/logout" />
+        </menu>
+    </item>
+
+</menu>
