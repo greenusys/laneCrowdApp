@@ -3,6 +3,7 @@ package com.example.lanecrowd.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.text.SpannableString
 import android.text.style.TextAppearanceSpan
 import android.view.MenuItem
@@ -18,15 +19,20 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.example.lancrowd.activity.home_fragments.Recent_Chat_Fragment
-import com.example.lanecrowd.Home_Fragment.*
+import com.example.lanecrowd.Home_Fragment.Friend_Request_Fragment
+import com.example.lanecrowd.Home_Fragment.Home_Post_Fragment
+import com.example.lanecrowd.Home_Fragment.Notification_Fragment
+import com.example.lanecrowd.Home_Fragment.Search_Fragment
 import com.example.lanecrowd.R
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
 
+    var drawer: DrawerLayout? = null
     var tabLayout: TabLayout? = null
     var viewPage: ViewPager? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,7 +70,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun initViews() {
 
         viewPage = findViewById<ViewPager>(R.id.viewpager)
-        viewPage!!.offscreenPageLimit=5
+        viewPage!!.offscreenPageLimit = 5
         setupViewPager(viewPage!!)
 
         tabLayout = findViewById<View>(R.id.tabs) as TabLayout
@@ -72,18 +78,19 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
+        drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         val headerView = navigationView.getHeaderView(0)
-        val header_image=headerView.findViewById<ImageView>(R.id.header_image)
+        val header_image = headerView.findViewById<ImageView>(R.id.header_image)
         val toggle = ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer.addDrawerListener(toggle)
+        drawer!!.addDrawerListener(toggle)
         toggle.syncState()
         navigationView.setNavigationItemSelectedListener(this)
 
         headerView.setOnClickListener(View.OnClickListener {
-            startActivity(Intent(applicationContext,Profile_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            closeDrawerLayout()
+            startActivity(Intent(applicationContext, Profile_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 
         })
 
@@ -100,6 +107,11 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         more_nav.title = s3
         navigationView.setNavigationItemSelectedListener(this)
         //end change the navigation title color
+    }
+
+    private fun closeDrawerLayout() {
+        drawer!!.closeDrawer(GravityCompat.START)
+
     }
 
 
@@ -121,25 +133,30 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
 
 
-        val id = item.getItemId();
+        val id = item.itemId
 
-        if(id==R.id.activity)
-            startActivity(Intent(applicationContext,Post_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        if (id == R.id.activity) {
+            closeDrawerLayout()
+            startActivity(Intent(applicationContext, Post_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 
-        else if(id==R.id.friends)
-            startActivity(Intent(applicationContext,My_Friend_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }else if (id == R.id.friends) {
+            closeDrawerLayout()
+            startActivity(Intent(applicationContext, My_Friend_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 
-        else if(id==R.id.photos)
-            startActivity(Intent(applicationContext,Show_Photo_Video_Album_Activity::class.java)
-                    .putExtra("from","photo")
+        }else if (id == R.id.photos) {
+            closeDrawerLayout()
+            startActivity(Intent(applicationContext, Show_Photo_Video_Album_Activity::class.java)
+                    .putExtra("from", "photo")
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 
-         else if(id==R.id.videos)
-            startActivity(Intent(applicationContext,Show_Photo_Video_Album_Activity::class.java)
-                    .putExtra("from","video")
+        }
+        else if (id == R.id.videos) {
+            closeDrawerLayout()
+            startActivity(Intent(applicationContext, Show_Photo_Video_Album_Activity::class.java)
+                    .putExtra("from", "video")
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 
-
+        }
 
         /*
         // Handle navigation view item clicks here.
@@ -196,7 +213,27 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    fun gotoBack(view: View) {}
+
+
+
+    var doubleBackToExitPressedOnce = false
+    override fun onBackPressed() {
+
+        if (drawer!!.isDrawerOpen(GravityCompat.START)) {
+            drawer!!.closeDrawer(GravityCompat.START)
+        } else {
+            if (doubleBackToExitPressedOnce) {
+                finishAffinity()
+                return
+            }
+            this.doubleBackToExitPressedOnce = true
+
+            DynamicToast.make(applicationContext, "Please click back again to exit").show()
+
+            Handler().postDelayed(Runnable { doubleBackToExitPressedOnce = false }, 2000)
+
+        }
+    }
 
 
 }

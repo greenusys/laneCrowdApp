@@ -1,10 +1,14 @@
 package com.example.lanecrowd.activity
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
+import android.os.Vibrator
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -15,11 +19,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.lancrowd.activity.modal.My_Friends_Modal
 import com.example.lanecrowd.R
 import com.example.lanecrowd.adapter.My_Friend_List_Adapter
+import com.example.lanecrowd.modal.PowerMenuUtils
+import com.skydoves.powermenu.OnMenuItemClickListener
+import com.skydoves.powermenu.PowerMenu
+import com.skydoves.powermenu.PowerMenuItem
 
 
 class My_Friend_Activity : AppCompatActivity(), View.OnClickListener, SearchView.OnQueryTextListener {
 
+    var firstTime: Boolean=false
 
+    private var hamburgerMenu: PowerMenu? = null
+    private var vibe: Vibrator? = null
 
     var all_friends: TextView? = null
     var family_friends: TextView? = null
@@ -32,6 +43,7 @@ class My_Friend_Activity : AppCompatActivity(), View.OnClickListener, SearchView
     var friend_list = ArrayList<My_Friends_Modal>()
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my__friend_)
@@ -41,6 +53,7 @@ class My_Friend_Activity : AppCompatActivity(), View.OnClickListener, SearchView
         set_All_Friend_Adapter("all")
 
     }
+
 
     @SuppressLint("WrongConstant")
     private fun set_All_Friend_Adapter(value: String) {
@@ -70,7 +83,7 @@ class My_Friend_Activity : AppCompatActivity(), View.OnClickListener, SearchView
         friend_list.add(My_Friends_Modal())
 
 
-        adapter = My_Friend_List_Adapter(friend_list, applicationContext)
+        adapter = My_Friend_List_Adapter(friend_list, this)
         friend_rv!!.layoutManager = LinearLayoutManager(applicationContext, LinearLayout.VERTICAL, false)
         friend_rv!!.adapter = adapter
         adapter!!.notifyDataSetChanged()
@@ -120,11 +133,51 @@ class My_Friend_Activity : AppCompatActivity(), View.OnClickListener, SearchView
     }
 
 
+    //power option menu
+    private val onHamburgerItemClickListener =
+            OnMenuItemClickListener<PowerMenuItem> { position, item ->
+                // hamburgerMenu!!.selectedPosition = position
+
+                if(!firstTime) {
+/*
+                    if (item.title.equals(getString(R.string.rate_me)))
+                        rateMe()
+                    else if (item.title.equals(getString(R.string.share)))
+                        share()
+                    else if (item.title.equals(getString(R.string.about)))
+                        gotoABoutActivity()*/
+                }
+
+
+            }
+
+    private val onHamburgerMenuDismissedListener = {
+        Log.d("Test", "onDismissed hamburger menu") }
+
+
+
+    fun showMenu(frndMenu: ImageView) {
+        showVibration()
+
+        if (hamburgerMenu!!.isShowing) {
+            hamburgerMenu!!.dismiss()
+            return
+        }
+        hamburgerMenu!!.showAsDropDown(frndMenu)
+
+
+    }
+
+
     private fun initViews() {
 
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
+        //power menu
+        hamburgerMenu = PowerMenuUtils.getFriendOptionMenu(this, this, onHamburgerItemClickListener, onHamburgerMenuDismissedListener)
+
+        vibe = this@My_Friend_Activity.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         all_friends = findViewById(R.id.all_friends)
         family_friends = findViewById(R.id.family_friends)
@@ -157,14 +210,23 @@ class My_Friend_Activity : AppCompatActivity(), View.OnClickListener, SearchView
 
     override fun onClick(v: View?) {
         if (v!!.id == R.id.all_friends) {
+            showVibration()
             set_All_Friend_Adapter("all")
         } else if (v.id == R.id.family_friends) {
+            showVibration()
             set_All_Friend_Adapter("family")
         } else if (v.id == R.id.recent_friends) {
+            showVibration()
             set_All_Friend_Adapter("recent")
         } else if (v.id == R.id.favourite_friends) {
+            showVibration()
             set_All_Friend_Adapter("fav")
         }
+    }
+
+    private fun showVibration() {
+
+        vibe!!.vibrate(80);
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {

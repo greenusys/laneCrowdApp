@@ -119,4 +119,8 @@ class Profile_Activity : AppCompatActivity(), View.OnClickListener {
             set_Photos_Videos_Adapter("video")
         }
     }
+
+    fun Back(view: View) {
+        onBackPressed()
+    }
 }

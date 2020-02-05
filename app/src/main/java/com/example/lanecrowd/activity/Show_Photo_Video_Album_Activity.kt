@@ -170,7 +170,9 @@ class Show_Photo_Video_Album_Activity : AppCompatActivity(), View.OnClickListene
 
     }
 
-
+    fun back(view: View) {
+        onBackPressed()
+    }
 
 
 }

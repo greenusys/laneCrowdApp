@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+   android:background="@drawable/forget_bg"
     android:orientation="vertical"
   tools:context=".activity.Forget_Pwd_Activity">
 
@@ -15,7 +16,7 @@
         android:layout_width="50dp"
         android:layout_height="35dp"
         android:src="@drawable/back_arrow"
-        android:tint="@color/black"/>
+        android:tint="@color/white"/>
 
     <TextView
         android:id="@+id/forget_password"
@@ -25,14 +26,15 @@
         android:layout_marginTop="20dp"
         android:gravity="center"
         android:text="Forget Password?"
-        android:textColor="@color/black" />
+        android:textColor="@color/white" />
 
 
 
     <TextView
+        android:textColor="@color/white"
        android:layout_marginTop="40dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         style="@style/TextAppearance.MaterialComponents.Headline6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,6 +48,10 @@
     <com.google.android.material.textfield.TextInputLayout
        android:layout_marginTop="100dp"
         android:visibility="visible"
+        app:hintTextColor="@color/white"
+        android:textColorHint="@color/white"
+        app:boxStrokeColor="@color/white"
+        android:outlineSpotShadowColor="@color/white"
         android:layout_marginLeft="20dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_marginRight="20dp"
@@ -54,6 +60,7 @@
         android:hint="E-mail Address">
 
         <com.google.android.material.textfield.TextInputEditText
+            style="@style/ValidatableInputLayoutStyle.OutlineBox.HintInputLayoutStyle"
             android:id="@+id/emailtxt"
             android:inputType="textEmailAddress"
             android:layout_width="match_parent"
@@ -72,23 +79,23 @@
         android:layout_marginTop="10dp"
         android:gravity="center"
         android:text="Please Enter OTP"
-        android:textColor="@color/box_8" />
+        android:textColor="@color/white" />
 
     <com.chaos.view.PinView
         android:layout_marginTop="70dp"
         android:visibility="gone"
         android:id="@+id/pinView"
-        style="@style/PinWidget.PinView"
+style="@style/PINVIEW"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
          android:inputType="number"
         android:padding="10dp"
-        android:textSize="18sp"
+        android:textSize="25sp"
         app:itemCount="4"
         android:gravity="center"
         android:layout_gravity="center"
         app:itemHeight="48dp"
-         app:lineColor="@color/colorPrimary"
+         app:lineColor="@color/white"
         app:viewType="rectangle" />
 
 

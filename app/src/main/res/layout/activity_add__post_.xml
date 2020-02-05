@@ -22,9 +22,10 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:layout_gravity="bottom"
                 android:id="@+id/back"
                 android:layout_width="50dp"
-                android:layout_height="35dp"
+                android:layout_height="30dp"
                 android:onClick="back_activity"
                 android:src="@drawable/back_arrow"
                 android:tint="@color/black" />

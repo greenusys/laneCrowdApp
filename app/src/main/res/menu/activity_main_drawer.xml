@@ -4,13 +4,7 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
-        <item
-            
-            android:iconTint="#fff"
-            android:id="@+id/notification"
-            android:icon="@drawable/notification_icon"
-            android:title="@string/notification" />
-        <item
+          <item
             android:id="@+id/friends"
             android:icon="@drawable/friend_icon"
             android:title="@string/friends" />

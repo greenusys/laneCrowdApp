@@ -45,6 +45,10 @@ class Recent_Chat_Fragment : Fragment(), SearchView.OnQueryTextListener {
         recent_chat_list.add(Recent_Chat_Modal())
         recent_chat_list.add(Recent_Chat_Modal())
         recent_chat_list.add(Recent_Chat_Modal())
+        recent_chat_list.add(Recent_Chat_Modal())
+        recent_chat_list.add(Recent_Chat_Modal())
+        recent_chat_list.add(Recent_Chat_Modal())
+        recent_chat_list.add(Recent_Chat_Modal())
 
 
 

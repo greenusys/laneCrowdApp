@@ -51,16 +51,26 @@
         <activity
             android:name=".activity.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity
             android:name=".activity.Login_Activity"
             android:theme="@style/AppThemeMat"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden" >
+
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+
+        </activity>
+
+
     </application>
 
 </manifest>

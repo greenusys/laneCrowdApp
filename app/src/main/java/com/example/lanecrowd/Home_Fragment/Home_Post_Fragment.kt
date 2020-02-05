@@ -1,8 +1,12 @@
 package com.example.lanecrowd.Home_Fragment
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
+import android.os.Vibrator
+import android.util.Log
 import android.view.*
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -13,13 +17,26 @@ import com.example.lancrowd.activity.modal.Story_Modal
 import com.example.lanecrowd.R
 import com.example.lanecrowd.adapter.Home_Post_Adapter
 import com.example.lanecrowd.adapter.Story_Adapter
+import com.example.lanecrowd.modal.PowerMenuUtils
+import com.skydoves.powermenu.OnMenuItemClickListener
+import com.skydoves.powermenu.PowerMenu
+import com.skydoves.powermenu.PowerMenuItem
 
 
 class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
+    override fun onQueryTextChange(newText: String?): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
+    internal var firstTime = false
+    private var hamburgerMenu: PowerMenu? = null
+    private var vibe: Vibrator? = null
 
-      var home_post_rv: RecyclerView?=null
+    var home_post_rv: RecyclerView?=null
       var story_rv: RecyclerView?=null
 
       var homePostAdapter:Home_Post_Adapter?=null
@@ -59,12 +76,21 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
         home_post_list.add(Home_Post_Modal())
 
 
+
+
+
         story_list.add(Story_Modal())
         story_list.add(Story_Modal())
         story_list.add(Story_Modal())
         story_list.add(Story_Modal())
         story_list.add(Story_Modal())
         story_list.add(Story_Modal())
+
+
+        //power menu
+        hamburgerMenu = PowerMenuUtils.getSelfPostMenu(context!!, this, onHamburgerItemClickListener, onHamburgerMenuDismissedListener)
+
+        vibe = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
 
         home_post_rv = view.findViewById(R.id.home_post_rv) as RecyclerView
@@ -72,7 +98,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
 
-        homePostAdapter = Home_Post_Adapter(home_post_list, view.context)
+        homePostAdapter = Home_Post_Adapter(home_post_list, context!!,this@Home_Post_Fragment)
         home_post_rv!!.layoutManager = LinearLayoutManager(view.context, LinearLayout.VERTICAL, false)
         home_post_rv!!.adapter = homePostAdapter
         homePostAdapter!!.notifyDataSetChanged()
@@ -83,6 +109,43 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
         story_rv!!.adapter = storyAdapter
         storyAdapter!!.notifyDataSetChanged()
 
+
+
+    }
+
+
+
+    //power option menu
+    private val onHamburgerItemClickListener =
+            OnMenuItemClickListener<PowerMenuItem> { position, item ->
+                // hamburgerMenu!!.selectedPosition = position
+
+                if(!firstTime) {
+/*
+                    if (item.title.equals(getString(R.string.rate_me)))
+                        rateMe()
+                    else if (item.title.equals(getString(R.string.share)))
+                        share()
+                    else if (item.title.equals(getString(R.string.about)))
+                        gotoABoutActivity()*/
+                }
+
+
+            }
+
+    private val onHamburgerMenuDismissedListener = {
+        Log.d("Test", "onDismissed hamburger menu") }
+
+
+
+    fun showMenu(frndMenu: ImageView) {
+        showVibration()
+
+        if (hamburgerMenu!!.isShowing) {
+            hamburgerMenu!!.dismiss()
+            return
+        }
+        hamburgerMenu!!.showAsDropDown(frndMenu)
 
 
     }
@@ -99,12 +162,10 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
     }
 
+    private fun showVibration() {
 
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        vibe!!.vibrate(80);
     }
 
-    override fun onQueryTextChange(newText: String?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+
 }

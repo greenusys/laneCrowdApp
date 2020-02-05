@@ -10,6 +10,7 @@ import com.example.lanecrowd.R
 import kotlinx.android.synthetic.main.login_layout.*
 import kotlinx.android.synthetic.main.register_layout.*
 import android.view.animation.AnimationUtils
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import kotlinx.android.synthetic.main.login_main.*
@@ -28,6 +29,9 @@ class Login_Activity : AppCompatActivity(), View.OnClickListener {
 
      var register_layout:LinearLayout?=null
      var login_layout:LinearLayout?=null
+
+
+     var email:EditText?=null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
