@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+  tools:context=".activity.Forget_Pwd_Activity">
+
+
+    <ImageView
+        android:onClick="back_activity"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_width="50dp"
+        android:layout_height="35dp"
+        android:src="@drawable/back_arrow"
+        android:tint="@color/black"/>
+
+    <TextView
+        android:id="@+id/forget_password"
+        style="@style/TextAppearance.MaterialComponents.Headline4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="Forget Password?"
+        android:textColor="@color/black" />
+
+
+
+    <TextView
+       android:layout_marginTop="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:lineSpacingExtra="5dp"
+        android:text="We just need your registered e-mail address to send your password reset."
+        android:textAllCaps="true" />
+
+
+
+    <com.google.android.material.textfield.TextInputLayout
+       android:layout_marginTop="100dp"
+        android:visibility="visible"
+        android:layout_marginLeft="20dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_marginRight="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="E-mail Address">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/emailtxt"
+            android:inputType="textEmailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/otptext"
+        style="@style/TextAppearance.MaterialComponents.Headline5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="Please Enter OTP"
+        android:textColor="@color/box_8" />
+
+    <com.chaos.view.PinView
+        android:layout_marginTop="70dp"
+        android:visibility="gone"
+        android:id="@+id/pinView"
+        style="@style/PinWidget.PinView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+         android:inputType="number"
+        android:padding="10dp"
+        android:textSize="18sp"
+        app:itemCount="4"
+        android:gravity="center"
+        android:layout_gravity="center"
+        app:itemHeight="48dp"
+         app:lineColor="@color/colorPrimary"
+        app:viewType="rectangle" />
+
+
+
+
+    <Button
+        android:layout_marginTop="100dp"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/resetpwdBtn"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/button_background"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:text="Reset Password"
+        android:padding="10dp"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="17sp" />
+
+
+
+</LinearLayout>

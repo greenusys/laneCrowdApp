@@ -2,14 +2,54 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.lanecrowd">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".activity.HomeActivity"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".activity.ShowPhotoActivity">
+
+        </activity>
+        <activity
+            android:name=".activity.View_Story_Activity"
+            android:theme="@style/AppThemeMat" />
+        <activity
+            android:name=".activity.Choose_Status_Activity"
+            android:theme="@style/AppThemeMat" />
+        <activity
+            android:name=".activity.Add_Post_Activity"
+            android:theme="@style/AppThemeMat" />
+        <activity
+            android:name=".activity.Show_Comment_Activity"
+            android:theme="@style/AppThemeMat" />
+        <activity
+            android:name=".activity.Forget_Pwd_Activity"
+            android:theme="@style/AppThemeMat" />
+        <activity
+            android:name=".activity.Show_Photo_Video_Album_Activity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".activity.My_Friend_Activity"
+            android:theme="@style/Apptheme2"/>
+
+
+
+        <activity
+            android:name=".activity.Profile_Activity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.Post_Activity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.Chat_Activity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,13 +59,8 @@
         </activity>
         <activity
             android:name=".activity.Login_Activity"
-            android:windowSoftInputMode="stateHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppThemeMat"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>

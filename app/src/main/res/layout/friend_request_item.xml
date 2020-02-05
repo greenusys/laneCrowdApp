@@ -111,7 +111,7 @@
                 android:background="@drawable/comfirm"
                 android:gravity="center"
                 android:text="Comfirm"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textStyle="bold" />
 
             <TextView
@@ -127,7 +127,7 @@
                 android:background="@drawable/reject"
                 android:gravity="center"
                 android:text="Reject"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textStyle="bold" />
 
 

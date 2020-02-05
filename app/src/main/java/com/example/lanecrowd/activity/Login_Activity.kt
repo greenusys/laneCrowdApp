@@ -1,6 +1,7 @@
 package com.example.lanecrowd.activity
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -21,6 +22,8 @@ class Login_Activity : AppCompatActivity(), View.OnClickListener {
 
      var login_sign_up:TextView?=null
      var register_signin:TextView?=null
+     var login_sign_in:TextView?=null
+     var forget_password:TextView?=null
 
 
      var register_layout:LinearLayout?=null
@@ -36,9 +39,13 @@ class Login_Activity : AppCompatActivity(), View.OnClickListener {
         register_signin=findViewById(R.id.register_signin)
 
 
+        forget_password=findViewById(R.id.forget_password)
         register_layout=findViewById(R.id.register_layout)
         login_layout=findViewById(R.id.login_layout)
+        login_sign_in=findViewById(R.id.login_sign_in)
 
+        login_sign_in!!.setOnClickListener(this)
+        forget_password!!.setOnClickListener(this)
 
 
 
@@ -54,6 +61,10 @@ class Login_Activity : AppCompatActivity(), View.OnClickListener {
             R.id.register_signin -> {
                 hideSoftKeyBoard()
                 showSignInForm()
+            }R.id.login_sign_in -> {
+                startActivity(Intent(applicationContext,HomeActivity::class.java))
+            }R.id.forget_password -> {
+                startActivity(Intent(applicationContext,Forget_Pwd_Activity::class.java))
             }
         }
     }
@@ -104,7 +115,6 @@ class Login_Activity : AppCompatActivity(), View.OnClickListener {
 
     fun onClick_Customer(v: View) {
 
-        println("Kkk")
 
         when (v.id) {
             R.id.login_sign_up -> {

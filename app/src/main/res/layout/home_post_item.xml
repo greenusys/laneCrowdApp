@@ -166,7 +166,7 @@
                         android:layout_width="0dp"
                         android:layout_height="100dp"
                         android:layout_weight="1"
-                        android:background="@drawable/img_background">
+                       >
 
                         <ImageView
                             android:src="@drawable/login"
@@ -197,8 +197,7 @@
                         android:id="@+id/frame_postB"
                         android:layout_width="0dp"
                         android:layout_height="100dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/img_background">
+                        android:layout_weight="1">
 
                         <ImageView
                             android:src="@drawable/login"

@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.Forget_Pwd_Activity">
+
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+<!--profilelayout-->
+    <LinearLayout
+        android:id="@+id/profileLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/back"
+            android:onClick="back_activity"
+            android:layout_width="50dp"
+            android:layout_height="35dp"
+            android:src="@drawable/back_arrow"
+            android:tint="@color/black"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/profile" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.MaterialComponents.Headline5"
+                android:id="@+id/txt_postUserName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Md. Kaif"
+                android:textColor="@color/black" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txt_postTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="25-12-2019"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dehradun"
+                    android:textColor="#ccc"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/iv_postMore"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/ic_more" />
+
+    </LinearLayout>
+    <!--profilelayout-->
+
+    <TextView
+        android:layout_below="@id/profileLayout"
+        android:id="@+id/staus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:ellipsize="end"
+        android:text="status"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+
+
+    <LinearLayout
+        android:layout_below="@id/staus"
+        android:id="@+id/lay_postMedia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_weight="1"
+        android:background="#ffffff"
+        android:foregroundGravity="left"
+        android:gravity="left"
+        android:orientation="vertical"
+        android:padding="0.5dp"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_weight="2">
+
+            <FrameLayout
+                android:id="@+id/frame_postA"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/iv_postImgA"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/login"
+                    android:background="@drawable/img_background"
+                    android:scaleType="fitXY" />
+
+                <ImageView
+                    android:id="@+id/iv_postIsVideoA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_play_video" />
+
+                <ProgressBar
+                    android:id="@+id/loading_iconA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center" />
+
+
+            </FrameLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lay_postForBelowImgs"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_weight="1.2"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_weight="1"
+                >
+
+                <ImageView
+                    android:src="@drawable/login"
+                    android:id="@+id/iv_postImgB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/img_background"
+                    android:scaleType="centerCrop" />
+
+                <ImageView
+                    android:id="@+id/iv_postIsVideoB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_play_video" />
+
+                <ProgressBar
+                    android:id="@+id/loading_iconB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center" />
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/frame_postB"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:src="@drawable/login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/img_background"
+                    android:scaleType="centerCrop" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_play_video" />
+
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center" />
+
+
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:id="@+id/frame_postE"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:src="@drawable/login"
+                    android:id="@+id/iv_postImgE"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/img_background"
+                    android:scaleType="centerCrop" />
+
+                <ImageView
+                    android:id="@+id/iv_postIsVideoE"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_play_video" />
+
+
+                <ProgressBar
+                    android:id="@+id/loading_iconE"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center" />
+
+
+                <TextView
+                    android:id="@+id/txt_postImgCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="#80000000"
+                    android:gravity="center"
+                    android:text="More"
+                    android:textAllCaps="true"
+                    android:textColor="#fff"
+                    android:textSize="22dp" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_below="@id/lay_postMedia"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+           android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/comment_rv" />
+
+    </LinearLayout>
+
+
+
+
+
+    </RelativeLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+
+
+
+    <!--bottomlayout-->
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:background="#fff"
+        android:gravity="bottom"
+        android:padding="8dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivProfileImageComment"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/profile"/>
+
+        <EditText
+            android:id="@+id/edt_comment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:maxHeight="100dp"
+            android:gravity="center_vertical"
+            android:hint="write a comment..."
+            android:padding="8dp"
+            android:textSize="13sp"
+            android:background="@drawable/shape_background_edit_text" />
+
+        <ImageView
+            android:id="@+id/iv_sendComment"
+            android:layout_width="55dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_send"
+            android:clickable="true"
+            android:padding="5dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/shape_oval_dark_grey"/>
+
+    </LinearLayout>
+    <!--bottomlayout-->
+
+
+
+
+</RelativeLayout>
+
+

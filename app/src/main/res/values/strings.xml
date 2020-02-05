@@ -1,12 +1,16 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">LaneCrowd</string>
 
+    <string name="bbn_default_view_behavior" translatable="false" tools:ignore="UnusedResources">it.sephiroth.android.library.bottomnavigation.BottomBehavior</string>
 
+
+    <string name="home">Home</string>
     <string name="notification">Notification</string>
     <string name="friends">Friends</string>
     <string name="photos">Photos</string>
     <string name="videos">Videos</string>
     <string name="pages">Pages</string>
+    <string name="activity">Activity</string>
     <string name="setting_privacy">Setting &amp; Privacy</string>
     <string name="share">Share</string>
     <string name="rate_me">Rate Me</string>
