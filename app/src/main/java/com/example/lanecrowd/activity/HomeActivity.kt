@@ -223,7 +223,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             drawer!!.closeDrawer(GravityCompat.START)
         } else {
             if (doubleBackToExitPressedOnce) {
-                finishAffinity()
+              //  finishAffinity()
+                super.onBackPressed()
                 return
             }
             this.doubleBackToExitPressedOnce = true
