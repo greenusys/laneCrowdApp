@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.Test">
+
+
+   <!-- <EditText
+        android:drawableLeft="@drawable/name_icon"
+        android:id="@+id/reg_name"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@id/si"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/button_round"
+        android:gravity="center"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        android:lines="1"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:textSize="20dp" />
+-->
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:drawableLeft="@drawable/name_icon"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:endIconMode="password_toggle"
+        app:hintEnabled="false"
+        app:endIconTint="@color/white">
+
+        <com.google.android.material.textfield.TextInputEditText
+           android:inputType="textPassword"
+            android:hint="Enter Password"
+            android:background="@drawable/button_round"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+</LinearLayout>

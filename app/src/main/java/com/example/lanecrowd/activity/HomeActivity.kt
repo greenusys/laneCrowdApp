@@ -24,9 +24,11 @@ import com.example.lanecrowd.Home_Fragment.Home_Post_Fragment
 import com.example.lanecrowd.Home_Fragment.Notification_Fragment
 import com.example.lanecrowd.Home_Fragment.Search_Fragment
 import com.example.lanecrowd.R
+import com.example.lanecrowd.Session_Package.SessionManager
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
+import java.util.HashMap
 
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -35,6 +37,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     var drawer: DrawerLayout? = null
     var tabLayout: TabLayout? = null
     var viewPage: ViewPager? = null
+    private var session: SessionManager? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -72,6 +76,18 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         viewPage = findViewById<ViewPager>(R.id.viewpager)
         viewPage!!.offscreenPageLimit = 5
         setupViewPager(viewPage!!)
+
+        session = SessionManager(applicationContext)
+
+     /*   // get user data from session
+        val user: HashMap<String, String> = session!!.getUserDetails()
+
+
+        val full_name = user[SessionManager.KEY_FULL_NAME]
+
+        println("full_name"+full_name)
+*/
+
 
         tabLayout = findViewById<View>(R.id.tabs) as TabLayout
         tabLayout!!.setupWithViewPager(viewPage)
@@ -156,6 +172,10 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .putExtra("from", "video")
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 
+        }
+        else if (id == R.id.logout) {
+            closeDrawerLayout()
+            session!!.logoutUser()
         }
 
         /*

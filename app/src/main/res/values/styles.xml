@@ -11,6 +11,15 @@
     </style>
 
 
+    <!-- Base application theme. -->
+    <style name="MateriaApptheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+
     <style name="ValidatableInputLayoutStyle.OutlineBox.HintInputLayoutStyle" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
     <item name="android:textColor">@color/white</item>
     <item name="android:textSize">20sp</item>
@@ -22,6 +31,18 @@
  <style name="PINVIEW" parent="Widget.AppCompat.EditText">
     <item name="android:textColor">@color/white</item>
     <item name="android:textSize">18sp</item>
+    </style>
+
+
+    <style name="RoundShapeTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="shapeAppearanceMediumComponent">@style/RoundShapeAppearance</item>
+        <item name="android:textSize">20dp</item>
+    </style>
+
+    <style name="RoundShapeAppearance" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
     </style>
 
 

@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/login_1">
 
 
@@ -36,19 +37,40 @@
 
     </LinearLayout>
 
-    <TextView
+
+    <LinearLayout
+        android:layout_marginLeft="20dp"
+        android:layout_below="@id/l1"
         android:id="@+id/welcome"
-        style="@style/TextAppearance.AppCompat.Headline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/l1"
-        android:layout_marginLeft="20dp"
-        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <TextView
+        style="@style/TextAppearance.AppCompat.Headline"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".6"
         android:gravity="left"
         android:text="Hello"
         android:textColor="@color/box_9"
         android:textSize="35dp"
         android:textStyle="bold" />
+
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:visibility="invisible"
+            android:id="@+id/loading_anim"
+            android:layout_width="0dp"
+            android:layout_weight="1.4"
+            android:layout_height="50dp"
+            app:lottie_rawRes="@raw/loading_anim"
+            app:lottie_loop="true"
+            app:lottie_autoPlay="true"/>
+
+
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/si"
@@ -69,7 +91,7 @@
         android:id="@+id/reg_name"
         style="@style/TextAppearance.AppCompat.Subhead"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_below="@id/si"
         android:layout_marginTop="20dp"
         android:layout_marginRight="30dp"
@@ -83,61 +105,88 @@
         android:textSize="20dp" />
 
     <EditText
-        android:drawableLeft="@drawable/email_icon"
+        android:drawableLeft="@drawable/email_mobile_icon"
         android:id="@+id/reg_email"
         style="@style/TextAppearance.AppCompat.Subhead"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_below="@id/reg_name"
         android:layout_marginTop="15dp"
         android:layout_marginRight="30dp"
         android:background="@drawable/button_round"
         android:gravity="center"
-        android:hint="E-Mail"
+        android:hint="E-Mail/Mobile"
         android:inputType="textPersonName"
         android:lines="1"
         android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="20dp" />
 
-    <EditText
-        android:drawableRight="@drawable/ic_visibility"
-        android:drawableLeft="@drawable/password_icon"
-        android:id="@+id/reg_password"
-        style="@style/TextAppearance.AppCompat.Subhead"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:lines="1"
+        android:drawableStart="@drawable/password_icon"
+        android:id="@+id/reg_password_layout"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="30dp"
         android:layout_below="@id/reg_email"
-        android:layout_marginTop="15dp"
-        android:layout_marginRight="30dp"
-        android:background="@drawable/button_round"
-        android:gravity="center"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:lines="1"
-        android:textColor="@color/white"
-        android:textColorHint="@color/white"
-        android:textSize="20dp" />
-
-
-    <EditText
-        android:drawableRight="@drawable/ic_visibility"
-        android:drawableLeft="@drawable/password_icon"
-        android:id="@+id/reg_re_password"
-        style="@style/TextAppearance.AppCompat.Subhead"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/reg_password"
+        android:layout_height="60dp"
+        app:endIconMode="password_toggle"
+        app:hintEnabled="false"
+        app:endIconTint="@color/white">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/reg_password"
+            android:drawableStart="@drawable/password_icon"
+            android:inputType="textPassword"
+            android:hint="Password"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:textColorHint="@color/white"
+            android:background="@drawable/button_round"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:lines="1"
+        android:id="@+id/reg_re_password_layout"
         android:layout_marginTop="15dp"
         android:layout_marginRight="30dp"
-        android:background="@drawable/button_round"
-        android:gravity="center"
-        android:hint="Re-Password"
-        android:inputType="textPassword"
-        android:lines="1"
-        android:textColor="@color/white"
-        android:textColorHint="@color/white"
-        android:textSize="20dp" />
+        android:drawableStart="@drawable/password_icon"
+        android:layout_below="@id/reg_password_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        app:endIconMode="password_toggle"
+        app:hintEnabled="false"
+        app:endIconTint="@color/white">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/reg_re_password"
+            android:drawableStart="@drawable/password_icon"
+            android:inputType="textPassword"
+            android:hint="Re-Password"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:background="@drawable/button_round"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
 
 
     <TextView
@@ -145,7 +194,7 @@
         style="@style/TextAppearance.AppCompat.Subhead"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/reg_re_password"
+        android:layout_below="@id/reg_re_password_layout"
         android:layout_marginLeft="70dp"
         android:layout_marginTop="30dp"
         android:layout_marginRight="70dp"
@@ -166,7 +215,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="20dp"
         android:layout_weight="1"
         android:background="@drawable/button_round_3"
         android:gravity="center"

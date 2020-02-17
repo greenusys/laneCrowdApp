@@ -1,20 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.lanecrowd">
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".retrofit.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
-        <activity android:name=".activity.ShowPhotoActivity">
-
+        android:usesCleartextTraffic="true"
+        android:windowSoftInputMode="stateAlwaysHidden">
+        <activity android:name=".activity.Test5"></activity>
+        <activity android:name=".activity.Test2">
         </activity>
+        <activity android:name=".activity.Verify_OTP_Activity" />
+        <activity android:name=".activity.ShowPhotoActivity" />
         <activity
             android:name=".activity.View_Story_Activity"
             android:theme="@style/AppThemeMat" />
@@ -23,7 +33,15 @@
             android:theme="@style/AppThemeMat" />
         <activity
             android:name=".activity.Add_Post_Activity"
-            android:theme="@style/AppThemeMat" />
+            android:theme="@style/AppThemeMat" >
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
+
+
         <activity
             android:name=".activity.Show_Comment_Activity"
             android:theme="@style/AppThemeMat" />
@@ -33,12 +51,9 @@
         <activity
             android:name=".activity.Show_Photo_Video_Album_Activity"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".activity.My_Friend_Activity"
-            android:theme="@style/Apptheme2"/>
-
-
-
+        <activity
+            android:name=".activity.My_Friend_Activity"
+            android:theme="@style/Apptheme2" />
         <activity
             android:name=".activity.Profile_Activity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -51,24 +66,28 @@
         <activity
             android:name=".activity.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <!--<intent-filter>
+
+            <!--
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
+            -->
         </activity>
         <activity
             android:name=".activity.Login_Activity"
-            android:theme="@style/AppThemeMat"
-            android:windowSoftInputMode="stateHidden" >
+            android:theme="@style/MateriaApptheme"
+            android:windowSoftInputMode="stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
+
+
+
 
 
     </application>
