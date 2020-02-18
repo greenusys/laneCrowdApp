@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableString
 import android.text.style.TextAppearanceSpan
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -25,9 +27,12 @@ import com.example.lanecrowd.Home_Fragment.Notification_Fragment
 import com.example.lanecrowd.Home_Fragment.Search_Fragment
 import com.example.lanecrowd.R
 import com.example.lanecrowd.Session_Package.SessionManager
+import com.example.lanecrowd.util.URL
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.nav_header_home.view.*
 import java.util.HashMap
 
 
@@ -79,14 +84,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         session = SessionManager(applicationContext)
 
-     /*   // get user data from session
-        val user: HashMap<String, String> = session!!.getUserDetails()
-
-
-        val full_name = user[SessionManager.KEY_FULL_NAME]
-
-        println("full_name"+full_name)
-*/
+     storeUserSessionValue()
 
 
         tabLayout = findViewById<View>(R.id.tabs) as TabLayout
@@ -97,12 +95,23 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         val headerView = navigationView.getHeaderView(0)
-        val header_image = headerView.findViewById<ImageView>(R.id.header_image)
+
+        val listHeader = LayoutInflater.from(baseContext).inflate(R.layout.nav_header_home, null)
+
+        val iv_cover = headerView.findViewById<ImageView>(R.id.iv_cover)
+        val iv_profile = headerView.findViewById<ImageView>(R.id.iv_profile)
+        val txt_name = headerView.findViewById<TextView>(R.id.txt_name)
+        val txt_mail = headerView.findViewById<TextView>(R.id.txt_mail)
+
         val toggle = ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer!!.addDrawerListener(toggle)
         toggle.syncState()
         navigationView.setNavigationItemSelectedListener(this)
+
+
+
+        setProfileANdCoverImageandName(iv_profile,iv_cover,txt_name,txt_mail)
 
         headerView.setOnClickListener(View.OnClickListener {
             closeDrawerLayout()
@@ -123,6 +132,59 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         more_nav.title = s3
         navigationView.setNavigationItemSelectedListener(this)
         //end change the navigation title color
+    }
+
+    private fun setProfileANdCoverImageandName(profileImage: ImageView?, headerView: ImageView?, txtName: TextView, txtMail: TextView) {
+
+
+        txtName.setText(URL.fullName)
+
+
+        println("mahar2"+URL.phone)
+        println("mahar"+URL.phone==null)
+
+        if(URL.phone.equals(""))
+        txtMail.setText(URL.email)
+        else
+        txtMail.setText(URL.phone)
+
+        Picasso.get()
+                .load(URL.profilePicPath+URL.profilePic)
+                .placeholder(R.drawable.placeholder_profile)
+                .error(R.drawable.placeholder_profile)
+                .into(profileImage);
+
+         Picasso.get()
+                .load(URL.coverPicPath+URL.coverPicPath)
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
+                .into(headerView);
+
+
+
+    }
+
+    private fun storeUserSessionValue() {
+
+           // get user data from session
+        val user: HashMap<String, String> = session!!.getUserDetails()
+
+
+        val KEY_USERID = user[SessionManager.KEY_USERID]
+        val KEY_FULL_NAME = user[SessionManager.KEY_FULL_NAME]
+        val KEY_EMAIL = user[SessionManager.KEY_EMAIL]
+        val KEY_PHONE = user[SessionManager.KEY_PHONE]
+        val KEY_PROFILE_PICTURE = user[SessionManager.KEY_PROFILE_PICTURE]
+        val KEY_COVER_PHOTO = user[SessionManager.KEY_COVER_PHOTO]
+
+        URL.userId=KEY_USERID!!
+        URL.fullName=KEY_FULL_NAME!!
+        URL.email=KEY_EMAIL!!
+        URL.phone=KEY_PHONE!!
+        URL.profilePic=KEY_PROFILE_PICTURE!!
+        URL.coverPic=KEY_COVER_PHOTO!!
+
+
     }
 
     private fun closeDrawerLayout() {

@@ -21,10 +21,17 @@ class Show_Selected_File_Adapter(val list: ArrayList<String>, val context: Add_P
     }
 
     override fun getItemCount(): Int {
+
+
         return list.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+        if(!Add_Post_Activity.isImage)
+           holder.video_icon.visibility=View.VISIBLE
+        else
+            holder.video_icon.visibility=View.GONE
 
         Glide.with(context).load(list.get(position)).into(holder.iv_img)
 
@@ -39,6 +46,7 @@ class Show_Selected_File_Adapter(val list: ArrayList<String>, val context: Add_P
 
         val iv_img:ImageView=view.findViewById(R.id.iv_img)
         val iv_close:ImageView=view.findViewById(R.id.iv_close)
+        val video_icon:ImageView=view.findViewById(R.id.video_icon)
 
 
     }

@@ -33,6 +33,7 @@
             android:src="@drawable/ic_clear"/>
 
         <ImageView
+            android:visibility="gone"
             android:tint="@color/white"
             android:id="@+id/video_icon"
             android:layout_width="wrap_content"

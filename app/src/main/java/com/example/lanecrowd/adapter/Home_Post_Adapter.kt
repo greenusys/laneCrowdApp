@@ -53,13 +53,14 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
 
         if(position!=0) {
             holder.lay_postComment.setOnClickListener(View.OnClickListener {
-                context.startActivity(Intent(context, Show_Comment_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            })
+                context.startActivity(Intent(context, Show_Comment_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) })
 
 
             holder.post_menu.setOnClickListener(View.OnClickListener {
-                activity!!.showMenu(holder.post_menu)
-            })
+                activity!!.showMenu(holder.post_menu) })
+
+
+
 
 
         }//main if

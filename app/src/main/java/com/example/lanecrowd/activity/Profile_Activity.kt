@@ -1,5 +1,6 @@
 package com.example.lanecrowd.activity
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
@@ -37,6 +38,7 @@ class Profile_Activity : AppCompatActivity(), View.OnClickListener {
         set_Time_Post_Adapter()
     }
 
+    @SuppressLint("WrongConstant")
     private fun set_Time_Post_Adapter() {
 
 
@@ -48,12 +50,12 @@ class Profile_Activity : AppCompatActivity(), View.OnClickListener {
 
 
         profile_rv!!.recycledViewPool.clear()
+       /* home_post_list.add(Home_Post_Modal())
         home_post_list.add(Home_Post_Modal())
         home_post_list.add(Home_Post_Modal())
         home_post_list.add(Home_Post_Modal())
         home_post_list.add(Home_Post_Modal())
-        home_post_list.add(Home_Post_Modal())
-        home_post_list.add(Home_Post_Modal())
+        home_post_list.add(Home_Post_Modal())*/
 
 
         profilePostAdapter = Profile_Post_Adapter(home_post_list, applicationContext)

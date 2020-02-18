@@ -69,7 +69,7 @@
             android:layout_height="70dp"
             app:lottie_rawRes="@raw/loading_anim"
             app:lottie_loop="true"
-            app:lottie_autoPlay="true"/>
+            app:lottie_autoPlay="false"/>
 
 
         <!--second layout-->
@@ -160,6 +160,7 @@
 
 
         <LinearLayout
+            android:id="@+id/list_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -210,17 +211,6 @@
             android:fontFamily="sans-serif-light"
             android:padding="10dp"
             android:text="Tag Friend" />
-
-            <TextView
-                style="@style/TextAppearance.MaterialComponents.Headline6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:drawableLeft="@drawable/smile_icon"
-                android:drawablePadding="20dp"
-                android:fontFamily="sans-serif-light"
-                android:padding="10dp"
-                android:text="Feeling" />
 
 
 

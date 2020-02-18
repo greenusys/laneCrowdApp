@@ -31,13 +31,13 @@ public class SessionManager {
 
 
     public static final String KEY_USERID = "id";
-    public static final String KEY_EMAIL = "full_name";
-    public static final String KEY_PHONE = "email";
-    public static final String KEY_FULL_NAME = "mobile";
-    public static final String KEY_BIOGRAPHY= "picture";
-    public static final String KEY_PROFILE_PICTURE = "type";
+    public static final String KEY_EMAIL = "email";
+    public static final String KEY_PHONE = "phone";
+    public static final String KEY_FULL_NAME = "full_name";
+    public static final String KEY_BIOGRAPHY= "biography";
+    public static final String KEY_PROFILE_PICTURE = "profile_pic";
 
-    public static final String KEY_COVER_PHOTO = "class_course";
+    public static final String KEY_COVER_PHOTO = "cover_photo";
 
 
     // Constructor

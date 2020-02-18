@@ -1,4 +1,4 @@
-package com.example.lanecrowd.Session_Package;
+package com.example.lanecrowd.util;
 
 import android.content.ContentUris;
 import android.content.Context;

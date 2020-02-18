@@ -10,24 +10,28 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.StrictMode
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.size
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.example.lanecrowd.R
-import com.example.lanecrowd.Session_Package.ImageFilePath
-import com.example.lanecrowd.Session_Package.RuntimePermissionsActivity
 import com.example.lanecrowd.adapter.Show_Selected_File_Adapter
 import com.example.lanecrowd.retrofit.AppController
+import com.example.lanecrowd.util.ImageFilePath
+import com.example.lanecrowd.util.RuntimePermissionsActivity
+import com.example.lanecrowd.view_modal.AddPostVM
+import com.example.lanecrowd.view_modal.LoginRegUserVM
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import okhttp3.*
-import org.json.JSONException
-import org.json.JSONObject
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -40,9 +44,13 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     private var gallery: Boolean = false
     private var camera: Boolean = false
     internal lateinit var appController: AppController
+    lateinit var viewmodel: AddPostVM
+
+    companion object {
+        var isImage: Boolean = false
+    }
 
 
-    private var isImage: Boolean = false
     private val REQ_PER_GALLERY = 10
     private val REQ_PER_CAMERA = 30
     private val REQ_PER_GALLERY_VIDEO = 20
@@ -50,10 +58,10 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
     internal var rv_video_list = java.util.ArrayList<String>()
-    internal var format_path:String=""
+    internal var format_path: String = ""
     internal var files = java.util.ArrayList<File>()
     private var mCurrentPhotoPath: String? = null
-    internal  var imageFilePath: String=""
+    internal var imageFilePath: String = ""
     private var videoFilePath: String? = null
 
 
@@ -75,6 +83,10 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     @SuppressLint("WrongConstant")
     private fun initViews() {
 
+
+        viewmodel = ViewModelProvider(this).get(AddPostVM::class.java!!)
+
+
         appController = applicationContext as AppController
 
         post_loading_anim = findViewById(R.id.post_loading_animLogin)
@@ -86,10 +98,6 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         adapter = Show_Selected_File_Adapter(rv_video_list, this)
         rv_addFiles!!.adapter = adapter
         rv_addFiles!!.layoutManager = LinearLayoutManager(applicationContext, LinearLayout.HORIZONTAL, false)
-        adapter!!.notifyDataSetChanged()
-
-
-
 
 
         openPhotoVideoChooser!!.setOnClickListener(View.OnClickListener {
@@ -119,13 +127,13 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
         if (requestCode == REQ_PER_GALLERY) {
             openGallery()
-             isImage = false;
+            isImage = true
         } else if (requestCode == REQ_PER_CAMERA) {
             openCameraImages()
-            isImage = true;
+            isImage = true
         } else if (requestCode == REQ_PER_GALLERY_VIDEO) {
             openGalleryVideo()
-             isImage = false;
+            isImage = false
         } else if (requestCode == REQ_PER_CAMERA_VIDEO) {
             openCameraVideo()
             isImage = false
@@ -172,6 +180,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     //2
     private fun openCameraVideo() {
+
+        isImage = false
         val builder = StrictMode.VmPolicy.Builder()
         StrictMode.setVmPolicy(builder.build())
 
@@ -232,32 +242,34 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         try {
 
 
-
             println("if_kaif_requestcode$requestCode")
             println("kaif_resultCode$resultCode")
             println("kaif_data${data!!.data}")
             //println("ClipData" + cd!!)
 
 
-
-            format_path=data.toString()
-
+            format_path = data.toString()
 
 
             //for gallery image
             if (requestCode == 1 && resultCode == RESULT_OK) {
                 // from gallery
-                val cd = data!!.clipData
+                val cd = data.clipData
 
-
+                isImage = true
 
 
 
                 if (cd != null) {
                     for (i in 0 until cd.itemCount) {
                         rv_video_list.add("" + cd.getItemAt(i).uri)
-                        files.add(File(ImageFilePath.getPath(baseContext, Uri.parse(rv_video_list[i]))))
 
+                        println("bbb1" + rv_video_list.get(0))
+                        println("bbb2" + Uri.parse(rv_video_list[i]))
+
+
+                        files.add(File(ImageFilePath.getPath(baseContext, Uri.parse(rv_video_list[i]))))
+                        println("bbb3" + files.get(0))
                     }
                 } else {
                     if (data.data != null) {
@@ -266,12 +278,9 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                     }
 
 
-
-
-
                 }
                 //disable Camera TextView
-                disableCameraTextView(true,false)
+                disableCameraTextView(true, false)
                 // txt_share.setTextColor(Color.parseColor("#000000"));
                 adapter!!.notifyDataSetChanged()
             }
@@ -279,11 +288,12 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
             //for camera images
             else if (requestCode == 3 && resultCode == RESULT_OK) {
 
+                isImage = true
                 //disable Photo/Video TextView
-                disableCameraTextView(false,false)
+                disableCameraTextView(false, false)
 
-                format_path=imageFilePath!!
-                println("camera_data_image"+imageFilePath)
+                format_path = imageFilePath
+                println("camera_data_image" + imageFilePath)
                 //uris.add(Uri.parse(imageFilePath));
                 rv_video_list.add(imageFilePath)
                 files.add(File(imageFilePath))
@@ -295,8 +305,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
             //for gallery video
             else if (requestCode == 2) {
 
-
-                val cd = data!!.clipData
+                isImage = false
+                val cd = data.clipData
                 if (cd != null) {
                     for (i in 0 until cd.itemCount) {
                         rv_video_list.add("" + cd.getItemAt(i).uri)
@@ -308,18 +318,18 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                 }
 
                 //disable Camera TextView
-                disableCameraTextView(true,false)
+                disableCameraTextView(true, false)
                 adapter!!.notifyDataSetChanged()
             }
             //for camera video
             else if (requestCode == 4) {
 
-
+                isImage = false
                 //disable Photo/Video TextView
-                disableCameraTextView(false,false)
+                disableCameraTextView(false, false)
 
-                println("camera_data_video"+videoFilePath)
-                format_path=videoFilePath!!
+                println("camera_data_video" + videoFilePath)
+                format_path = videoFilePath!!
 
                 rv_video_list.add(videoFilePath!!)
                 files.add(File(videoFilePath))
@@ -333,8 +343,6 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         }
 
     }
-
-
 
 
     @Throws(IOException::class)
@@ -368,7 +376,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
             super@Add_Post_Activity.requestAppPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), R.string.runtimepermission_txt, REQ_PER_CAMERA)
         } else {
             openCameraImages()
-             isImage = true;
+            isImage = true
         }
 
     }
@@ -397,12 +405,9 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     }
 
-    fun back_activity(view: View) {
-        onBackPressed()
-    }
 
 
-    private fun showSnackBar(msg:String) {
+    private fun showSnackBar(msg: String) {
 
         val snackbar = Snackbar.make(findViewById(R.id.add_root), msg, Snackbar.LENGTH_SHORT)
         snackbar.setBackgroundTint(ContextCompat.getColor(applicationContext, R.color.red)
@@ -416,7 +421,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     fun openPhotoVideoChooser() {
 
 
-        gallery=true
+        gallery = true
 
 
 
@@ -442,14 +447,13 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                     if (!format_path.equals("") && format_path.contains("video"))
                         showSnackBar("You can't select photo video at the same time")
                     else
-                    choosePhoto()
+                        choosePhoto()
 
                     dialog.dismiss()
 
                 })
 
                 video.setOnClickListener(View.OnClickListener {
-
 
 
                     if (!format_path.equals("") && format_path.contains("image"))
@@ -472,25 +476,23 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     }
 
-    private fun disableCameraTextView(value: Boolean,visibleBoth:Boolean) {
+    private fun disableCameraTextView(value: Boolean, visibleBoth: Boolean) {
 
 
-        if(!visibleBoth) {
+        if (!visibleBoth) {
             //clicked on Photo/Video
             if (value) {
 
-                openPhotoVideoChooser!!.setEnabled(true)
-                openCameraChooser!!.setEnabled(false)
+                openPhotoVideoChooser!!.isEnabled = true
+                openCameraChooser!!.isEnabled = false
 
             } else {
-                openPhotoVideoChooser!!.setEnabled(false)
-                openCameraChooser!!.setEnabled(true)
+                openPhotoVideoChooser!!.isEnabled = false
+                openCameraChooser!!.isEnabled = true
             }
-        }
-        else
-        {
-            openPhotoVideoChooser!!.setEnabled(true)
-            openCameraChooser!!.setEnabled(true)
+        } else {
+            openPhotoVideoChooser!!.isEnabled = true
+            openCameraChooser!!.isEnabled = true
 
         }
 
@@ -499,7 +501,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     fun openCameraChooser() {
 
-        camera=true
+        camera = true
 
 
 
@@ -519,7 +521,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                 close_box.setOnClickListener(View.OnClickListener { dialog.dismiss() })
 
 
-                println("sallu"+format_path)
+                println("sallu" + format_path)
                 photo.setOnClickListener(View.OnClickListener {
 
 
@@ -555,9 +557,9 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     }
 
     private fun checkImageFormat(): Boolean {
-        if(format_path.contains(".jpg") ||
-                format_path.contains(".png")||
-                format_path.contains(".jpeg")||
+        if (format_path.contains(".jpg") ||
+                format_path.contains(".png") ||
+                format_path.contains(".jpeg") ||
                 format_path.contains(".bmp"))
 
             return true
@@ -566,132 +568,124 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     }
 
 
- private fun checkVideoFormat(): Boolean {
+    private fun checkVideoFormat(): Boolean {
 
 
-     if(format_path.contains(".mp4") ||
-             format_path.contains(".3gp")||
-             format_path.contains(".mkv")||
-             format_path.contains(".webm"))
+        if (format_path.contains(".mp4") ||
+                format_path.contains(".3gp") ||
+                format_path.contains(".mkv") ||
+                format_path.contains(".webm"))
 
-         return true
+            return true
 
-     return false
+        return false
     }
 
     fun removeItem(position: Int) {
 
-        if(rv_video_list.size==1) {
+        if (rv_video_list.size == 1) {
             format_path = ""
             gallery = false
-            camera=false
-            disableCameraTextView(false,true)
+            camera = false
+            disableCameraTextView(false, true)
 
         }
 
         rv_video_list.removeAt(position)
-       adapter!!.notifyDataSetChanged()
-
+        adapter!!.notifyDataSetChanged()
 
 
     }
 
-
-
-
-    private fun addPost(post: String?, imgageData: String, user_id: String,
-                        files: ArrayList<File>, isImage: Boolean?) {
-
-
-
-
-
-        val builder = MultipartBody.Builder()
-        builder.setType(MultipartBody.FORM)
-        builder.addFormDataPart("android", "")
-        builder.addFormDataPart("post_type", "1")
-        builder.addFormDataPart("post", post)
-        builder.addFormDataPart("imgageData", imgageData)
-        builder.addFormDataPart("user_id", user_id)
-
-        for (f in files) {
-
-            val filePath = f.absolutePath
-            val mediaType = MediaType.parse(if (isImage!!) "image/" else "video/" + filePath.substring(filePath.lastIndexOf(".") + 1))
-            builder.addFormDataPart("files[]", filePath.substring(filePath.lastIndexOf("/") + 1),
-            RequestBody.create(mediaType, f))
-        }
-
-        val request = Request.Builder().url("http://www.lanecrowd.com/addPost").post(builder.build()).build()
-
-
-        appController.getOkHttpClient().newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                this@Add_Post_Activity.runOnUiThread(Runnable {
-                    Log.e("kaif_Excetpion-3", "skdj")
-                    visibleLoadingAnimation(false)
-
-                    Toast.makeText(baseContext, "Error$e", Toast.LENGTH_SHORT).show()
-                })
-            }
-
-            @Throws(IOException::class)
-            override fun onResponse(call: Call, response: Response) {
-                val myResponse = response.body()!!.string()
-                this@Add_Post_Activity.runOnUiThread(Runnable {
-                    try {
-                        val jo = JSONObject(myResponse)
-
-                        println("hsdf$jo")
-
-
-
-                        if (jo.getString("status") == "1") {
-                            visibleLoadingAnimation(false)
-                            //setResult(RESULT_OK)
-                           // finish()
-                        }
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
-                        visibleLoadingAnimation(false)
-
-                    }
-                })
-            }
-        })
-    }
 
     fun upload_Post(view: View) {
 
 
-        if(rv_video_list!!.size<=0 && findViewById<EditText>(R.id.status_input).text.toString().length<=0)
-        {
+        if (rv_video_list.size <= 0 && findViewById<EditText>(R.id.status_input).text.toString().length <= 0) {
+
+        } else {
+
+
+            try {
+
+
+                visibleLoadingAnimation(true)
+
+
+                viewmodel.addPostvm("", findViewById<EditText>(R.id.status_input).text.toString(), files, isImage, applicationContext).observe(this, Observer { resultPi ->
+
+                    println("add_post" + resultPi)
+
+
+
+                    if (resultPi != null && resultPi.getString("status").equals("1"))
+                        visibleLoadingAnimation(false)
+                    else {
+                        visibleLoadingAnimation(false)
+                    }
+
+
+                })
+
+
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+
 
         }
-        else
-        {
-            addPost(findViewById<EditText>(R.id.status_input).text.toString(),"","2",files,isImage)
-            visibleLoadingAnimation(true)
-
-        }
-
 
 
     }
 
+
     private fun visibleLoadingAnimation(value: Boolean) {
 
-        if(value)
-        {
-            post_loading_anim!!.visibility=View.VISIBLE
+        if (value) {
+            post_loading_anim!!.visibility = View.VISIBLE
             post_loading_anim!!.playAnimation()
 
-        }
-        else
-        {
-            post_loading_anim!!.visibility=View.GONE
+        } else {
+            post_loading_anim!!.visibility = View.GONE
             post_loading_anim!!.pauseAnimation()
         }
+
+
+    }
+
+    private fun askTOExit() {
+
+
+        MaterialAlertDialogBuilder(this@Add_Post_Activity, R.style.RoundShapeTheme)
+                .setTitle("LaneCrowd")
+                .setMessage("Are you sure want to exit?")
+                .setNegativeButton("No") { dialogInterface, i ->
+                }
+                .setPositiveButton("yes") { dialogInterface, i ->
+
+                    viewmodel.cancleNetworkCall()
+                    super.onBackPressed()
+                }
+                .show()
+
+
+    }
+    fun back_activity(view: View) {
+        if (post_loading_anim!!.isAnimating)
+            askTOExit()
+        else
+            super.onBackPressed()
+    }
+
+
+    override fun onBackPressed() {
+
+        if (post_loading_anim!!.isAnimating)
+            askTOExit()
+        else
+            super.onBackPressed()
+
+
     }
 
 

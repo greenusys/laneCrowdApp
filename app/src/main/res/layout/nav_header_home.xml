@@ -1,40 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="200dp"
-    android:background="@drawable/test"
-    android:gravity="bottom"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+    android:layout_width="match_parent"
+    android:layout_height="200dp">
 
     <ImageView
-        android:id="@+id/header_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="15dp"
-        app:srcCompat="@drawable/profile" />
-
-    <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:text="Sayed Md. Kaif"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="#fff"
-        android:textSize="20dp" />
+        android:layout_height="200dp"
+        android:id="@+id/iv_cover"
+        android:src="@drawable/test"
+        android:alpha="0.5"
+        android:scaleType="centerCrop"/>
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="10dp"
-        android:text="mkaif6053@gmail.com"
-        android:textColor="#fff"
-        android:textSize="18dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="bottom|left"
+        android:paddingBottom="10dp">
 
-</LinearLayout>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/profile"
+            android:id="@+id/iv_profile"
+            android:layout_marginLeft="20dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Md Kaif"
+            android:id="@+id/txt_name"
+            android:textColor="#000"
+            android:gravity="left"
+            android:layout_marginLeft="20dp"
+            android:textSize="15sp"
+            android:textAllCaps="true"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txt_mail"
+            android:text="mkaif5605@gmail.com"
+            android:textColor="#000"
+            android:gravity="left"
+            android:layout_marginLeft="20dp"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</FrameLayout>

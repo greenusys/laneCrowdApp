@@ -6,10 +6,14 @@ import android.os.Bundle
 import android.os.Vibrator
 import android.util.Log
 import android.view.*
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lancrowd.activity.modal.Home_Post_Modal
@@ -18,12 +22,18 @@ import com.example.lanecrowd.R
 import com.example.lanecrowd.adapter.Home_Post_Adapter
 import com.example.lanecrowd.adapter.Story_Adapter
 import com.example.lanecrowd.modal.PowerMenuUtils
+import com.example.lanecrowd.util.URL
+import com.example.lanecrowd.view_modal.FetchPostVm
+import com.google.gson.JsonObject
 import com.skydoves.powermenu.OnMenuItemClickListener
 import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
+import org.json.JSONArray
+import org.json.JSONObject
 
 
 class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
+
     override fun onQueryTextSubmit(query: String?): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -44,6 +54,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
       var home_post_list= ArrayList<Home_Post_Modal>()
       var story_list= ArrayList<Story_Modal>()
+    lateinit var viewmodel: FetchPostVm
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,12 +79,12 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
     private fun initViews(view: View) {
 
 
+       /* home_post_list.add(Home_Post_Modal())
         home_post_list.add(Home_Post_Modal())
         home_post_list.add(Home_Post_Modal())
         home_post_list.add(Home_Post_Modal())
         home_post_list.add(Home_Post_Modal())
-        home_post_list.add(Home_Post_Modal())
-        home_post_list.add(Home_Post_Modal())
+        home_post_list.add(Home_Post_Modal())*/
 
 
 
@@ -85,6 +96,9 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
         story_list.add(Story_Modal())
         story_list.add(Story_Modal())
         story_list.add(Story_Modal())
+
+
+         viewmodel = ViewModelProvider(this).get(FetchPostVm::class.java)
 
 
         //power menu
@@ -111,8 +125,119 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
 
+        fetchPost()
+
+
+
+
     }
 
+    private fun fetchPost() {
+
+        try {
+
+
+
+            viewmodel.fetchPostvm(URL.userId,"0").observe(viewLifecycleOwner, Observer { resultPi ->
+
+                println("fetch_post" + resultPi)
+
+
+                storepostDataTOModal(resultPi)
+
+            })
+
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+
+
+
+    }
+
+    private fun storepostDataTOModal(resultPi: JsonObject?) {
+
+        var main:JSONObject = JSONObject(resultPi.toString())
+
+
+
+        var isMylike:Boolean=false
+
+
+        if(main.getString("code").equals("1"))
+        {
+
+
+            val data:JSONArray=main.getJSONArray("data")
+
+            println("data_size"+data.length())
+
+            for (i in 0 until data.length()) {
+
+                var item=data.getJSONObject(i)
+
+                var postList:ArrayList<String> = ArrayList()
+
+                //store images and video in postlist
+                for (str in item.getString("post_files").split(",")) {
+
+                    if(!str.equals("")) {
+                        postList.add(str)
+
+                    }
+
+                }
+
+
+
+
+                    //for likes
+                val like:JSONArray=item.getJSONArray("likes_data")
+               if(like.length()>0) {
+
+                   println("like_kaif"+like)
+
+                   var likeitem = like.getJSONObject(0)
+
+                   if (likeitem.getString("like_or_dislike").equals("1"))
+                       isMylike = true
+                   else
+                       isMylike = false
+
+               }
+                else
+                   isMylike=false
+
+
+
+
+                //store data to list
+                home_post_list.add(
+                    Home_Post_Modal(
+                        item.getString("post_id"),
+                        item.getString("user_id"),
+                        item.getString("post"),
+                        postList,
+                        item.getString("posted_by"),
+                        item.getString("profile_pic"),
+                        item.getString("posted_on"),
+                        item.getString("total_likes"),
+                        item.getString("total_share"),
+                        isMylike))
+
+
+            }
+
+        }
+        else
+        {
+
+        }
+
+
+
+    }
 
 
     //power option menu
