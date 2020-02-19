@@ -40,7 +40,7 @@ class AddPostVM : ViewModel() {
 
     var context: Context?=null
 
-    //this will cancel network call if the call already sent
+    //this will cancel network.xml call if the call already sent
      fun cancleNetworkCall() {
 
 

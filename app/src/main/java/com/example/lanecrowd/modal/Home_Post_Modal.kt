@@ -7,9 +7,11 @@ class Home_Post_Modal(val post_id:String,
                       val posted_by:String,
                       val profile_pic:String,
                       val posted_on:String,
-                      val total_likes:String,
+                      var total_likes:String,
                       val total_share:String,
-                      val isMyLike:Boolean) {
+                      val total_comments:String,
+                      val isImage:Boolean,
+                      var isMyLike:Boolean) {
 
 
 

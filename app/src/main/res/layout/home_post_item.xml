@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="1dp"
+    android:elevation="50dp"
+    app:cardCornerRadius="20dp"
+    android:layout_margin="5dp"
     app:cardBackgroundColor="#ffffff">
 
     <LinearLayout
@@ -40,7 +42,7 @@
                     android:id="@+id/postUserName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Md. Kaif"
+                    android:text=""
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
@@ -53,7 +55,7 @@
                         android:id="@+id/postTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="25-12-2019"
+                        android:text=""
                         android:textColor="@color/dark_grey"
                         android:textSize="14sp" />
 
@@ -91,7 +93,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="10dp"
             android:ellipsize="end"
-            android:text="status"
+            android:text=""
             android:textColor="@color/black"
             android:textSize="16sp" />
 
@@ -123,7 +125,6 @@
                     android:layout_weight="2">
 
                     <FrameLayout
-                        android:id="@+id/frame_postA"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1">
@@ -131,13 +132,14 @@
                         <ImageView
                             android:id="@+id/iv_postImgA"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="360dp"
                             android:adjustViewBounds="true"
-                            android:src="@drawable/login"
                             android:background="@drawable/img_background"
                             android:scaleType="fitXY" />
 
                         <ImageView
+                            android:tint="@color/white"
+                            android:visibility="gone"
                             android:id="@+id/iv_postIsVideoA"
                             android:layout_width="wrap_content"
                             android:layout_height="30dp"
@@ -157,6 +159,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:layout_marginTop="5dp"
                     android:id="@+id/lay_postForBelowImgs"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
@@ -164,13 +167,13 @@
                     android:orientation="horizontal">
 
                     <FrameLayout
+                    android:id="@+id/frame_postAi"
                         android:layout_width="0dp"
                         android:layout_height="100dp"
                         android:layout_weight="1"
                        >
 
                         <ImageView
-                            android:src="@drawable/login"
                             android:id="@+id/iv_postImgB"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -179,6 +182,8 @@
                             android:scaleType="centerCrop" />
 
                         <ImageView
+                            android:tint="@color/white"
+                            android:visibility="gone"
                             android:id="@+id/iv_postIsVideoB"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -201,7 +206,7 @@
                         android:layout_weight="1">
 
                         <ImageView
-                            android:id="@+id/postImageC"                            android:src="@drawable/login"
+                            android:id="@+id/postImageC"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:adjustViewBounds="true"
@@ -209,12 +214,16 @@
                             android:scaleType="centerCrop" />
 
                         <ImageView
+                            android:tint="@color/white"
+                            android:visibility="gone"
+                            android:id="@+id/iv_postIsVideoC"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_play_video" />
 
                         <ProgressBar
+                            android:id="@+id/loading_iconC"
                             android:layout_width="wrap_content"
                             android:layout_height="30dp"
                             android:layout_gravity="center" />
@@ -224,13 +233,12 @@
 
 
                     <FrameLayout
-                        android:id="@+id/frame_postE"
+                        android:id="@+id/frame_postC"
                         android:layout_width="0dp"
                         android:layout_height="100dp"
                         android:layout_weight="1">
 
                         <ImageView
-                            android:src="@drawable/login"
                             android:id="@+id/iv_postImgD"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -239,7 +247,9 @@
                             android:scaleType="centerCrop" />
 
                         <ImageView
-                            android:id="@+id/iv_postIsVideoE"
+                            android:tint="@color/white"
+                            android:visibility="gone"
+                            android:id="@+id/iv_postIsVideoD"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:layout_gravity="center"
@@ -247,14 +257,15 @@
 
 
                         <ProgressBar
-                            android:id="@+id/loading_iconE"
+                            android:id="@+id/loading_iconD"
                             android:layout_width="wrap_content"
                             android:layout_height="30dp"
                             android:layout_gravity="center" />
 
 
                         <TextView
-                            android:id="@+id/txt_postImgCount"
+                            android:visibility="gone"
+                            android:id="@+id/more_text"
                             android:layout_width="match_parent"
                             android:layout_height="100dp"
                             android:background="#80000000"
@@ -320,7 +331,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="234"
+                    android:text=""
                     android:textAllCaps="true"
                     android:textColor="#000"
                     android:textSize="14sp" />
@@ -355,7 +366,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="234"
+                    android:text=""
                     android:textAllCaps="true"
                     android:textColor="#000"
                     android:textSize="14sp" />
@@ -388,7 +399,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="23423"
+                    android:text=""
                     android:textAllCaps="true"
                     android:textColor="#000"
                     android:textSize="14sp" />

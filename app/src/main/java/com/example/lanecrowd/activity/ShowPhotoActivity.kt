@@ -30,6 +30,10 @@ class ShowPhotoActivity : AppCompatActivity() {
 
 
 
+
+
+
+
         /*//show single images
         ZGallery.with(this, getDummyImageList())
                 .setToolbarTitleColor(ZColor.WHITE)

@@ -20,9 +20,12 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
-        <activity android:name=".activity.test"></activity>
+        <activity android:name=".activity.testss">
+
+        </activity>
+        <activity android:name=".activity.test" />
         <activity android:name=".activity.Test5" />
-        <activity android:name=".activity.Test2"></activity>
+        <activity android:name=".activity.Test2" />
         <activity android:name=".activity.Verify_OTP_Activity" />
         <activity android:name=".activity.ShowPhotoActivity" />
         <activity
@@ -33,9 +36,7 @@
             android:theme="@style/AppThemeMat" />
         <activity
             android:name=".activity.Add_Post_Activity"
-            android:theme="@style/AppThemeMat">
-
-        </activity>
+            android:theme="@style/AppThemeMat" />
         <activity
             android:name=".activity.Show_Comment_Activity"
             android:theme="@style/AppThemeMat" />

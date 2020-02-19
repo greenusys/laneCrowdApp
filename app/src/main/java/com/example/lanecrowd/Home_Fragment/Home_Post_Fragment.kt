@@ -30,9 +30,13 @@ import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.Exception
 
 
 class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
+
+
+
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -112,6 +116,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
 
+
+
         homePostAdapter = Home_Post_Adapter(home_post_list, context!!,this@Home_Post_Fragment)
         home_post_rv!!.layoutManager = LinearLayoutManager(view.context, LinearLayout.VERTICAL, false)
         home_post_rv!!.adapter = homePostAdapter
@@ -130,7 +136,13 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
 
+
+
     }
+
+
+
+
 
     private fun fetchPost() {
 
@@ -163,6 +175,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
         var isMylike:Boolean=false
+        var isImage:Boolean=false
 
 
         if(main.getString("code").equals("1"))
@@ -179,7 +192,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
                 var postList:ArrayList<String> = ArrayList()
 
-                //store images and video in postlist
+               /* //store images and video in postlist
                 for (str in item.getString("post_files").split(",")) {
 
                     if(!str.equals("")) {
@@ -187,10 +200,29 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
                     }
 
+
+                }*/
+
+
+
+                try {
+
+               if(!item.getString("post_files").equals("null")) {
+                   postList = item.getString("post_files").split(",") as ArrayList<String>
+
+                   isImage = item.getString("post_files").contains(".jpg") || item.getString("post_files").contains(".jpeg") || item.getString("post_files").contains(".png")
+
+               }  else {
+                   isImage=false
+                   postList.add("empty")
+               }
+
+                }catch (e:Exception)
+                {
+                    isImage=false
+                    postList.add(item.getString("post_files"))
+
                 }
-
-
-
 
                     //for likes
                 val like:JSONArray=item.getJSONArray("likes_data")
@@ -200,14 +232,13 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
                    var likeitem = like.getJSONObject(0)
 
-                   if (likeitem.getString("like_or_dislike").equals("1"))
-                       isMylike = true
-                   else
-                       isMylike = false
+                   isMylike = likeitem.getString("like_or_dislike").equals("1")
 
                }
                 else
                    isMylike=false
+
+
 
 
 
@@ -224,7 +255,12 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                         item.getString("posted_on"),
                         item.getString("total_likes"),
                         item.getString("total_share"),
+                        item.getString("total_comments"),
+                        isImage,
                         isMylike))
+
+
+
 
 
             }
@@ -235,6 +271,17 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
         }
 
+        homePostAdapter!!.notifyDataSetChanged()
+
+       // println("sallu"+home_post_list.size)
+        //println("salluFiles"+home_post_list)
+        for (i in 0 until home_post_list.size) {
+
+            println("loop_run"+i)
+            println("kaif_files"+home_post_list.get(i).post_files)
+            println("kaif_image"+home_post_list.get(i).isImage)
+
+        }
 
 
     }
@@ -287,7 +334,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
     }
 
-    private fun showVibration() {
+     fun showVibration() {
 
         vibe!!.vibrate(80);
     }
