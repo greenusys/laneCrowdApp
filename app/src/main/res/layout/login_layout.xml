@@ -87,6 +87,7 @@
         android:hint="E-Mail/Mobile"
         android:inputType="textEmailAddress"
         android:lines="1"
+
         android:textColor="@color/white"
         android:textColorHint="@color/white" />
 

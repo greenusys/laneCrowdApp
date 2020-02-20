@@ -2,35 +2,38 @@ package com.example.lanecrowd.Home_Fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Vibrator
 import android.util.Log
 import android.view.*
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.example.lancrowd.activity.modal.Home_Post_Modal
 import com.example.lancrowd.activity.modal.Story_Modal
 import com.example.lanecrowd.R
+import com.example.lanecrowd.activity.Add_Post_Activity
 import com.example.lanecrowd.adapter.Home_Post_Adapter
 import com.example.lanecrowd.adapter.Story_Adapter
 import com.example.lanecrowd.modal.PowerMenuUtils
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.FetchPostVm
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.JsonObject
 import com.skydoves.powermenu.OnMenuItemClickListener
 import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
 import org.json.JSONArray
 import org.json.JSONObject
-import java.lang.Exception
 
 
 class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
@@ -46,8 +49,24 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+
+    fun gotoAddpostActivity() {
+
+        startActivity(Intent(context, Add_Post_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+
+    }
+    var isLoading = false
+
+
+
     internal var firstTime = false
-    private var hamburgerMenu: PowerMenu? = null
+    internal var postId:String=""
+    internal var postposition:Int = -1
+    internal var offset:Int = 0
+    private var selPostfMenu: PowerMenu? = null
+    private var otherPostMenu: PowerMenu? = null
+    private var whatslayout: LinearLayout? = null
+    private var swipe: SwipeRefreshLayout? = null
     private var vibe: Vibrator? = null
 
     var home_post_rv: RecyclerView?=null
@@ -106,17 +125,24 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
         //power menu
-        hamburgerMenu = PowerMenuUtils.getSelfPostMenu(context!!, this, onHamburgerItemClickListener, onHamburgerMenuDismissedListener)
+        selPostfMenu = PowerMenuUtils.getSelfPostMenu(context!!, this, onHamburgerItemClickListener, onHamburgerMenuDismissedListener)
+        otherPostMenu = PowerMenuUtils.getOtherPostMenu(context!!, this, onHamburgerItemClickListener, onHamburgerMenuDismissedListener)
 
         vibe = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
 
         home_post_rv = view.findViewById(R.id.home_post_rv) as RecyclerView
         story_rv = view.findViewById(R.id.story_rv) as RecyclerView
+        whatslayout = view.findViewById(R.id.whatslayout) as LinearLayout
+        swipe = view.findViewById(R.id.swipe) as SwipeRefreshLayout
 
 
 
 
+        swipe!!.setDistanceToTriggerSync(500)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            swipe!!.setProgressViewOffset(false, 0, 300)
+        }
 
         homePostAdapter = Home_Post_Adapter(home_post_list, context!!,this@Home_Post_Fragment)
         home_post_rv!!.layoutManager = LinearLayoutManager(view.context, LinearLayout.VERTICAL, false)
@@ -130,9 +156,16 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
         storyAdapter!!.notifyDataSetChanged()
 
 
+        whatslayout!!.setOnClickListener(View.OnClickListener {
 
-        fetchPost()
+            gotoAddpostActivity()
 
+        })
+
+
+        swiperefresh_Listener()
+        fetchPost(offset.toString())
+        initScrollListener()
 
 
 
@@ -141,21 +174,62 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
+    private fun initScrollListener() {
+
+        home_post_rv!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val totalItemCount: Int = home_post_rv!!.layoutManager!!.getItemCount()
+                val lastVisibleItem =
+                    (home_post_rv!!.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                if (lastVisibleItem == totalItemCount - 1 && !isLoading && !firstTime) { //   Toast.makeText(getContext(), "counting: "+counting, Toast.LENGTH_SHORT).show();
+                    isLoading = true
+                    if (home_post_list.size == 0) offset = 0
+                    fetchPost(offset.toString())
+                }
+            }
+        })
+
+
+    }
 
 
 
-    private fun fetchPost() {
+
+    private fun swiperefresh_Listener() {
+        swipe!!.setOnRefreshListener(OnRefreshListener {
+            if (home_post_list != null) {
+                home_post_rv!!.recycledViewPool.clear()
+                notifiyAdapter()
+                home_post_list.clear()
+            }
+
+            offset = 0
+            fetchPost("0")
+            setRefreshingfalse()
+        })
+    }
+
+    private fun setRefreshingfalse() {
+
+            swipe!!.isRefreshing=false
+
+    }
+
+
+    private fun fetchPost(offsettt:String) {
+
 
         try {
 
-
-
-            viewmodel.fetchPostvm(URL.userId,"0").observe(viewLifecycleOwner, Observer { resultPi ->
+            viewmodel.fetchPostvm(URL.userId,offsettt).observe(viewLifecycleOwner, Observer { resultPi ->
 
                 println("fetch_post" + resultPi)
 
 
+                offset++
                 storepostDataTOModal(resultPi)
+
 
             })
 
@@ -170,12 +244,12 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun storepostDataTOModal(resultPi: JsonObject?) {
 
-        var main:JSONObject = JSONObject(resultPi.toString())
+        var main = JSONObject(resultPi.toString())
 
 
 
-        var isMylike:Boolean=false
-        var isImage:Boolean=false
+        var isMylike =false
+        var isImage =false
 
 
         if(main.getString("code").equals("1"))
@@ -191,18 +265,6 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                 var item=data.getJSONObject(i)
 
                 var postList:ArrayList<String> = ArrayList()
-
-               /* //store images and video in postlist
-                for (str in item.getString("post_files").split(",")) {
-
-                    if(!str.equals("")) {
-                        postList.add(str)
-
-                    }
-
-
-                }*/
-
 
 
                 try {
@@ -271,18 +333,17 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
         }
 
+       notifiyAdapter()
+
+
+
+
+    }
+
+    private fun notifiyAdapter() {
+
+
         homePostAdapter!!.notifyDataSetChanged()
-
-       // println("sallu"+home_post_list.size)
-        //println("salluFiles"+home_post_list)
-        for (i in 0 until home_post_list.size) {
-
-            println("loop_run"+i)
-            println("kaif_files"+home_post_list.get(i).post_files)
-            println("kaif_image"+home_post_list.get(i).isImage)
-
-        }
-
 
     }
 
@@ -293,7 +354,18 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                 // hamburgerMenu!!.selectedPosition = position
 
                 if(!firstTime) {
+
+
+                    println("menu_clcked")
+
+
+
+                    if (item.title.equals(getString(R.string.delete)))
+                       askToDeleteSelfPost(postId)
+
+
 /*
+
                     if (item.title.equals(getString(R.string.rate_me)))
                         rateMe()
                     else if (item.title.equals(getString(R.string.share)))
@@ -305,19 +377,51 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
             }
 
+    private fun askToDeleteSelfPost(postId: String) {
+
+
+        MaterialAlertDialogBuilder(activity, R.style.AlertDialogTheme)
+            .setTitle("LaneCrowd")
+            .setMessage("Are you sure want to delete post?")
+            .setNegativeButton("No") { dialogInterface, i ->
+            }
+            .setPositiveButton("Yes") { dialogInterface, i ->
+
+                viewmodel.deletePosetAPI(postId)
+                homePostAdapter!!.notifyItemRemoved(postposition)
+
+            }
+            .show()
+    }
+
     private val onHamburgerMenuDismissedListener = {
         Log.d("Test", "onDismissed hamburger menu") }
 
 
 
-    fun showMenu(frndMenu: ImageView) {
+    fun showMenu(position:Int,postId:String,menu: ImageView, value: Boolean) {
         showVibration()
 
-        if (hamburgerMenu!!.isShowing) {
-            hamburgerMenu!!.dismiss()
+        this.postId=postId
+        this.postposition=position
+
+        if (selPostfMenu!!.isShowing) {
+            selPostfMenu!!.dismiss()
             return
         }
-        hamburgerMenu!!.showAsDropDown(frndMenu)
+
+        if (otherPostMenu!!.isShowing) {
+            otherPostMenu!!.dismiss()
+            return
+        }
+
+
+        println("menu_check"+value)
+
+        if(value)
+        selPostfMenu!!.showAsDropDown(menu)
+        else
+        otherPostMenu!!.showAsDropDown(menu)
 
 
     }
@@ -337,6 +441,13 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
      fun showVibration() {
 
         vibe!!.vibrate(80);
+    }
+
+    fun likeDislike(postId: String, userId: String) {
+
+
+        viewmodel.likeDislikeAPI(postId,userId)
+
     }
 
 

@@ -76,7 +76,7 @@ class AddPostVM : ViewModel() {
 
 
 
-        addPost(isOnlyText,status,imgageData,"2",files,isImage)
+        addPost(isOnlyText,status,imgageData,URL.userId,files,isImage)
 
 
         return addPostRes as MutableLiveData<JSONObject>
@@ -137,8 +137,6 @@ class AddPostVM : ViewModel() {
 
             @Throws(Exception::class)
             override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-
-
 
 
 

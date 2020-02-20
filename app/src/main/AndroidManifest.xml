@@ -20,10 +20,22 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
-        <activity android:name=".activity.testss">
+        <activity android:name=".test.MainActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
+        <activity android:name=".activity.test" >
 
         </activity>
-        <activity android:name=".activity.test" />
+
+
+
         <activity android:name=".activity.Test5" />
         <activity android:name=".activity.Test2" />
         <activity android:name=".activity.Verify_OTP_Activity" />
@@ -60,7 +72,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/MateriaApptheme">
 
             <!--
             <intent-filter>

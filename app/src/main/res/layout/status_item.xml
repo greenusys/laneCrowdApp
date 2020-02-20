@@ -14,10 +14,13 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/themeImage"
+        android:tint="@color/black"
+        android:background="@drawable/circle_bg"
+        android:outlineAmbientShadowColor="@color/black"
+        android:outlineSpotShadowColor="@color/black"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/test" />
+        android:scaleType="centerCrop" />
 
 
 

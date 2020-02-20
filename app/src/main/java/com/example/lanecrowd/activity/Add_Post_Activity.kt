@@ -3,6 +3,7 @@ package com.example.lanecrowd.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -12,6 +13,7 @@ import android.os.StrictMode
 import android.provider.MediaStore
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -23,7 +25,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.example.lanecrowd.R
-import com.example.lanecrowd.adapter.Home_Post_Adapter
 import com.example.lanecrowd.adapter.Show_Selected_File_Adapter
 import com.example.lanecrowd.retrofit.AppController
 import com.example.lanecrowd.util.ImageFilePath
@@ -83,7 +84,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     private fun initViews() {
 
 
-        viewmodel = ViewModelProvider(this).get(AddPostVM::class.java!!)
+        viewmodel = ViewModelProvider(this).get(AddPostVM::class.java)
 
 
         appController = applicationContext as AppController
@@ -96,7 +97,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         rv_addFiles = findViewById<RecyclerView>(R.id.rv_addFiles)
         adapter = Show_Selected_File_Adapter(rv_video_list, this)
         rv_addFiles!!.adapter = adapter
-        rv_addFiles!!.layoutManager = LinearLayoutManager(applicationContext, LinearLayout.HORIZONTAL, false)
+        rv_addFiles!!.layoutManager =
+            LinearLayoutManager(applicationContext, LinearLayout.HORIZONTAL, false)
 
 
         openPhotoVideoChooser!!.setOnClickListener(View.OnClickListener {
@@ -117,7 +119,12 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     fun choose_Status(view: View) {
 
-        startActivity(Intent(applicationContext, Choose_Status_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        startActivity(
+            Intent(
+                applicationContext,
+                Choose_Status_Activity::class.java
+            ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
 
     }
 
@@ -143,9 +150,17 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     //for upload image
     //1
     fun choosePhoto() {
-        if (ContextCompat.checkSelfPermission(this@Add_Post_Activity,
-                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            super@Add_Post_Activity.requestAppPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), R.string.runtimepermission_txt, REQ_PER_GALLERY)
+        if (ContextCompat.checkSelfPermission(
+                this@Add_Post_Activity,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            super@Add_Post_Activity.requestAppPermissions(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ), R.string.runtimepermission_txt, REQ_PER_GALLERY
+            )
         } else {
             openGallery()
             isImage = true
@@ -154,9 +169,17 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
     fun open_video_gallery() {
-        if (ContextCompat.checkSelfPermission(this@Add_Post_Activity,
-                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            super@Add_Post_Activity.requestAppPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), R.string.runtimepermission_txt, REQ_PER_GALLERY_VIDEO)
+        if (ContextCompat.checkSelfPermission(
+                this@Add_Post_Activity,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            super@Add_Post_Activity.requestAppPermissions(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ), R.string.runtimepermission_txt, REQ_PER_GALLERY_VIDEO
+            )
         } else {
             openGalleryVideo()
             isImage = false
@@ -167,10 +190,21 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     //for camera video
     //1
     fun open_video_camera() {
-        if (ContextCompat.checkSelfPermission(this@Add_Post_Activity,
-                        Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this@Add_Post_Activity,
-                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            super@Add_Post_Activity.requestAppPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), R.string.runtimepermission_txt, REQ_PER_CAMERA_VIDEO)
+        if (ContextCompat.checkSelfPermission(
+                this@Add_Post_Activity,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                this@Add_Post_Activity,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            super@Add_Post_Activity.requestAppPermissions(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA
+                ), R.string.runtimepermission_txt, REQ_PER_CAMERA_VIDEO
+            )
         } else {
             openCameraVideo()
             isImage = false
@@ -207,12 +241,26 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
     fun openGallery() {
-        startActivityForResult(Intent.createChooser(Intent().setType("image/*").putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true).setAction(Intent.ACTION_GET_CONTENT), "Select Images"), 1)
+        startActivityForResult(
+            Intent.createChooser(
+                Intent().setType("image/*").putExtra(
+                    Intent.EXTRA_ALLOW_MULTIPLE,
+                    true
+                ).setAction(Intent.ACTION_GET_CONTENT), "Select Images"
+            ), 1
+        )
     }
 
 
     fun openGalleryVideo() {
-        startActivityForResult(Intent.createChooser(Intent().setType("video/*").putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true).setAction(Intent.ACTION_GET_CONTENT), "Select Video"), 2)
+        startActivityForResult(
+            Intent.createChooser(
+                Intent().setType("video/*").putExtra(
+                    Intent.EXTRA_ALLOW_MULTIPLE,
+                    true
+                ).setAction(Intent.ACTION_GET_CONTENT), "Select Video"
+            ), 2
+        )
     }
 
 
@@ -222,11 +270,12 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val imageFileName = "Vid_" + timeStamp + "_"
         val storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES)
+            Environment.DIRECTORY_PICTURES
+        )
         val image = File.createTempFile(
-                imageFileName, /* prefix */
-                ".mp4", /* suffix */
-                storageDir      /* directory */
+            imageFileName, /* prefix */
+            ".mp4", /* suffix */
+            storageDir      /* directory */
         )
         // videoFilePath = "file:" + image.getAbsolutePath();
         videoFilePath = image.absolutePath
@@ -267,13 +316,27 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                         println("bbb2" + Uri.parse(rv_video_list[i]))
 
 
-                        files.add(File(ImageFilePath.getPath(baseContext, Uri.parse(rv_video_list[i]))))
+                        files.add(
+                            File(
+                                ImageFilePath.getPath(
+                                    baseContext,
+                                    Uri.parse(rv_video_list[i])
+                                )
+                            )
+                        )
                         println("bbb3" + files.get(0))
                     }
                 } else {
                     if (data.data != null) {
                         rv_video_list.add("" + data.data!!)
-                        files.add(File(ImageFilePath.getPath(baseContext, Uri.parse(rv_video_list[0]))))
+                        files.add(
+                            File(
+                                ImageFilePath.getPath(
+                                    baseContext,
+                                    Uri.parse(rv_video_list[0])
+                                )
+                            )
+                        )
                     }
 
 
@@ -309,11 +372,25 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                 if (cd != null) {
                     for (i in 0 until cd.itemCount) {
                         rv_video_list.add("" + cd.getItemAt(i).uri)
-                        files.add(File(ImageFilePath.getPath(applicationContext, Uri.parse(rv_video_list[i]))))
+                        files.add(
+                            File(
+                                ImageFilePath.getPath(
+                                    applicationContext,
+                                    Uri.parse(rv_video_list[i])
+                                )
+                            )
+                        )
                     }
                 } else {
                     rv_video_list.add("" + data.data!!)
-                    files.add(File(ImageFilePath.getPath(applicationContext, Uri.parse(rv_video_list[0]))))
+                    files.add(
+                        File(
+                            ImageFilePath.getPath(
+                                applicationContext,
+                                Uri.parse(rv_video_list[0])
+                            )
+                        )
+                    )
                 }
 
                 //disable Camera TextView
@@ -350,11 +427,12 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val imageFileName = "JPEG_" + timeStamp + "_"
         val storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES)
+            Environment.DIRECTORY_PICTURES
+        )
         val image = File.createTempFile(
-                imageFileName, // prefix
-                ".jpg", // suffix
-                storageDir      // directory
+            imageFileName, // prefix
+            ".jpg", // suffix
+            storageDir      // directory
         )
 
         // Save a file: path for use with ACTION_VIEW intents
@@ -369,10 +447,21 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     //for camera image
     //1
     fun open_image_camera() {
-        if (ContextCompat.checkSelfPermission(this@Add_Post_Activity,
-                        Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this@Add_Post_Activity,
-                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            super@Add_Post_Activity.requestAppPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), R.string.runtimepermission_txt, REQ_PER_CAMERA)
+        if (ContextCompat.checkSelfPermission(
+                this@Add_Post_Activity,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                this@Add_Post_Activity,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            super@Add_Post_Activity.requestAppPermissions(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA
+                ), R.string.runtimepermission_txt, REQ_PER_CAMERA
+            )
         } else {
             openCameraImages()
             isImage = true
@@ -405,13 +494,14 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     }
 
 
-
     private fun showSnackBar(msg: String) {
 
         val snackbar = Snackbar.make(findViewById(R.id.add_root), msg, Snackbar.LENGTH_SHORT)
-        snackbar.setBackgroundTint(ContextCompat.getColor(applicationContext, R.color.red)
+        snackbar.setBackgroundTint(
+            ContextCompat.getColor(applicationContext, R.color.red)
         )
-        snackbar.setTextColor(ContextCompat.getColor(applicationContext, R.color.white)
+        snackbar.setTextColor(
+            ContextCompat.getColor(applicationContext, R.color.white)
         )
         snackbar.show()
 
@@ -468,7 +558,10 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
                 dialog.show()
                 val window = dialog.window
-                window!!.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
+                window!!.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
             })
 
         }
@@ -548,7 +641,10 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
                 dialog.show()
                 val window = dialog.window
-                window!!.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
+                window!!.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
             })
 
         }
@@ -557,9 +653,10 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     private fun checkImageFormat(): Boolean {
         if (format_path.contains(".jpg") ||
-                format_path.contains(".png") ||
-                format_path.contains(".jpeg") ||
-                format_path.contains(".bmp"))
+            format_path.contains(".png") ||
+            format_path.contains(".jpeg") ||
+            format_path.contains(".bmp")
+        )
 
             return true
 
@@ -571,9 +668,10 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
         if (format_path.contains(".mp4") ||
-                format_path.contains(".3gp") ||
-                format_path.contains(".mkv") ||
-                format_path.contains(".webm"))
+            format_path.contains(".3gp") ||
+            format_path.contains(".mkv") ||
+            format_path.contains(".webm")
+        )
 
             return true
 
@@ -600,6 +698,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     fun upload_Post(view: View) {
 
 
+        hideSoftKeyBoard()
+
         if (rv_video_list.size <= 0 && findViewById<EditText>(R.id.status_input).text.toString().length <= 0) {
 
         } else {
@@ -611,15 +711,22 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                 visibleLoadingAnimation(true)
 
 
-                viewmodel.addPostvm("", findViewById<EditText>(R.id.status_input).text.toString(), files, isImage, applicationContext).observe(this, Observer { resultPi ->
+                viewmodel.addPostvm(
+                    "",
+                    findViewById<EditText>(R.id.status_input).text.toString(),
+                    files,
+                    isImage,
+                    applicationContext
+                ).observe(this, Observer { resultPi ->
 
                     println("add_post" + resultPi)
 
 
 
-                    if (resultPi != null && resultPi.getString("status").equals("1"))
+                    if (resultPi != null && resultPi.getString("status").equals("1")) {
                         visibleLoadingAnimation(false)
-                    else {
+                        finish()
+                    } else {
                         visibleLoadingAnimation(false)
                     }
 
@@ -656,19 +763,20 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
         MaterialAlertDialogBuilder(this@Add_Post_Activity, R.style.RoundShapeTheme)
-                .setTitle("LaneCrowd")
-                .setMessage("Are you sure want to exit?")
-                .setNegativeButton("No") { dialogInterface, i ->
-                }
-                .setPositiveButton("yes") { dialogInterface, i ->
+            .setTitle("LaneCrowd")
+            .setMessage("Are you sure want to exit?")
+            .setNegativeButton("No") { dialogInterface, i ->
+            }
+            .setPositiveButton("yes") { dialogInterface, i ->
 
-                    viewmodel.cancleNetworkCall()
-                    super.onBackPressed()
-                }
-                .show()
+                viewmodel.cancleNetworkCall()
+                super.onBackPressed()
+            }
+            .show()
 
 
     }
+
     fun back_activity(view: View) {
         if (post_loading_anim!!.isAnimating)
             askTOExit()
@@ -686,6 +794,22 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
     }
+
+    private fun hideSoftKeyBoard() {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        try {
+
+
+            if (imm.isAcceptingText) {
+                // verify if the soft keyboard is open
+                imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+            }
+        } catch (e: Exception) {
+
+        }
+    }
+
 
 
 }

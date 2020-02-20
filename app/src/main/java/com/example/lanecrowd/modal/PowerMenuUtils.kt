@@ -97,6 +97,36 @@ object PowerMenuUtils {
     }
 
 
+fun getOtherPostMenu(
+        context: Context,
+        lifecycleOwner: LifecycleOwner,
+        onMenuItemClickListener: OnMenuItemClickListener<PowerMenuItem>,
+        onDismissedListener: () -> Int
+    ): PowerMenu {
+
+
+        return PowerMenu.Builder(context)
+            .addItem(PowerMenuItem(context.getString(R.string.share), false))
+            .setAutoDismiss(true)
+            .setLifecycleOwner(lifecycleOwner)
+            .setAnimation(MenuAnimation.SHOWUP_TOP_LEFT)
+            .setCircularEffect(CircularEffect.BODY)
+            .setMenuRadius(10f)
+            .setMenuShadow(10f)
+            .setTextColor(ContextCompat.getColor(context, R.color.black))
+            .setTextSize(12)
+            .setTextGravity(Gravity.CENTER)
+            .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+            .setSelectedTextColor(Color.WHITE)
+            .setMenuColor(Color.WHITE)
+            .setSelectedMenuColor(ContextCompat.getColor(context, R.color.colorPrimary))
+            .setOnMenuItemClickListener(onMenuItemClickListener)
+            .setPreferenceName("HamburgerPowerMenu")
+            .setInitializeRule(Lifecycle.Event.ON_CREATE, 0)
+            .build()
+    }
+
+
 
  fun getCommentMenu(
         context: Context,

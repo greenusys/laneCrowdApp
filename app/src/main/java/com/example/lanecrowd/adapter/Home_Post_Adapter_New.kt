@@ -1,5 +1,6 @@
 package com.example.lanecrowd.adapter
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -21,13 +23,40 @@ import com.example.lanecrowd.R
 import com.example.lanecrowd.activity.Show_Comment_Activity
 import com.example.lanecrowd.util.URL
 import com.like.LikeButton
-import com.like.OnAnimationEndListener
 import com.like.OnLikeListener
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import java.util.*
 
 
-class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Context, val activity: Home_Post_Fragment) : RecyclerView.Adapter<Home_Post_Adapter.ViewHolder>() {
+class Home_Post_Adapter_New(val list: ArrayList<Home_Post_Modal>, val context: Context, val activity: Home_Post_Fragment) : RecyclerView.Adapter<Home_Post_Adapter_New.ViewHolder>() {
+
+
+    private var mcontext: Context? = null
+    private var mactivity: Activity? = null
+    private var clickListener: OnItemClickListener? = null
+
+    // for load more
+    private val VIEW_TYPE_ITEM = 0
+    private val VIEW_TYPE_LOADING = 1
+    private val onLoadMoreListener: OnLoadMoreListener? = null
+
+    // The minimum amount of items to have below your current scroll position
+// before loading more.
+    private var isLoading = false
+    private val visibleThreshold = 5
+    private var lastVisibleItem = 0
+    private  var totalItemCount:Int = 0
+
+    interface OnItemClickListener {
+        fun onItemClick(item: HashMap<String?, String?>?)
+    }
+
+    interface OnLoadMoreListener {
+        fun onLoadMore()
+    }
+
+
 
 
 
@@ -71,7 +100,7 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
 
     }
 
-    private fun setPostMediaData(holder: Home_Post_Adapter.ViewHolder, position: Int) {
+    private fun setPostMediaData(holder: Home_Post_Adapter_New.ViewHolder, position: Int) {
 
         var url: String = ""
         var isImage: Boolean=false

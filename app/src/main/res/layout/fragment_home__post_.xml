@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_centerVertical="true"
+    android:id="@+id/swipe"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+
 
 <LinearLayout
     android:layout_marginTop="50dp"
@@ -15,23 +25,34 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-      android:nestedScrollingEnabled="true"
+        android:nestedScrollingEnabled="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:id="@+id/story_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <include
+
+
+    <LinearLayout
+        android:id="@+id/whatslayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
         layout="@layout/whats_mind_layout"/>
 
- <androidx.recyclerview.widget.RecyclerView
-    android:nestedScrollingEnabled="true"
-     android:id="@+id/home_post_rv"
+    </LinearLayout>
+
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:nestedScrollingEnabled="true"
+        android:id="@+id/home_post_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-
 </LinearLayout>
 
+    </androidx.core.widget.NestedScrollView>
 
-</androidx.core.widget.NestedScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
