@@ -5,9 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/mRecyclerview"
+
+    <fragment
+        android:name="com.example.lanecrowd.test.TestFragment"
+        android:id="@+id/fragment1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        />
+
+
+
+
 
 </RelativeLayout>

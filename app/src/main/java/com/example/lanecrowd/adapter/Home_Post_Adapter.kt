@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -18,21 +19,45 @@ import com.bumptech.glide.request.target.Target
 import com.example.lancrowd.activity.modal.Home_Post_Modal
 import com.example.lanecrowd.Home_Fragment.Home_Post_Fragment
 import com.example.lanecrowd.R
+import com.example.lanecrowd.activity.Add_Post_Activity
+import com.example.lanecrowd.activity.ShowPhotoActivity
 import com.example.lanecrowd.activity.Show_Comment_Activity
 import com.example.lanecrowd.util.URL
 import com.like.LikeButton
-import com.like.OnAnimationEndListener
 import com.like.OnLikeListener
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
 
-class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Context, val activity: Home_Post_Fragment) : RecyclerView.Adapter<Home_Post_Adapter.ViewHolder>() {
+class Home_Post_Adapter(
+    val list: ArrayList<Home_Post_Modal>,
+    val context: Context,
+    val activity: Home_Post_Fragment
+) : RecyclerView.Adapter<Home_Post_Adapter.ViewHolder>() {
 
 
+    private val TYPE_ITEM_WHATS = 0
+    private val TYPE_ITEM_NORMAL = 1
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+
+
+       if(viewType==TYPE_ITEM_WHATS)
+       {
+
+           val view = LayoutInflater.from(context).inflate(R.layout.whats_mind_layout, parent, false)
+           return ViewHolder(view)
+
+       }
+       else if(viewType==TYPE_ITEM_NORMAL)
+       {
+
+           val view = LayoutInflater.from(context).inflate(R.layout.home_post_item, parent, false)
+           return ViewHolder(view)
+
+       }
+
 
 
         val view = LayoutInflater.from(context).inflate(R.layout.home_post_item, parent, false)
@@ -42,39 +67,118 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return list.size+1
+    }
+
+
+    override fun getItemViewType(position: Int): Int {
+
+        if (position == 0)
+            return TYPE_ITEM_WHATS
+
+        return TYPE_ITEM_NORMAL
+
+
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
 
 
-
-        //set Comment Layout listener
-        setCommentLayoutLIstener(holder)
-
-        // menu listener
-        showMenuListener(holder,position)
+        if(position==0)
+        setWhatLayoutLIstener(holder,position)
 
 
-        //set User Profile, User Name and Post time
-        setUSerImageNameAndTime(holder, position)
+        else {
+            //set Comment Layout listener
+            setCommentLayoutLIstener(holder)
+
+            // menu listener
+            showMenuListener(holder, position-1)
 
 
-        //set Like Button Listener
-        setLikeListener(holder, position)
+            //set User Profile, User Name and Post time
+            setUSerImageNameAndTime(holder, position-1)
+
+
+            //set Like Button Listener
+            setLikeListener(holder, position-1)
+
+            setPostMediaData(holder, position-1)
+
+
+            setPhotoVideoViewListener(position-1,holder)
+        }
 
 
 
-        setPostMediaData(holder, position)
 
 
+    }
+
+    private fun setPhotoVideoViewListener(position: Int, holder: ViewHolder) {
+
+
+
+
+        holder.iv_postImgA.setOnClickListener(View.OnClickListener {
+            println("checkImageee"+checkIsImage(position))
+            context.startActivity(Intent(context, ShowPhotoActivity::class.java)
+                .putExtra("isImage",checkIsImage(position).toString())
+                .putExtra("position","0")
+                .putStringArrayListExtra("files",list.get(position).post_files))
+
+        })
+
+        holder.iv_postImgB.setOnClickListener(View.OnClickListener {
+            println("checkImageee"+checkIsImage(position))
+            context.startActivity(Intent(context, ShowPhotoActivity::class.java)
+                .putExtra("isImage",checkIsImage(position).toString())
+                .putExtra("position","1")
+                .putStringArrayListExtra("files",list.get(position).post_files))
+
+        })
+  holder.postImageC.setOnClickListener(View.OnClickListener {
+            println("checkImageee"+checkIsImage(position))
+            context.startActivity(Intent(context, ShowPhotoActivity::class.java)
+                .putExtra("isImage",checkIsImage(position).toString())
+                .putExtra("position","2")
+                .putStringArrayListExtra("files",list.get(position).post_files))
+
+        })
+
+  holder.iv_postImgD.setOnClickListener(View.OnClickListener {
+            println("checkImageee"+checkIsImage(position))
+            context.startActivity(Intent(context, ShowPhotoActivity::class.java)
+                .putExtra("isImage",checkIsImage(position).toString())
+                .putExtra("position","3")
+                .putStringArrayListExtra("files",list.get(position).post_files))
+
+        })
+
+
+
+
+    }
+
+
+    private fun setWhatLayoutLIstener(holder: ViewHolder, position: Int) {
+        if (position == 0)
+            holder.whatmain_layout.setOnClickListener(View.OnClickListener {
+                context.startActivity(
+                    Intent(
+                        context,
+                        Add_Post_Activity::class.java
+                    ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+
+            })
     }
 
     private fun setPostMediaData(holder: Home_Post_Adapter.ViewHolder, position: Int) {
 
         var url: String = ""
-        var isImage: Boolean=false
+        var isImage: Boolean = false
 
 
         //1 or more images exist
@@ -85,11 +189,10 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
             if (list.get(position).post_files.size == 1) {
 
 
-                if (list.get(position).post_files.get(0).contains("jpg") || list.get(position).post_files.get(0).contains("png") || list.get(position).post_files.get(0).contains("jpeg") ) {
+                if (checkIsImage(position)) {
                     url = URL.imagePath
                     isImage = true
-                }
-                else {
+                } else {
                     isImage = false
                     url = URL.videoPath
                 }
@@ -114,11 +217,10 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
             else if (list.get(position).post_files.size == 2) {
 
 
-                if (list.get(position).post_files.get(0).contains("jpg") || list.get(position).post_files.get(0).contains("png") || list.get(position).post_files.get(0).contains("jpeg") ) {
+                if (checkIsImage(position)) {
                     url = URL.imagePath
                     isImage = true
-                }
-                else {
+                } else {
                     isImage = false
                     url = URL.videoPath
                 }
@@ -134,7 +236,7 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
                     holder.loading_iconB,
                     holder.iv_postImgB,
                     holder.video_iconB,
-                 isImage
+                    isImage
                 )
 
                 goneOtherImageLayout(holder, holder.frame_postB)
@@ -146,11 +248,10 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
             else if (list.get(position).post_files.size == 3) {
 
 
-                if (list.get(position).post_files.get(0).contains("jpg") || list.get(position).post_files.get(0).contains("png") || list.get(position).post_files.get(0).contains("jpeg") ) {
+                if (checkIsImage(position)) {
                     url = URL.imagePath
                     isImage = true
-                }
-                else {
+                } else {
                     isImage = false
                     url = URL.videoPath
                 }
@@ -167,7 +268,7 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
                     holder.loading_iconB,
                     holder.iv_postImgB,
                     holder.video_iconB,
-                   isImage
+                    isImage
                 )
                 set_Success_Glide_Data(
                     url + list.get(position).post_files.get(2),
@@ -186,11 +287,10 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
             else if (list.get(position).post_files.size == 4) {
 
 
-                if (list.get(position).post_files.get(0).contains("jpg") || list.get(position).post_files.get(0).contains("png") || list.get(position).post_files.get(0).contains("jpeg") ) {
+                if (checkIsImage(position)) {
                     url = URL.imagePath
                     isImage = true
-                }
-                else {
+                } else {
                     isImage = false
                     url = URL.videoPath
                 }
@@ -207,21 +307,21 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
                     holder.loading_iconB,
                     holder.iv_postImgB,
                     holder.video_iconB,
-                   isImage
+                    isImage
                 )
                 set_Success_Glide_Data(
                     url + list.get(position).post_files.get(2),
                     holder.loading_iconC,
                     holder.postImageC,
                     holder.video_iconC,
-                   isImage
+                    isImage
                 )
                 set_Success_Glide_Data(
                     url + list.get(position).post_files.get(3),
                     holder.loading_iconD,
                     holder.iv_postImgD,
                     holder.video_iconD,
-                   isImage
+                    isImage
                 )
 
 
@@ -231,11 +331,10 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
             else if (list.get(position).post_files.size > 4) {
 
 
-                if (list.get(position).post_files.get(0).contains("jpg") || list.get(position).post_files.get(0).contains("png") || list.get(position).post_files.get(0).contains("jpeg") ) {
+                if (checkIsImage(position)) {
                     url = URL.imagePath
                     isImage = true
-                }
-                else {
+                } else {
                     isImage = false
                     url = URL.videoPath
                 }
@@ -244,14 +343,14 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
                     holder.loading_iconA,
                     holder.iv_postImgA,
                     holder.video_iconA,
-                   isImage
+                    isImage
                 )
                 set_Success_Glide_Data(
                     url + list.get(position).post_files.get(1),
                     holder.loading_iconB,
                     holder.iv_postImgB,
                     holder.video_iconB,
-                   isImage
+                    isImage
                 )
                 set_Success_Glide_Data(
                     url + list.get(position).post_files.get(2),
@@ -280,6 +379,15 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
 
     }
 
+    private fun checkIsImage(position: Int): Boolean {
+
+        if(list.get(position).post_files.get(0).contains("jpg") || list.get(position).post_files.get(0).contains("png") || list.get(position).post_files.get(0).contains("jpeg"))
+   return true
+
+        return false
+
+    }
+
     private fun goneOtherImageLayout(holder: ViewHolder, imageLayout: View?) {
 
         imageLayout!!.visibility = View.GONE
@@ -290,22 +398,20 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
     private fun setLikeListener(holder: ViewHolder, position: Int) {
 
 
-
         holder.likeIcon.setOnLikeListener(object : OnLikeListener {
             override fun liked(likeButton: LikeButton) {
 
-           likePost(position)
+                likePost(position)
 
             }
+
             override fun unLiked(likeButton: LikeButton) {
 
                 likePost(position)
 
 
-
             }
         })
-
 
 
     }
@@ -313,36 +419,32 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
     private fun likePost(position: Int) {
 
 
-
-
         activity.showVibration()
 
-             if (list[position].isMyLike) {
-                 list[position].total_likes =
-                     (Integer.parseInt(list[position].total_likes) - 1).toString() + ""
-             } else {
-                 list[position].total_likes = (Integer.parseInt(list[position].total_likes) + 1).toString() + ""
+        if (list[position].isMyLike) {
+            list[position].total_likes =
+                (Integer.parseInt(list[position].total_likes) - 1).toString() + ""
+        } else {
+            list[position].total_likes =
+                (Integer.parseInt(list[position].total_likes) + 1).toString() + ""
 
-             }
+        }
 
-             println("kksd"+list[position].total_likes)
+        println("kksd" + list[position].total_likes)
 
-             //update their value
-             list[position].isMyLike = !list[position].isMyLike
-
-
-
-           notifyItemChanged(position,position)
-
-            activity.likeDislike(list.get(position).post_id,URL.userId)
+        //update their value
+        list[position].isMyLike = !list[position].isMyLike
 
 
+
+        notifyItemChanged(position, position)
+
+        activity.likeDislike(list.get(position).post_id, URL.userId)
 
 
     }
 
     private fun setUSerImageNameAndTime(holder: ViewHolder, position: Int) {
-
 
 
         Picasso.get()
@@ -356,8 +458,8 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
         holder.postTime.text = list.get(position).posted_on
 
 
-        if(!list.get(position).post.equals(""))
-        holder.postStatus.text = list.get(position).post
+        if (!list.get(position).post.equals(""))
+            holder.postStatus.text = list.get(position).post
         else
             goneOtherImageLayout(holder, holder.postStatus)
 
@@ -385,34 +487,29 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
             holder.commentText.text = ""
 
 
+        // holder.likeIcon.setImageResource(if (list.get(position).isMyLike) R.drawable.ic_like_fill else R.drawable.ic_like)
 
-
-       // holder.likeIcon.setImageResource(if (list.get(position).isMyLike) R.drawable.ic_like_fill else R.drawable.ic_like)
-
-        holder.likeIcon.isLiked=list.get(position).isMyLike
+        holder.likeIcon.isLiked = list.get(position).isMyLike
 
     }
 
-    private fun showMenuListener(
-        holder: ViewHolder,
-        position: Int
+    private fun showMenuListener(holder: ViewHolder, position: Int
     ) {
 
         holder.post_menu.setOnClickListener(View.OnClickListener {
 
             //self post
-            if(list.get(position).user_id.equals(URL.userId))
-            activity.showMenu(position,list.get(position).post_id,holder.post_menu,true)
+            if (list.get(position).user_id.equals(URL.userId))
+                activity.showMenu(position, list.get(position).post_id, holder.post_menu, true)
 
             //other post
             else
-                activity.showMenu(position,list.get(position).post_id,holder.post_menu,false)
+                activity.showMenu(position, list.get(position).post_id, holder.post_menu, false)
 
         })
 
 
     }
-
 
 
     private fun setCommentLayoutLIstener(holder: ViewHolder) {
@@ -442,27 +539,40 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
         println("isImage" + isImage)
 
 
-        Glide.with(context).load(url).apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)).listener(object : RequestListener<Drawable?> {
-            override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
+        Glide.with(context).load(url)
+            .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.AUTOMATIC))
+            .listener(object : RequestListener<Drawable?> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any,
+                    target: Target<Drawable?>,
+                    isFirstResource: Boolean
+                ): Boolean {
 
-                loading_icon_gone.visibility = View.GONE
+                    loading_icon_gone.visibility = View.GONE
 
-                videoIcona.visibility = View.GONE
-
-                return false
-            }
-
-            override fun onResourceReady(resource: Drawable?, model: Any, target: Target<Drawable?>, dataSource: DataSource, isFirstResource: Boolean): Boolean {
-                loading_icon_gone.visibility = View.GONE
-
-                if (isImage)
                     videoIcona.visibility = View.GONE
-                else
-                    videoIcona.visibility = View.VISIBLE
 
-                return false
-            }
-        }).thumbnail(0.01f).into(post_img)
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any,
+                    target: Target<Drawable?>,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    loading_icon_gone.visibility = View.GONE
+
+                    if (isImage)
+                        videoIcona.visibility = View.GONE
+                    else
+                        videoIcona.visibility = View.VISIBLE
+
+                    return false
+                }
+            }).thumbnail(0.01f).into(post_img)
 
 
     }
@@ -473,6 +583,8 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
 
         //menu button
         val post_menu = view.findViewById<ImageView>(R.id.post_menu)
+
+        val whatmain_layout = view.findViewById<CardView>(R.id.main_layout)
 
 
         //post pic,username,status,posttime
@@ -531,8 +643,6 @@ class Home_Post_Adapter(val list: ArrayList<Home_Post_Modal>, val context: Conte
 
 
     }
-
-
 
 
 }

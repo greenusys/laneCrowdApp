@@ -114,6 +114,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         })
 
 
+
+
     }
 
 
@@ -241,6 +243,17 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
     fun openGallery() {
+
+        if (ContextCompat.checkSelfPermission(this@Add_Post_Activity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            super@Add_Post_Activity.requestAppPermissions(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ), R.string.runtimepermission_txt, REQ_PER_GALLERY_VIDEO
+            )
+        }
+
+        else
         startActivityForResult(
             Intent.createChooser(
                 Intent().setType("image/*").putExtra(
@@ -253,6 +266,16 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
     fun openGalleryVideo() {
+        if (ContextCompat.checkSelfPermission(this@Add_Post_Activity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            super@Add_Post_Activity.requestAppPermissions(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ), R.string.runtimepermission_txt, REQ_PER_GALLERY_VIDEO
+            )
+        }
+
+        else
         startActivityForResult(
             Intent.createChooser(
                 Intent().setType("video/*").putExtra(

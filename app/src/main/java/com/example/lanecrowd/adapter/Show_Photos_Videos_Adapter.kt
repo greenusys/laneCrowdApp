@@ -1,7 +1,5 @@
 package com.example.lanecrowd.adapter
 
-import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -55,12 +53,14 @@ class Show_Photos_Videos_Adapter(val list: ArrayList<Photo_Video_Modal>,
 
         else {
            holder.albummain_layout.setOnClickListener(View.OnClickListener {
+
+              //open single image
                ZGallery.with(activity, arrayListOf("http://static0.passel.co/wp-content/uploads/2016/08/05110349/20160731-igor-trepeshchenok-barnimages-08-768x509.jpg"))
                        .setToolbarTitleColor(ZColor.WHITE)
                        .setGalleryBackgroundColor(ZColor.WHITE)
                        .setToolbarColorResId(R.color.colorPrimary)
                        .setTitle("Gallery")
-                       .show()
+                       .show("true")
            })
        }
 

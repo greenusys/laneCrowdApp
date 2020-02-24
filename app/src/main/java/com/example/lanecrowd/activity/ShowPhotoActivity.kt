@@ -1,55 +1,101 @@
 package com.example.lanecrowd.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.example.lanecrowd.R
+import com.example.lanecrowd.util.URL
 import com.mzelzoghbi.zgallery.ZGallery
 import com.mzelzoghbi.zgallery.ZGrid
 import com.mzelzoghbi.zgallery.entities.ZColor
-import java.util.ArrayList
+import kotlin.collections.ArrayList
+
 
 class ShowPhotoActivity : AppCompatActivity() {
+
+
+     var files:ArrayList<String>?=null
+     var isImage:String?=null
+     var position:String?=null
+
 
     var backCount:Int=0;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_photo)
 
-        gridActivity()
+
+
+         files = intent.extras!!.getStringArrayList("files")
+        isImage = intent.extras!!.getString("isImage")
+        position = intent.extras!!.getString("position")
+
+
+        println("files_size"+files!!.size)
+        println("isImage"+isImage)
+        println("position"+position)
+
+
+
+            showSingleImages()
+
+
     }
 
-    fun gridActivity() {
-        ZGrid.with(this, getDummyImageList())
+    fun showSingleImages() {
+
+
+        //open single image
+        ZGallery.with(this, getImageList())
+            .setToolbarTitleColor(ZColor.WHITE)
+            .setGalleryBackgroundColor(ZColor.WHITE)
+            .setToolbarColorResId(R.color.colorPrimary)
+            .setTitle("Gallery")
+            .setSelectedImgPosition(position!!.toInt())
+            .show(isImage)
+
+
+
+    }
+
+    fun showMultipleImages() {
+        ZGrid.with(this, getImageList())
                 .setToolbarColorResId(R.color.colorPrimary)
                 .setTitle("Zak Gallery")
                 .setToolbarTitleColor(ZColor.WHITE)
                 .setSpanCount(3)
                 .setGridImgPlaceHolder(R.color.colorPrimary)
-                .show()
-
-
-
-
-
-
-
-        /*//show single images
-        ZGallery.with(this, getDummyImageList())
-                .setToolbarTitleColor(ZColor.WHITE)
-                .setGalleryBackgroundColor(ZColor.WHITE)
-                .setToolbarColorResId(R.color.colorPrimary)
-                .setTitle("Gallery")
-                .show()*/
-
-
-
+                .show(isImage)
 
     }
 
+    private fun getImageList(): ArrayList<String>? {
+
+        val imagesList = ArrayList<String>()
+        var url:String?=null
+
+        if(isImage.equals("true"))
+            url=URL.imagePath
+        else
+            url=URL.videoPath
+
+
+        for (i in 0 until files!!.size)
+            imagesList.add(url+files!!.get(i))
+
+
+
+        return imagesList
+
+    }
+
+
+
+
+
+
+
     override fun onResume() {
         super.onResume()
-
 
         ++backCount
         if(backCount>=2)
@@ -57,7 +103,7 @@ class ShowPhotoActivity : AppCompatActivity() {
 
     }
 
-    private fun getDummyImageList(): ArrayList<String> {
+  /*  private fun getDummyImageList(): ArrayList<String> {
         val imagesList = ArrayList<String>()
         imagesList.add("http://static0.passel.co/wp-content/uploads/2016/08/05110349/20160731-igor-trepeshchenok-barnimages-08-768x509.jpg")
         imagesList.add("http://static0.passel.co/wp-content/uploads/2016/08/05095154/tumblr_oawfisUmZo1u7ns0go1_500.jpg")
@@ -89,7 +135,7 @@ class ShowPhotoActivity : AppCompatActivity() {
         imagesList.add("http://static0.passel.co/wp-content/uploads/2016/07/03092404/tumblr_o97ipvkger1ted1sho1_500.jpg")
         return imagesList
     }
-
+*/
 
 
 }
