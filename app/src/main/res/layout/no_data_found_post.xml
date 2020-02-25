@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+    <com.airbnb.lottie.LottieAnimationView
+      android:layout_marginTop="150dp"
+       android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:id="@+id/no_data_anim_post"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        app:lottie_rawRes="@raw/no_data_anim_post"
+        app:lottie_loop="true"
+        app:lottie_autoPlay="false"/>
+
+    <TextView
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/no_data_anim_post"
+        android:visibility="gone"
+        android:id="@+id/text"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="No post available"
+        android:textColor="@color/red" />
+
+
+
+    <TextView
+        android:layout_below="@id/text"
+        android:visibility="gone"
+        android:id="@+id/add_post"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/button_round"
+        android:gravity="center"
+        android:text="Want to add new post?"
+        android:textColor="@color/white" />
+
+
+
+
+</RelativeLayout>

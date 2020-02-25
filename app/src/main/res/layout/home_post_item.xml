@@ -131,15 +131,16 @@
                         android:layout_weight="1">
 
                         <ImageView
+
                             android:id="@+id/iv_postImgA"
                             android:layout_width="match_parent"
                             android:layout_height="360dp"
                             android:adjustViewBounds="true"
                             android:background="@drawable/img_background"
-                            android:scaleType="fitXY" />
+                            android:scaleType="centerCrop" />
 
                         <ImageView
-                            android:tint="@color/white"
+                            android:tint="@color/colorPrimary"
                             android:visibility="gone"
                             android:id="@+id/iv_postIsVideoA"
                             android:layout_width="wrap_content"
@@ -184,7 +185,7 @@
                             android:scaleType="centerCrop" />
 
                         <ImageView
-                            android:tint="@color/white"
+                            android:tint="@color/colorPrimary"
                             android:visibility="gone"
                             android:id="@+id/iv_postIsVideoB"
                             android:layout_width="wrap_content"
@@ -217,7 +218,7 @@
                             android:scaleType="centerCrop" />
 
                         <ImageView
-                            android:tint="@color/white"
+                            android:tint="@color/colorPrimary"
                             android:visibility="gone"
                             android:id="@+id/iv_postIsVideoC"
                             android:layout_width="wrap_content"
@@ -251,7 +252,7 @@
                             android:scaleType="centerCrop" />
 
                         <ImageView
-                            android:tint="@color/white"
+                            android:tint="@color/colorPrimary"
                             android:visibility="gone"
                             android:id="@+id/iv_postIsVideoD"
                             android:layout_width="30dp"
@@ -297,6 +298,7 @@
 
 
         <LinearLayout
+            android:id="@+id/like_comment_layout"
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_gravity="left"

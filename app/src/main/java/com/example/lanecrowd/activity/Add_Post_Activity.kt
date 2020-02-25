@@ -121,9 +121,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     fun choose_Status(view: View) {
 
-        startActivity(
-            Intent(
-                applicationContext,
+        startActivity(Intent(
+            applicationContext,
                 Choose_Status_Activity::class.java
             ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )

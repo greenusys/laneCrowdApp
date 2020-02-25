@@ -9,24 +9,26 @@
     android:orientation="vertical">
 
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
 
 
-<LinearLayout
-    android:layout_marginTop="50dp"
+<RelativeLayout
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
 
+<LinearLayout
+    android:id="@+id/home_post"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:nestedScrollingEnabled="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:id="@+id/story_rv"
+        android:id="@+id/home_post_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -34,14 +36,46 @@
 
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:nestedScrollingEnabled="true"
-        android:id="@+id/home_post_rv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
 </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
+    <LinearLayout
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            layout="@layout/no_data_found_post"/>
+
+
+    </LinearLayout>
+
+ <LinearLayout
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            layout="@layout/no_internet_layout"/>
+
+
+    </LinearLayout>
+
+
+
+
+    <com.github.ybq.android.spinkit.SpinKitView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/loading_more_anim"
+        android:visibility="gone"
+        style="@style/SpinKitView.FadingCircle"
+        android:layout_width="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        app:SpinKit_Color="@color/colorPrimary" />
+
+
+</RelativeLayout>
+
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

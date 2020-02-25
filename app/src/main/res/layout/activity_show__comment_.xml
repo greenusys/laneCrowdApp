@@ -38,6 +38,7 @@
         <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:id="@+id/user_profile_comment"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
@@ -52,7 +53,7 @@
 
             <TextView
                 style="@style/TextAppearance.MaterialComponents.Headline5"
-                android:id="@+id/txt_postUserName"
+                android:id="@+id/user_name_comment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Md. Kaif"
@@ -64,7 +65,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/txt_postTime"
+                    android:id="@+id/post_time_comment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="25-12-2019"
@@ -91,204 +92,36 @@
     </LinearLayout>
     <!--profilelayout-->
 
-    <TextView
-        android:layout_below="@id/profileLayout"
-        android:id="@+id/staus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:ellipsize="end"
-        android:text="status"
-        android:textColor="@color/black"
-        android:textSize="16sp" />
-
-
-
-    <LinearLayout
-        android:layout_below="@id/staus"
-        android:id="@+id/lay_postMedia"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_weight="1"
-        android:background="#ffffff"
-        android:foregroundGravity="left"
-        android:gravity="left"
-        android:orientation="vertical"
-        android:padding="0.5dp"
-        android:visibility="visible">
 
         <LinearLayout
+            android:id="@+id/media_layout2"
+            android:layout_below="@id/profileLayout"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_weight="2">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <FrameLayout
-                android:id="@+id/frame_postAA"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:id="@+id/iv_postImgA"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/login"
-                    android:background="@drawable/img_background"
-                    android:scaleType="fitXY" />
-
-                <ImageView
-                    android:id="@+id/iv_postIsVideoA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_play_video" />
-
-                <ProgressBar
-                    android:id="@+id/loading_iconA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center" />
-
-
-            </FrameLayout>
+            <include
+                layout="@layout/home_post_item"/>
 
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/lay_postForBelowImgs"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_weight="1.2"
-            android:orientation="horizontal">
 
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                >
-
-                <ImageView
-                    android:src="@drawable/login"
-                    android:id="@+id/iv_postImgB"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:background="@drawable/img_background"
-                    android:scaleType="centerCrop" />
-
-                <ImageView
-                    android:id="@+id/iv_postIsVideoB"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_play_video" />
-
-                <ProgressBar
-                    android:id="@+id/loading_iconB"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center" />
-
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/frame_postB"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:src="@drawable/login"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:background="@drawable/img_background"
-                    android:scaleType="centerCrop" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_play_video" />
-
-                <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center" />
-
-
-            </FrameLayout>
-
-
-            <FrameLayout
-                android:id="@+id/frame_postE"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:src="@drawable/login"
-                    android:id="@+id/iv_postImgE"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:background="@drawable/img_background"
-                    android:scaleType="centerCrop" />
-
-                <ImageView
-                    android:id="@+id/iv_postIsVideoE"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_play_video" />
-
-
-                <ProgressBar
-                    android:id="@+id/loading_iconE"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center" />
-
-
-                <TextView
-                    android:id="@+id/txt_postImgCount"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:background="#80000000"
-                    android:gravity="center"
-                    android:text="More"
-                    android:textAllCaps="true"
-                    android:textColor="#fff"
-                    android:textSize="22dp" />
-
-            </FrameLayout>
-
-        </LinearLayout>
-
-
-    </LinearLayout>
 
 
     <LinearLayout
-        android:layout_below="@id/lay_postMedia"
+        android:layout_below="@id/media_layout2"
         android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <androidx.recyclerview.widget.RecyclerView
-           android:layout_marginBottom="10dp"
+           android:layout_marginBottom="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/comment_rv" />
 
     </LinearLayout>
-
 
 
 

@@ -8,15 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.example.lancrowd.activity.modal.Home_Post_Modal
+import com.example.lancrowd.activity.modal.Story_Modal
 import com.example.lanecrowd.Home_Fragment.Home_Post_Fragment
 import com.example.lanecrowd.R
 import com.example.lanecrowd.activity.Add_Post_Activity
@@ -25,39 +26,46 @@ import com.example.lanecrowd.activity.Show_Comment_Activity
 import com.example.lanecrowd.util.URL
 import com.like.LikeButton
 import com.like.OnLikeListener
-import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
 
 class Home_Post_Adapter(
+    val storyLIst: ArrayList<Story_Modal>,
     val list: ArrayList<Home_Post_Modal>,
     val context: Context,
     val activity: Home_Post_Fragment
 ) : RecyclerView.Adapter<Home_Post_Adapter.ViewHolder>() {
 
 
-    private val TYPE_ITEM_WHATS = 0
-    private val TYPE_ITEM_NORMAL = 1
+    private val TYPE_ITEM_STORY = 0
+    private val TYPE_ITEM_WHATS = 1
+    private val TYPE_ITEM_NORMAL = 2
 
-
+    private val viewPool = RecyclerView.RecycledViewPool()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
 
-       if(viewType==TYPE_ITEM_WHATS)
+     if(viewType==TYPE_ITEM_STORY)
+       {
+
+           val view = LayoutInflater.from(context).inflate(R.layout.story_recyclerview, parent, false)
+           return ViewHolder(view)
+
+       }
+      else if(viewType==TYPE_ITEM_WHATS)
        {
 
            val view = LayoutInflater.from(context).inflate(R.layout.whats_mind_layout, parent, false)
            return ViewHolder(view)
 
        }
-       else if(viewType==TYPE_ITEM_NORMAL)
+     else if(viewType==TYPE_ITEM_NORMAL)
        {
 
            val view = LayoutInflater.from(context).inflate(R.layout.home_post_item, parent, false)
            return ViewHolder(view)
 
        }
-
 
 
         val view = LayoutInflater.from(context).inflate(R.layout.home_post_item, parent, false)
@@ -67,14 +75,17 @@ class Home_Post_Adapter(
     }
 
     override fun getItemCount(): Int {
-        return list.size+1
+        return list.size+2
     }
 
 
     override fun getItemViewType(position: Int): Int {
 
         if (position == 0)
+            return TYPE_ITEM_STORY
+        if (position == 1)
             return TYPE_ITEM_WHATS
+
 
         return TYPE_ITEM_NORMAL
 
@@ -84,30 +95,39 @@ class Home_Post_Adapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
 
+if(position==0) {
+    val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+    layoutManager.setInitialPrefetchItemCount(8)
+    val storyAdapter = Story_Adapter(storyLIst, context)
+    holder.story_rv.setLayoutManager(layoutManager)
+    holder.story_rv.setAdapter(storyAdapter)
+    holder.story_rv.setRecycledViewPool(viewPool)
+}
 
-        if(position==0)
+
+       else if(position==1)
         setWhatLayoutLIstener(holder,position)
 
 
         else {
             //set Comment Layout listener
-            setCommentLayoutLIstener(holder)
+            setCommentLayoutLIstener(holder,position-2)
 
             // menu listener
-            showMenuListener(holder, position-1)
+            showMenuListener(holder, position-2)
 
 
             //set User Profile, User Name and Post time
-            setUSerImageNameAndTime(holder, position-1)
+            setUSerImageNameAndTime(holder, position-2)
 
 
             //set Like Button Listener
-            setLikeListener(holder, position-1)
+            setLikeListener(holder, position-2)
 
-            setPostMediaData(holder, position-1)
+            setPostMediaData(holder, position-2)
 
 
-            setPhotoVideoViewListener(position-1,holder)
+            setPhotoVideoViewListener(position-2,holder)
         }
 
 
@@ -163,19 +183,16 @@ class Home_Post_Adapter(
 
 
     private fun setWhatLayoutLIstener(holder: ViewHolder, position: Int) {
-        if (position == 0)
             holder.whatmain_layout.setOnClickListener(View.OnClickListener {
                 context.startActivity(
-                    Intent(
-                        context,
-                        Add_Post_Activity::class.java
+                    Intent(context, Add_Post_Activity::class.java
                     ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 )
 
             })
     }
 
-    private fun setPostMediaData(holder: Home_Post_Adapter.ViewHolder, position: Int) {
+    private fun setPostMediaData(holder:ViewHolder, position: Int) {
 
         var url: String = ""
         var isImage: Boolean = false
@@ -382,7 +399,7 @@ class Home_Post_Adapter(
     private fun checkIsImage(position: Int): Boolean {
 
         if(list.get(position).post_files.get(0).contains("jpg") || list.get(position).post_files.get(0).contains("png") || list.get(position).post_files.get(0).contains("jpeg"))
-   return true
+    return true
 
         return false
 
@@ -394,6 +411,7 @@ class Home_Post_Adapter(
 
 
     }
+
 
     private fun setLikeListener(holder: ViewHolder, position: Int) {
 
@@ -447,11 +465,11 @@ class Home_Post_Adapter(
     private fun setUSerImageNameAndTime(holder: ViewHolder, position: Int) {
 
 
-        Picasso.get()
-            .load(URL.profilePicPath + list.get(position).profile_pic)
-            .placeholder(R.drawable.placeholder_profile)
-            .error(R.drawable.placeholder_profile)
-            .into(holder.postProfilePic)
+        Glide.with(context)
+            .load(URL.profilePicPath + list.get(position)
+                .profile_pic).apply(
+                RequestOptions().placeholder(R.drawable.placeholder_profile))
+            .thumbnail(0.01f).into(holder.postProfilePic!!)
 
 
         holder.postUserName.text = list.get(position).posted_by
@@ -512,12 +530,25 @@ class Home_Post_Adapter(
     }
 
 
-    private fun setCommentLayoutLIstener(holder: ViewHolder) {
+    private fun setCommentLayoutLIstener(
+        holder: ViewHolder,
+        position: Int
+    ) {
 
         holder.commentButton.setOnClickListener(View.OnClickListener {
             context.startActivity(
-                Intent(context, Show_Comment_Activity::class.java).setFlags(
-                    Intent.FLAG_ACTIVITY_NEW_TASK
+                Intent(context, Show_Comment_Activity::class.java)
+                    .putExtra("isImage",checkIsImage(position).toString())
+                    .putExtra("post_id",list.get(position).post_id)
+                    .putExtra("user_name",list.get(position).posted_by)
+                    .putExtra("user_pic",list.get(position).profile_pic)
+                    .putExtra("time",list.get(position).posted_on)
+                    .putExtra("total_likes",list.get(position).total_likes)
+                    .putExtra("total_comment",list.get(position).total_comments)
+                    .putExtra("total_shared",list.get(position).total_share)
+                    .putExtra("staus",list.get(position).post)
+                    .putStringArrayListExtra("files",list.get(position).post_files)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 )
             )
 
@@ -531,38 +562,26 @@ class Home_Post_Adapter(
         loading_icon_gone: ProgressBar,
         post_img: ImageView,
         videoIcona: ImageView,
-        isImage: Boolean
-    ) {
+        isImage: Boolean) {
 
 
         println("sayed_url" + url)
         println("isImage" + isImage)
 
 
+
+
         Glide.with(context).load(url)
-            .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.AUTOMATIC))
             .listener(object : RequestListener<Drawable?> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    isFirstResource: Boolean
-                ): Boolean {
+                override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
 
                     loading_icon_gone.visibility = View.GONE
-
                     videoIcona.visibility = View.GONE
 
                     return false
                 }
 
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
+                override fun onResourceReady(resource: Drawable?, model: Any, target: Target<Drawable?>, dataSource: DataSource, isFirstResource: Boolean): Boolean {
                     loading_icon_gone.visibility = View.GONE
 
                     if (isImage)
@@ -572,7 +591,10 @@ class Home_Post_Adapter(
 
                     return false
                 }
-            }).thumbnail(0.01f).into(post_img)
+            })
+            .apply(RequestOptions().placeholder(R.drawable.placeholder))
+
+            .thumbnail(0.01f).into(post_img).waitForLayout()
 
 
     }
@@ -640,6 +662,11 @@ class Home_Post_Adapter(
         val video_iconD = view.findViewById<ImageView>(R.id.iv_postIsVideoD)
 
         val likeIcon = view.findViewById<LikeButton>(R.id.iv_postLike)
+
+
+
+        val story_rv = view.findViewById<RecyclerView>(R.id.story_rv)
+
 
 
     }

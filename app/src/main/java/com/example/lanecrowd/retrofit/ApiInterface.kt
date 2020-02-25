@@ -64,6 +64,15 @@ interface ApiInterface {
 
 
  @FormUrlEncoded
+    @POST("/getComments")
+    fun getComments(@Field("post_id") post_id: String): Call<JsonObject>
+
+    @FormUrlEncoded
+    @POST("/deleteComment")
+    fun deleteComments(@Field("c_id") c_id: String): Call<JsonObject>
+
+
+@FormUrlEncoded
     @POST("/addComment")
     fun addComment(@Field("android") android: String,
                    @Field("post_id") post_id: String,

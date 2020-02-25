@@ -20,6 +20,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.lancrowd.activity.home_fragments.Recent_Chat_Fragment
 import com.example.lanecrowd.Home_Fragment.Friend_Request_Fragment
 import com.example.lanecrowd.Home_Fragment.Home_Post_Fragment
@@ -31,9 +33,8 @@ import com.example.lanecrowd.util.URL
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
-import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.nav_header_home.view.*
-import java.util.HashMap
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -84,7 +85,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         session = SessionManager(applicationContext)
 
-     storeUserSessionValue()
+        storeUserSessionValue()
 
 
         tabLayout = findViewById<View>(R.id.tabs) as TabLayout
@@ -104,18 +105,24 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val txt_mail = headerView.findViewById<TextView>(R.id.txt_mail)
 
         val toggle = ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+            this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
         drawer!!.addDrawerListener(toggle)
         toggle.syncState()
         navigationView.setNavigationItemSelectedListener(this)
 
 
 
-        setProfileANdCoverImageandName(iv_profile,iv_cover,txt_name,txt_mail)
+        setProfileANdCoverImageandName(iv_profile, iv_cover, txt_name, txt_mail)
 
         headerView.setOnClickListener(View.OnClickListener {
             closeDrawerLayout()
-            startActivity(Intent(applicationContext, Profile_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            startActivity(
+                Intent(
+                    applicationContext,
+                    Profile_Activity::class.java
+                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
 
         })
 
@@ -134,40 +141,46 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //end change the navigation title color
     }
 
-    private fun setProfileANdCoverImageandName(profileImage: ImageView?, headerView: ImageView?, txtName: TextView, txtMail: TextView) {
+    private fun setProfileANdCoverImageandName(
+        profileImage: ImageView?,
+        headerView: ImageView?,
+        txtName: TextView,
+        txtMail: TextView
+    ) {
 
 
-        txtName.setText(URL.fullName)
+        txtName.text = URL.fullName
 
 
-        println("mahar2"+URL.phone)
-        println("mahar"+URL.phone==null)
+        println("mahar2" + URL.phone)
+        println("mahar" + URL.phone == null)
+        println("profilePic" + URL.profilePic)
+        println("coverPic" + URL.coverPic)
 
-        if(URL.phone.equals(""))
-        txtMail.setText(URL.email)
+        if (URL.phone.equals(""))
+            txtMail.text = URL.email
         else
-        txtMail.setText(URL.phone)
+            txtMail.text = URL.phone
 
-        Picasso.get()
-                .load(URL.profilePicPath+URL.profilePic)
-                .placeholder(R.drawable.placeholder_profile)
-                .error(R.drawable.placeholder_profile)
-                .into(profileImage);
 
-         Picasso.get()
-                .load(URL.coverPicPath+URL.coverPicPath)
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.placeholder)
-                .into(headerView);
 
+            Glide.with(baseContext)
+            .load(URL.profilePicPath + URL.profilePic)
+            .apply(RequestOptions().placeholder(R.drawable.placeholder_profile))
+            .thumbnail(0.01f).into(profileImage!!)
+
+             Glide.with(baseContext)
+            .load(URL.coverPicPath + URL.coverPic).apply(
+                RequestOptions().placeholder(R.drawable.placeholder)
+            ).thumbnail(0.01f).into(headerView!!)
 
 
     }
 
     private fun storeUserSessionValue() {
 
-           // get user data from session
-        val user: HashMap<String, String> = session!!.getUserDetails()
+        // get user data from session
+        val user: HashMap<String, String> = session!!.userDetails
 
 
         val KEY_USERID = user[SessionManager.KEY_USERID]
@@ -177,12 +190,12 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val KEY_PROFILE_PICTURE = user[SessionManager.KEY_PROFILE_PICTURE]
         val KEY_COVER_PHOTO = user[SessionManager.KEY_COVER_PHOTO]
 
-        URL.userId=KEY_USERID!!
-        URL.fullName=KEY_FULL_NAME!!
-        URL.email=KEY_EMAIL!!
-        URL.phone=KEY_PHONE!!
-        URL.profilePic=KEY_PROFILE_PICTURE!!
-        URL.coverPic=KEY_COVER_PHOTO!!
+        URL.userId = KEY_USERID!!
+        URL.fullName = KEY_FULL_NAME!!
+        URL.email = KEY_EMAIL!!
+        URL.phone = KEY_PHONE!!
+        URL.profilePic = KEY_PROFILE_PICTURE!!
+        URL.coverPic = KEY_COVER_PHOTO!!
 
 
     }
@@ -215,27 +228,39 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (id == R.id.activity) {
             closeDrawerLayout()
-            startActivity(Intent(applicationContext, Post_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            startActivity(
+                Intent(
+                    applicationContext,
+                    Post_Activity::class.java
+                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
 
-        }else if (id == R.id.friends) {
+        } else if (id == R.id.friends) {
             closeDrawerLayout()
-            startActivity(Intent(applicationContext, My_Friend_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            startActivity(
+                Intent(
+                    applicationContext,
+                    My_Friend_Activity::class.java
+                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
 
-        }else if (id == R.id.photos) {
+        } else if (id == R.id.photos) {
             closeDrawerLayout()
-            startActivity(Intent(applicationContext, Show_Photo_Video_Album_Activity::class.java)
+            startActivity(
+                Intent(applicationContext, Show_Photo_Video_Album_Activity::class.java)
                     .putExtra("from", "photo")
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
 
-        }
-        else if (id == R.id.videos) {
+        } else if (id == R.id.videos) {
             closeDrawerLayout()
-            startActivity(Intent(applicationContext, Show_Photo_Video_Album_Activity::class.java)
+            startActivity(
+                Intent(applicationContext, Show_Photo_Video_Album_Activity::class.java)
                     .putExtra("from", "video")
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
 
-        }
-        else if (id == R.id.logout) {
+        } else if (id == R.id.logout) {
             closeDrawerLayout()
             session!!.logoutUser()
         }
@@ -273,7 +298,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-    internal inner class ViewPagerAdapter(manager: FragmentManager) : FragmentPagerAdapter(manager) {
+    internal inner class ViewPagerAdapter(manager: FragmentManager) :
+        FragmentPagerAdapter(manager) {
         private val mFragmentList = ArrayList<Fragment>()
         private val mFragmentTitleList = ArrayList<String>()
 
@@ -296,8 +322,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-
-
     var doubleBackToExitPressedOnce = false
     override fun onBackPressed() {
 
@@ -305,7 +329,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             drawer!!.closeDrawer(GravityCompat.START)
         } else {
             if (doubleBackToExitPressedOnce) {
-              //  finishAffinity()
+                //  finishAffinity()
                 super.onBackPressed()
                 return
             }
@@ -317,7 +341,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         }
     }
-
 
 
 }

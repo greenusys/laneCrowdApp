@@ -36,9 +36,11 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.6.0'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
-    implementation 'com.airbnb.android:lottie:2.5.0-rc1'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
+
+    //lotti animation
+    implementation 'com.airbnb.android:lottie:2.7.0'
 
     //rxbinding
 
@@ -77,13 +79,13 @@ dependencies {
     //like button library
     implementation 'com.github.jd-alexander:LikeButton:0.2.3'
 
+    //laoding library
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
 
 
     implementation 'com.github.tcking:ijkplayer-arm64:0.8.8'
 
 
-    // for image process
-    implementation 'com.squareup.picasso:picasso:2.71828'
 
     // for circular imageview
     implementation 'de.hdodenhof:circleimageview:3.0.1'

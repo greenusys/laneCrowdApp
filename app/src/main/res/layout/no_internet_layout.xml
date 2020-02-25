@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+    <com.airbnb.lottie.LottieAnimationView
+      android:layout_marginTop="150dp"
+       android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:id="@+id/no_internet_anim"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        app:lottie_rawRes="@raw/no_internet"
+        app:lottie_loop="true"
+        app:lottie_autoPlay="false"/>
+
+    <TextView
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/no_internet_anim"
+        android:visibility="gone"
+        android:id="@+id/internet_text"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="Please check your internet connection"
+        android:textColor="@color/red" />
+
+
+
+    <TextView
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/internet_text"
+        android:visibility="gone"
+        android:id="@+id/retry"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:background="@drawable/button_round"
+        android:gravity="center"
+        android:text="Retry"
+        android:textColor="@color/white" />
+
+
+
+
+</RelativeLayout>

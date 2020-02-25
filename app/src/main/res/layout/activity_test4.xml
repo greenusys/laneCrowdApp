@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:id="@+id/abc"
+    android:layout_gravity="center"
     android:layout_height="match_parent"
-    tools:context=".activity.test">
+    android:id="@+id/swipe"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
 
-
-
-  <ImageView
-      android:src="@drawable/ic_like_fill"
-      android:layout_width="match_parent"
-      android:layout_height="300dp"
-      android:id="@+id/imageview"/>
-
-</LinearLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
