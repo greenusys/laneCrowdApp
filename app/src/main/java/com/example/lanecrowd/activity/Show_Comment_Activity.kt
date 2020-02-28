@@ -2,30 +2,44 @@ package com.example.lanecrowd.activity
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.Drawable
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Vibrator
 import android.util.Log
 import android.view.View
-import android.widget.*
+import android.view.inputmethod.InputMethodManager
+import android.widget.AbsListView
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import com.example.lanecrowd.R
 import com.example.lanecrowd.adapter.CommentAdapter
+import com.example.lanecrowd.modal.CommentMediaModal
 import com.example.lanecrowd.modal.CommentModel
 import com.example.lanecrowd.modal.PowerMenuUtils
 import com.example.lanecrowd.util.URL
+import com.example.lanecrowd.view_modal.CommentVM
+import com.example.lanecrowd.view_modal.FetchPostVm
+import com.github.ybq.android.spinkit.SpinKitView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
 import com.skydoves.powermenu.OnMenuItemClickListener
 import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
 import de.hdodenhof.circleimageview.CircleImageView
+import org.json.JSONArray
+import org.json.JSONObject
+import java.lang.reflect.Type
 
 class Show_Comment_Activity : AppCompatActivity() {
 
@@ -33,20 +47,45 @@ class Show_Comment_Activity : AppCompatActivity() {
     private var hamburgerMenu: PowerMenu? = null
     private var vibe: Vibrator? = null
 
+
+    var isScrolling = false
+    var currentItems: Int = 0
+    var totalItems: Int = 0
+    var scrollOutItems: Int = 0
+
+    var mediaData: CommentMediaModal? = null
     var comment_rv: RecyclerView? = null
     var adapter: CommentAdapter? = null
     var files: ArrayList<String>? = null
     var post_id: String? = null
     var user_name: String? = null
+    var isMyLike: Boolean=false
     var isImage: String? = null
     var time: String? = null
     var staus: String? = null
     var user_pic: String? = null
     var url: String = ""
-    var total_comment: String ? = null
-    var total_likes: String ? = null
-    var total_shared: String ? = null
+    var total_comment: String? = null
+    var total_likes: String? = null
+    var total_shared: String? = null
     var comment_list = ArrayList<CommentModel>()
+    var counting: Int = 0
+
+    internal var comment_id:String=""
+    internal var postposition:Int = -1
+
+    var layoutManager: LinearLayoutManager? = null
+    lateinit var viewmodellike: FetchPostVm
+
+
+    private var edt_comment: EditText? = null
+    private var iv_sendComment: ImageView? = null
+    private var swipe: SwipeRefreshLayout? = null
+    var loading_more_anim: SpinKitView? = null
+
+    lateinit var viewmodel: CommentVM
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show__comment_)
@@ -57,6 +96,7 @@ class Show_Comment_Activity : AppCompatActivity() {
         isImage = intent.extras!!.getString("isImage")
         user_name = intent.extras!!.getString("user_name")
         time = intent.extras!!.getString("time")
+       var mYLIke = intent.extras!!.getString("isMyLike")
         staus = intent.extras!!.getString("staus")
         user_pic = intent.extras!!.getString("user_pic")
         total_likes = intent.extras!!.getString("total_likes")
@@ -68,317 +108,339 @@ class Show_Comment_Activity : AppCompatActivity() {
         else
             url = URL.videoPath
 
-/*
-        println("files_size"+files!!.size)
-        println("post_id"+post_id)
-        println("user_name"+user_name)
-        println("time"+time)
-        println("staus"+staus)*/
 
+        if(mYLIke.equals("true")) {
+            isMyLike = true
 
-        initViews()
+        }
+
+        initViesForVM()
+
 
 
     }
 
+    private fun setProfileImage(url: String, layott: CircleImageView?) {
+        Glide.with(applicationContext).load(url).apply(
+            RequestOptions().placeholder(R.drawable.placeholder_profile)
+        )
+            .thumbnail(0.01f).into(layott!!)
+
+    }
+
     @SuppressLint("WrongConstant")
-    private fun initViews() {
-
-
-        comment_list.add(CommentModel())
-        comment_list.add(CommentModel())
-        comment_list.add(CommentModel())
-        comment_list.add(CommentModel())
-        comment_list.add(CommentModel())
-        comment_list.add(CommentModel())
-        comment_list.add(CommentModel())
-        comment_list.add(CommentModel())
-        comment_list.add(CommentModel())
-        comment_list.add(CommentModel())
-        comment_list.add(CommentModel())
+    private fun initViesForVM() {
 
         //power
-        hamburgerMenu = PowerMenuUtils.getCommentMenu(
-            this,
-            this,
-            onHamburgerItemClickListener,
-            onHamburgerMenuDismissedListener
-        )
-
+        hamburgerMenu = PowerMenuUtils.getCommentMenu(this, this, onHamburgerItemClickListener, onHamburgerMenuDismissedListener)
         vibe = this@Show_Comment_Activity.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
+        viewmodellike = ViewModelProvider(this).get(FetchPostVm::class.java)
 
-        comment_rv = findViewById<RecyclerView>(R.id.comment_rv)
-        adapter = CommentAdapter(this, comment_list)
-        comment_rv!!.adapter = adapter
-        comment_rv!!.layoutManager =
-            LinearLayoutManager(applicationContext, LinearLayout.VERTICAL, false)
-        adapter!!.notifyDataSetChanged()
 
+
+        mediaData = CommentMediaModal(post_id!!,isMyLike,files!!, url, staus!!, total_likes!!, isImage!!, total_shared!!,total_comment!!)
+        swipe = findViewById<SwipeRefreshLayout>(R.id.comment_swipe)
+        loading_more_anim = findViewById<SpinKitView>(R.id.loading_more_anim)
+        iv_sendComment = findViewById<ImageView>(R.id.iv_sendComment)
+        edt_comment = findViewById<EditText>(R.id.edt_comment)
 
         val user_profile_comment = findViewById<CircleImageView>(R.id.user_profile_comment)
         val user_name_comment = findViewById<TextView>(R.id.user_name_comment)
         val post_time_comment = findViewById<TextView>(R.id.post_time_comment)
 
 
-        //set user image,name and post time
-        Glide.with(applicationContext).load(
-            URL.profilePicPath + user_pic
-        ).apply(
-            RequestOptions().placeholder(R.drawable.placeholder_profile)
-        )
-            .thumbnail(0.01f).into(user_profile_comment!!)
-
+        setProfileImage(URL.profilePicPath+user_pic, user_profile_comment)
         user_name_comment.text = user_name
         post_time_comment.text = time
+        user_name_comment.isAllCaps = true
+
+        println("user_pic"+URL.profilePicPath+user_pic)
 
 
-        //post pic,username,status,posttime of homepost item
-        val postProfilePic = findViewById<CircleImageView>(R.id.postProfilePic)
-        val postUserName = findViewById<TextView>(R.id.postUserName)
-        val postTime = findViewById<TextView>(R.id.postTime)
-        val postStatus = findViewById<TextView>(R.id.postStatus)
+        comment_rv = findViewById<RecyclerView>(R.id.comment_rv)
+        layoutManager = LinearLayoutManager(applicationContext)
+        comment_rv!!.layoutManager = layoutManager
+        adapter = CommentAdapter(this, comment_list, mediaData!!)
+        comment_rv!!.adapter = adapter
 
 
-        postUserName.isAllCaps=true
-        goneLayout(postProfilePic)
-        goneLayout(postUserName)
-        goneLayout(postTime)
-        goneLayout(postStatus)
+        viewmodel = ViewModelProvider(this).get(CommentVM::class.java)
 
 
-        //loading icons
-        val loading_iconA = findViewById<ProgressBar>(R.id.loading_iconA)
-        val loading_iconB = findViewById<ProgressBar>(R.id.loading_iconB)
-        val loading_iconC = findViewById<ProgressBar>(R.id.loading_iconC)
-        val loading_iconD = findViewById<ProgressBar>(R.id.loading_iconD)
+        swiperefresh_Listener()
+        initScrollListener()
 
 
+        if (!isNetworkAvailable(applicationContext!!)) {
+            // visible_no_internet_layout(true)
+        } else {
+            setRefreshingfalse(true)
 
-        //no. of likes,comment and shares
-        val likesText = findViewById<TextView>(R.id.likes)
-        val commentText = findViewById<TextView>(R.id.comment)
-        val shareText = findViewById<TextView>(R.id.share)
-
-        likesText.setText(total_likes)
-        commentText.setText(total_comment)
-        shareText.setText(total_shared)
+            fetchPostCommentAPI("")
+        }
 
 
-        //image layout
-        val iv_postImgA = findViewById<ImageView>(R.id.iv_postImgA)
-        val iv_postImgB = findViewById<ImageView>(R.id.iv_postImgB)
-        val postImageC = findViewById<ImageView>(R.id.postImageC)
-        val iv_postImgD = findViewById<ImageView>(R.id.iv_postImgD)
+        iv_sendComment!!.setOnClickListener(View.OnClickListener {
+
+            if(edt_comment!!.text.toString().length>0) {
+                edt_comment!!.text.clear()
+                hideSoftKeyBoard()
+                callAddCommentAPI(post_id!!, edt_comment!!.text.toString(), URL.userId)
 
 
-        //video icons
-        val video_iconA = findViewById<ImageView>(R.id.iv_postIsVideoA)
-        val video_iconB = findViewById<ImageView>(R.id.iv_postIsVideoB)
-        val video_iconC = findViewById<ImageView>(R.id.iv_postIsVideoC)
-        val video_iconD = findViewById<ImageView>(R.id.iv_postIsVideoD)
+            }})
 
-        val frame_postB = findViewById<FrameLayout>(R.id.frame_postB)
-        val frame_postC = findViewById<FrameLayout>(R.id.frame_postC)
+    }
 
 
 
-        //more text
-        val more_text = findViewById<TextView>(R.id.more_text)
+    private fun hideSoftKeyBoard() {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        val like_comment_layout = findViewById<LinearLayout>(R.id.like_comment_layout)
-        goneLayout(like_comment_layout)
-
-
-        //three image layout
-        val threeImgLayout = findViewById<LinearLayout>(R.id.lay_postForBelowImgs)
-
-        //menu button
-        val post_menu = findViewById<ImageView>(R.id.post_menu)
-        goneLayout(post_menu)
+        try {
 
 
+            if (imm.isAcceptingText) {
+                // verify if the soft keyboard is open
+                imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+            }
+        } catch (e: Exception) {
+
+        }
+    }
+
+    private fun callAddCommentAPI(post_id: String, comment: String, comment_by: String) {
+
+        try {
 
 
-        if (files!!.size == 1) {
+            viewmodel.addCommentVM(post_id,comment,comment_by)
+                .observe(this, Observer { resultPi ->
 
 
-            set_Success_Glide_Data(
-                url + files!!.get(0),
-                loading_iconA,
-                iv_postImgA,
-                video_iconA
-            )
-
-            goneLayout(threeImgLayout)
-        } else if (files!!.size == 2) {
 
 
-            set_Success_Glide_Data(
-                url + files!!.get(0),
-                loading_iconA,
-                iv_postImgA,
-                video_iconA
-            )
-
-            set_Success_Glide_Data(
-                url + files!!.get(1),
-                loading_iconB,
-                iv_postImgB,
-                video_iconB
-            )
-
-            goneLayout(frame_postB)
-            goneLayout(frame_postC)
-        } else if (files!!.size == 3) {
-
-            set_Success_Glide_Data(
-                url + files!!.get(0),
-                loading_iconA,
-                iv_postImgA,
-                video_iconA
-            )
-
-            set_Success_Glide_Data(
-                url + files!!.get(1),
-                loading_iconB,
-                iv_postImgB,
-                video_iconB
-            )
-
-            set_Success_Glide_Data(
-                url + files!!.get(2),
-                loading_iconC,
-                postImageC,
-                video_iconC
-            )
-
-            goneLayout(frame_postC)
-        } else if (files!!.size == 4) {
-
-            set_Success_Glide_Data(
-                url + files!!.get(0),
-                loading_iconA,
-                iv_postImgA,
-                video_iconA
-            )
-
-            set_Success_Glide_Data(
-                url + files!!.get(1),
-                loading_iconB,
-                iv_postImgB,
-                video_iconB
-            )
-
-            set_Success_Glide_Data(
-                url + files!!.get(2),
-                loading_iconC,
-                postImageC,
-                video_iconC
-            )
-            set_Success_Glide_Data(
-                url + files!!.get(3),
-                loading_iconD,
-                iv_postImgD,
-                video_iconD
-            )
-
-        } else if (files!!.size > 4) {
-
-            set_Success_Glide_Data(
-                url + files!!.get(0),
-                loading_iconA,
-                iv_postImgA,
-                video_iconA
-            )
-
-            set_Success_Glide_Data(
-                url + files!!.get(1),
-                loading_iconB,
-                iv_postImgB,
-                video_iconB
-            )
-
-            set_Success_Glide_Data(
-                url + files!!.get(2),
-                loading_iconC,
-                postImageC,
-                video_iconC
-            )
-            set_Success_Glide_Data(
-                url + files!!.get(3),
-                loading_iconD,
-                iv_postImgD,
-                video_iconD
-            )
-
-            more_text.visibility = View.VISIBLE
+                })
 
 
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+
+    private fun initScrollListener() {
+
+        comment_rv!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    isScrolling = true
+                }
+                //  println("isScrollli"+isScrolling)
+
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                currentItems = layoutManager!!.childCount
+                totalItems = layoutManager!!.itemCount
+                scrollOutItems = layoutManager!!.findFirstVisibleItemPosition()
+
+
+                println("totalItems" + totalItems)
+                println("scrollOutItems" + scrollOutItems)
+                println("currentItems" + currentItems)
+                println("isScrolling" + isScrolling)
+
+
+
+                if (isScrolling && (currentItems + scrollOutItems == totalItems)) {
+                    visibleLoadingMoreAnim(true)
+
+                    println("load_more_called")
+                    isScrolling = false
+                    counting++
+                    if (!isNetworkAvailable(applicationContext!!)) {
+                        //visible_no_internet_layout(true)
+                    } else
+                        fetchPostCommentAPI("more")
+
+
+                }
+
+            }
+        })
+
+
+    }
+
+
+    private fun swiperefresh_Listener() {
+
+        swipe!!.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
+            try {
+
+                counting = 0
+                //if (!isNetworkAvailable(applicationContext!!)) {
+                ////  setRefreshingfalse(false)
+                // showSnackBar("Please check your internet connection")
+                //  if (comment_list.size <= 0 && no_data_anim_post!!.visibility != View.VISIBLE)
+                //   visible_no_internet_layout(true)
+                //  } else {
+                fetchPostCommentAPI("swipe")
+                //  }
+            } catch (e: IndexOutOfBoundsException) {
+                println("on_Refresh_Exception_Found_$e")
+            }
+        })
+
+    }
+
+    /*  private fun showSnackBar(msg: String) {
+          val snackbar = Snackbar.make(main_layout!!, msg, Snackbar.LENGTH_SHORT)
+          snackbar.show()
+      }*/
+
+    private fun visibleLoadingMoreAnim(value: Boolean) {
+        if (value)
+            loading_more_anim!!.visibility = View.VISIBLE
+        else
+            loading_more_anim!!.visibility = View.GONE
+
+    }
+
+
+    private fun setRefreshingfalse(value: Boolean) {
+
+        swipe!!.isRefreshing = value
+
+    }
+
+
+    fun isNetworkAvailable(context: Context)//check internet of device
+            : Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return connectivityManager.activeNetworkInfo != null && connectivityManager.activeNetworkInfo!!.isConnected
+    }
+
+
+    private fun fetchPostCommentAPI(from: String) {
+
+
+        try {
+            viewmodel.fetchCommentVM(post_id!!, counting.toString())
+                .observe(this, Observer { resultPi ->
+
+
+                    storepostDataTOModal(resultPi, from)
+
+
+                })
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
 
     }
 
 
-    private fun set_Success_Glide_Data(
-        url: String,
-        loading_icon_gone: ProgressBar,
-        post_img: ImageView,
-        videoIcona: ImageView
-    ) {
+    private fun updateAdapterForMultipleData() {
 
 
-        println("sayed_url" + url)
-        println("isImage" + isImage)
+        if (swipe!!.isRefreshing) {
+            println("Refreshing;......")
+            if (this@Show_Comment_Activity != null) {
+                this@Show_Comment_Activity.runOnUiThread {
+                    if (adapter != null) {
+                        comment_rv!!.recycledViewPool.clear()
+                        adapter!!.notifyDataSetChanged()
+                        setRefreshingfalse(false)
+                    }
+                    comment_list.clear()
 
-
-
-
-        Glide.with(applicationContext).load(url)
-            .listener(object : RequestListener<Drawable?> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    isFirstResource: Boolean
-                ): Boolean {
-
-                    loading_icon_gone.visibility = View.GONE
-                    videoIcona.visibility = View.GONE
-
-                    return false
                 }
-
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    loading_icon_gone.visibility = View.GONE
-
-                    if (isImage.equals("true"))
-                        videoIcona.visibility = View.GONE
-                    else
-                        videoIcona.visibility = View.VISIBLE
-
-                    return false
-                }
-            })
-            .apply(RequestOptions().placeholder(R.drawable.placeholder))
-
-            .thumbnail(0.01f).into(post_img).waitForLayout()
+            }
+        }
 
 
     }
 
 
-    private fun goneLayout(layout: View?) {
+    private fun ClearForRefreshData() {
 
-        layout!!.visibility = View.GONE
+        println("ClearForRefreshData_called")
+        comment_list.clear()
+        comment_rv!!.recycledViewPool.clear()
+        notifiyAdapter()
+
+
     }
+
+    private fun storepostDataTOModal(resultPi: JsonObject?, from: String) {
+
+
+
+
+        if (from.equals("swipe"))
+            ClearForRefreshData()
+
+        //call after load more
+        updateAdapterForMultipleData()
+
+
+        if(resultPi!=null) {
+            var main = JSONObject(resultPi.toString())
+
+            if (resultPi != null && main.getString("code").equals("1")) {
+
+                val data: JSONArray = main.getJSONArray("data")
+
+                println("comement_list_before" + comment_list.size)
+
+
+                val gson = Gson()
+                val listType: Type = object : TypeToken<ArrayList<CommentModel?>?>() {}.type
+                comment_list.addAll( gson.fromJson(data.toString(), listType))
+
+                println("Comment_list_xize" + comment_list.size)
+
+            }
+        }else {
+
+            println("no_data_found_for_offset" + counting.toString())
+
+
+        }
+
+
+        if (from.equals("more"))
+            visibleLoadingMoreAnim(false)
+
+
+        notifiyAdapter()
+
+
+    }
+
+    private fun notifiyAdapter() {
+        println("comement_list" + comment_list.size)
+        println("check_value"+layoutManager!!.itemCount)
+
+        // adapter = CommentAdapter(this, comment_list, mediaData!!)
+        //comment_rv!!.adapter = adapter
+        adapter!!.notifyDataSetChanged()
+    }
+
+
+
 
 
     //power option menu
@@ -387,25 +449,54 @@ class Show_Comment_Activity : AppCompatActivity() {
             // hamburgerMenu!!.selectedPosition = position
 
             if (!firstTime) {
-/*
-                    if (item.title.equals(getString(R.string.rate_me)))
-                        rateMe()
-                    else if (item.title.equals(getString(R.string.share)))
-                        share()
-                    else if (item.title.equals(getString(R.string.about)))
-                        gotoABoutActivity()*/
+
+                    if (item.title.equals(getString(R.string.delete)))
+                       askToDeleteSelfPost()
+
+                         else  if (item.title.equals(getString(R.string.edit)))
+                            callEditCommentAPI()
+
             }
 
 
         }
+
+    private fun callEditCommentAPI() {
+
+        viewmodel.editCommentVM(URL.userId,edt_comment!!.text.toString(),comment_id)
+
+    }
+
+
+    private fun askToDeleteSelfPost() {
+
+
+        MaterialAlertDialogBuilder(this@Show_Comment_Activity, R.style.AlertDialogTheme)
+            .setTitle("LaneCrowd")
+            .setMessage("Are you sure want to delete comment?")
+            .setNegativeButton("No") { dialogInterface, i ->
+            }
+            .setPositiveButton("Yes") { dialogInterface, i ->
+                println("show_psoitio_2"+postposition)
+
+
+                viewmodel.deleteCommentVM(comment_id)
+                adapter!!.notifyItemRemoved(postposition)
+
+            }
+            .show()
+    }
 
     private val onHamburgerMenuDismissedListener = {
         Log.d("Test", "onDismissed hamburger menu")
     }
 
 
-    fun showMenu(frndMenu: ImageView) {
+    fun showMenu(frndMenu: ImageView,comment_id:String,position:Int) {
         showVibration()
+
+        this.comment_id=comment_id
+        this.postposition=position
 
         if (hamburgerMenu!!.isShowing) {
             hamburgerMenu!!.dismiss()
@@ -416,9 +507,16 @@ class Show_Comment_Activity : AppCompatActivity() {
 
     }
 
-    private fun showVibration() {
+     fun showVibration() {
 
         vibe!!.vibrate(80)
+    }
+
+    fun likeDislike(postId: String, userId: String) {
+
+
+        viewmodellike.likeDislikeAPI(postId,userId)
+
     }
 
 

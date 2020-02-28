@@ -8,7 +8,7 @@ import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
-interface ApiInterface {
+ interface ApiInterface {
 
 
     @FormUrlEncoded
@@ -63,13 +63,18 @@ interface ApiInterface {
 
 
 
- @FormUrlEncoded
+     @FormUrlEncoded
     @POST("/getComments")
-    fun getComments(@Field("post_id") post_id: String): Call<JsonObject>
+    fun getComments(@Field("post_id") post_id: String,@Field("offset") offset: String): Call<JsonObject>
 
     @FormUrlEncoded
     @POST("/deleteComment")
     fun deleteComments(@Field("c_id") c_id: String): Call<JsonObject>
+
+
+ @FormUrlEncoded
+    @POST("/editcomment")
+    fun editComments(@Field("user_id") user_id: String,@Field("comment") comment: String,@Field("c_id") c_id: String,@Field("android") android: String): Call<JsonObject>
 
 
 @FormUrlEncoded

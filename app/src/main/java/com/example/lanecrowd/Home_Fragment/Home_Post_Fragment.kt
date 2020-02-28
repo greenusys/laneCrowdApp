@@ -36,6 +36,7 @@ import com.google.gson.JsonObject
 import com.skydoves.powermenu.OnMenuItemClickListener
 import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
+import kotlinx.android.synthetic.main.activity_show__comment_.*
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -71,6 +72,7 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
     private var otherPostMenu: PowerMenu? = null
     private var main_layout: RelativeLayout? = null
     private var swipe: SwipeRefreshLayout? = null
+    var loading_more_anim: SpinKitView?=null
 
     private var no_data_anim_post: LottieAnimationView? = null
     private var add_post: TextView? = null
@@ -84,18 +86,15 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
     private var vibe: Vibrator? = null
 
-    var loading_more_anim: SpinKitView?=null
     var home_post_rv: RecyclerView?=null
-      var story_rv: RecyclerView?=null
 
       var homePostAdapter:Home_Post_Adapter?=null
-      var storyAdapter:Story_Adapter?=null
 
       var home_post_list= ArrayList<Home_Post_Modal>()
       var story_list= ArrayList<Story_Modal>()
     lateinit var viewmodel: FetchPostVm
     var layoutManager: LinearLayoutManager? = null
-    lateinit var rootView: View;
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,9 +107,6 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_home__post_, container, false)
-
-
-
 
 
 
@@ -131,11 +127,9 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
         vibe = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
-
+        swipe = view.findViewById(R.id.swipe) as SwipeRefreshLayout
         loading_more_anim = view.findViewById(R.id.loading_more_anim) as SpinKitView
         home_post_rv = view.findViewById(R.id.home_post_rv) as RecyclerView
-//        story_rv = view.findViewById(R.id.story_rv) as RecyclerView
-        swipe = view.findViewById(R.id.swipe) as SwipeRefreshLayout
         main_layout = view.findViewById(R.id.main_layout) as RelativeLayout
 
 
@@ -274,11 +268,6 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
                 totalItems = layoutManager!!.getItemCount();
                 scrollOutItems = layoutManager!!.findFirstVisibleItemPosition();
 
-              /*  println("currentItems"+currentItems)
-                println("totalItems"+totalItems)
-                println("scrollOutItems"+scrollOutItems)
-                println("isScrolling"+isScrolling)
-*/
                 if(isScrolling && (currentItems + scrollOutItems == totalItems))
                 {
                     visibleLoadingMoreAnim(true)
@@ -321,7 +310,7 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
                 if (!isNetworkAvailable(context!!)) {
                     setRefreshingfalse(false)
                     showSnackBar("Please check your internet connection")
-                    if(home_post_list.size<=0)
+                    if(home_post_list.size<=0 && no_data_anim_post!!.visibility!=View.VISIBLE)
                     visible_no_internet_layout(true)
                 }
                 else {
@@ -376,6 +365,8 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
         } catch (e: Exception) {
             e.printStackTrace()
 
+
+
         }
 
 
@@ -389,7 +380,7 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
         var main:JSONObject?=null
 
 
-        if(from.equals("swipe"))
+             if(from.equals("swipe"))
             ClearForRefreshData()
 
 
@@ -397,8 +388,14 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
          updateAdapterForMultipleData()
 
 
-        if(resultPi!=null) {
+        if(resultPi!=null)
+        {
+
+            try {
+
+
             main = JSONObject(resultPi.toString())
+
 
 
             if (resultPi != null && main!!.getString("code").equals("1")) {
@@ -414,7 +411,7 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
                 val data: JSONArray = main.getJSONArray("data")
 
-                println("data_size" + data.length())
+               // println("data_size" + data.length())
 
                 for (i in 0 until data.length()) {
 
@@ -423,6 +420,8 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
                     var postList: ArrayList<String> = ArrayList()
 
 
+
+                    //for post files
                     try {
 
                         if (!item.getString("post_files").equals("null")) {
@@ -444,11 +443,12 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
                     }
 
+
                     //for likes
                     val like: JSONArray = item.getJSONArray("likes_data")
                     if (like.length() > 0) {
 
-                        println("like_kaif" + like)
+                       // println("like_kaif" +i+" " +like)
 
                         var likeitem = like.getJSONObject(0)
 
@@ -456,6 +456,9 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
                     } else
                         isMylike = false
+
+
+                  //  println("isMyLIke"+i+ " "+isMylike+ " "+item.getString("post"))
 
 
                     //store data to list
@@ -480,6 +483,14 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
                 }
 
 
+            }
+
+            }
+            catch (e:Exception)
+            {
+
+                visibleLoadingMoreAnim(false)
+                setRefreshingfalse(false)
             }
 
         }
@@ -510,9 +521,7 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
     private fun updateAdapterForMultipleData() {
 
 
-        println("kaifff"+homePostAdapter)
         if (swipe!!.isRefreshing()) {
-            println("Refreshing;......")
             if (activity != null) {
                 activity!!.runOnUiThread {
                     if (homePostAdapter != null) {
@@ -532,6 +541,7 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
     private fun notifiyAdapter() {
 
 
+        println("check_value"+home_post_list.size)
         homePostAdapter!!.notifyDataSetChanged()
 
     }

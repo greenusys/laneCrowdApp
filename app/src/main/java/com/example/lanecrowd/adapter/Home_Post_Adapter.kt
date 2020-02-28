@@ -106,28 +106,29 @@ if(position==0) {
 
 
        else if(position==1)
-        setWhatLayoutLIstener(holder,position)
+        setWhatLayoutLIstener(holder,position-1)
 
 
         else {
+              //  println("elseeeee"+position)
             //set Comment Layout listener
-            setCommentLayoutLIstener(holder,position-2)
+            setCommentLayoutLIstener(holder,position)
 
             // menu listener
-            showMenuListener(holder, position-2)
+            showMenuListener(holder, position)
 
 
             //set User Profile, User Name and Post time
-            setUSerImageNameAndTime(holder, position-2)
+            setUSerImageNameAndTime(holder, position)
 
 
             //set Like Button Listener
-            setLikeListener(holder, position-2)
+            setLikeListener(holder, position)
 
-            setPostMediaData(holder, position-2)
+            setPostMediaData(holder, position)
 
 
-            setPhotoVideoViewListener(position-2,holder)
+            setPhotoVideoViewListener(position,holder)
         }
 
 
@@ -142,37 +143,37 @@ if(position==0) {
 
 
         holder.iv_postImgA.setOnClickListener(View.OnClickListener {
-            println("checkImageee"+checkIsImage(position))
+            println("checkImageee"+checkIsImage(position-2))
             context.startActivity(Intent(context, ShowPhotoActivity::class.java)
-                .putExtra("isImage",checkIsImage(position).toString())
+                .putExtra("isImage",checkIsImage(position-2).toString())
                 .putExtra("position","0")
-                .putStringArrayListExtra("files",list.get(position).post_files))
+                .putStringArrayListExtra("files",list.get(position-2).post_files))
 
         })
 
         holder.iv_postImgB.setOnClickListener(View.OnClickListener {
-            println("checkImageee"+checkIsImage(position))
+            println("checkImageee"+checkIsImage(position-2))
             context.startActivity(Intent(context, ShowPhotoActivity::class.java)
-                .putExtra("isImage",checkIsImage(position).toString())
+                .putExtra("isImage",checkIsImage(position-2).toString())
                 .putExtra("position","1")
-                .putStringArrayListExtra("files",list.get(position).post_files))
+                .putStringArrayListExtra("files",list.get(position-2).post_files))
 
         })
   holder.postImageC.setOnClickListener(View.OnClickListener {
-            println("checkImageee"+checkIsImage(position))
+            println("checkImageee"+checkIsImage(position-2))
             context.startActivity(Intent(context, ShowPhotoActivity::class.java)
-                .putExtra("isImage",checkIsImage(position).toString())
+                .putExtra("isImage",checkIsImage(position-2).toString())
                 .putExtra("position","2")
-                .putStringArrayListExtra("files",list.get(position).post_files))
+                .putStringArrayListExtra("files",list.get(position-2).post_files))
 
         })
 
   holder.iv_postImgD.setOnClickListener(View.OnClickListener {
-            println("checkImageee"+checkIsImage(position))
+            println("checkImageee"+checkIsImage(position-2))
             context.startActivity(Intent(context, ShowPhotoActivity::class.java)
-                .putExtra("isImage",checkIsImage(position).toString())
+                .putExtra("isImage",checkIsImage(position-2).toString())
                 .putExtra("position","3")
-                .putStringArrayListExtra("files",list.get(position).post_files))
+                .putStringArrayListExtra("files",list.get(position-2).post_files))
 
         })
 
@@ -194,19 +195,25 @@ if(position==0) {
 
     private fun setPostMediaData(holder:ViewHolder, position: Int) {
 
+
+      //  var position:Int=position-2
+
         var url: String = ""
         var isImage: Boolean = false
 
 
+       // println("ksdjksd"+position-2)
+
+
         //1 or more images exist
-        if (!list.get(position).post_files.get(0).equals("empty")) {
+        if (!list.get(position-2).post_files.get(0).equals("empty")) {
 
 
             //only 1 image
-            if (list.get(position).post_files.size == 1) {
+            if (list.get(position-2).post_files.size == 1) {
 
 
-                if (checkIsImage(position)) {
+                if (checkIsImage(position-2)) {
                     url = URL.imagePath
                     isImage = true
                 } else {
@@ -214,11 +221,11 @@ if(position==0) {
                     url = URL.videoPath
                 }
 
-                println("isImageeee" + list.get(position).isImage)
-                println("mmmmm" + url + list.get(position).post_files.get(0))
+                println("isImageeee" + list.get(position-2).isImage)
+                println("mmmmm" + url + list.get(position-2).post_files.get(0))
 
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(0),
+                    url + list.get(position-2).post_files.get(0),
                     holder.loading_iconA,
                     holder.iv_postImgA,
                     holder.video_iconA,
@@ -231,10 +238,10 @@ if(position==0) {
             }
 
             //only 2 images
-            else if (list.get(position).post_files.size == 2) {
+            else if (list.get(position-2).post_files.size == 2) {
 
 
-                if (checkIsImage(position)) {
+                if (checkIsImage(position-2)) {
                     url = URL.imagePath
                     isImage = true
                 } else {
@@ -242,14 +249,14 @@ if(position==0) {
                     url = URL.videoPath
                 }
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(0),
+                    url + list.get(position-2).post_files.get(0),
                     holder.loading_iconA,
                     holder.iv_postImgA,
                     holder.video_iconA,
                     isImage
                 )
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(1),
+                    url + list.get(position-2).post_files.get(1),
                     holder.loading_iconB,
                     holder.iv_postImgB,
                     holder.video_iconB,
@@ -262,10 +269,10 @@ if(position==0) {
             }
 
             //only 3 images
-            else if (list.get(position).post_files.size == 3) {
+            else if (list.get(position-2).post_files.size == 3) {
 
 
-                if (checkIsImage(position)) {
+                if (checkIsImage(position-2)) {
                     url = URL.imagePath
                     isImage = true
                 } else {
@@ -274,21 +281,21 @@ if(position==0) {
                 }
 
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(0),
+                    url + list.get(position-2).post_files.get(0),
                     holder.loading_iconA,
                     holder.iv_postImgA,
                     holder.video_iconA,
                     isImage
                 )
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(1),
+                    url + list.get(position-2).post_files.get(1),
                     holder.loading_iconB,
                     holder.iv_postImgB,
                     holder.video_iconB,
                     isImage
                 )
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(2),
+                    url + list.get(position-2).post_files.get(2),
                     holder.loading_iconC,
                     holder.postImageC,
                     holder.video_iconC,
@@ -301,10 +308,10 @@ if(position==0) {
             }
 
             //only 4 images
-            else if (list.get(position).post_files.size == 4) {
+            else if (list.get(position-2).post_files.size == 4) {
 
 
-                if (checkIsImage(position)) {
+                if (checkIsImage(position-2)) {
                     url = URL.imagePath
                     isImage = true
                 } else {
@@ -313,28 +320,28 @@ if(position==0) {
                 }
 
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(0),
+                    url + list.get(position-2).post_files.get(0),
                     holder.loading_iconA,
                     holder.iv_postImgA,
                     holder.video_iconA,
                     isImage
                 )
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(1),
+                    url + list.get(position-2).post_files.get(1),
                     holder.loading_iconB,
                     holder.iv_postImgB,
                     holder.video_iconB,
                     isImage
                 )
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(2),
+                    url + list.get(position-2).post_files.get(2),
                     holder.loading_iconC,
                     holder.postImageC,
                     holder.video_iconC,
                     isImage
                 )
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(3),
+                    url + list.get(position-2).post_files.get(3),
                     holder.loading_iconD,
                     holder.iv_postImgD,
                     holder.video_iconD,
@@ -345,10 +352,10 @@ if(position==0) {
             }
 
             //more than 4 images
-            else if (list.get(position).post_files.size > 4) {
+            else if (list.get(position-2).post_files.size > 4) {
 
 
-                if (checkIsImage(position)) {
+                if (checkIsImage(position-2)) {
                     url = URL.imagePath
                     isImage = true
                 } else {
@@ -356,32 +363,32 @@ if(position==0) {
                     url = URL.videoPath
                 }
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(0),
+                    url + list.get(position-2).post_files.get(0),
                     holder.loading_iconA,
                     holder.iv_postImgA,
                     holder.video_iconA,
                     isImage
                 )
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(1),
+                    url + list.get(position-2).post_files.get(1),
                     holder.loading_iconB,
                     holder.iv_postImgB,
                     holder.video_iconB,
                     isImage
                 )
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(2),
+                    url + list.get(position-2).post_files.get(2),
                     holder.loading_iconC,
                     holder.postImageC,
                     holder.video_iconC,
                     isImage
                 )
                 set_Success_Glide_Data(
-                    url + list.get(position).post_files.get(3),
+                    url + list.get(position-2).post_files.get(3),
                     holder.loading_iconD,
                     holder.iv_postImgD,
                     holder.video_iconD,
-                    list.get(position).isImage
+                    list.get(position-2).isImage
                 )
 
                 holder.more_text.visibility = View.VISIBLE
@@ -390,7 +397,7 @@ if(position==0) {
 
 
         } else {
-            println("else_called" + position)
+            //println("else_called" + position-2)
             holder.media_layout.visibility = View.GONE
         }
 
@@ -415,15 +422,19 @@ if(position==0) {
 
     private fun setLikeListener(holder: ViewHolder, position: Int) {
 
+       // var position:Int=position-2
 
         holder.likeIcon.setOnLikeListener(object : OnLikeListener {
             override fun liked(likeButton: LikeButton) {
 
+                println("bbbbb_liked"+position)
                 likePost(position)
 
             }
 
             override fun unLiked(likeButton: LikeButton) {
+
+                println("bbbbb_disliked"+position)
 
                 likePost(position)
 
@@ -439,75 +450,76 @@ if(position==0) {
 
         activity.showVibration()
 
-        if (list[position].isMyLike) {
-            list[position].total_likes =
-                (Integer.parseInt(list[position].total_likes) - 1).toString() + ""
+        if (list[position-2].isMyLike) {
+            list[position-2].total_likes =
+                (Integer.parseInt(list[position-2].total_likes) - 1).toString() + ""
         } else {
-            list[position].total_likes =
-                (Integer.parseInt(list[position].total_likes) + 1).toString() + ""
+            list[position-2].total_likes =
+                (Integer.parseInt(list[position-2].total_likes) + 1).toString() + ""
 
         }
 
-        println("kksd" + list[position].total_likes)
+        println("total_likes" + list[position-2].total_likes)
+        println("timeofpost" + list[position-2].posted_on)
 
         //update their value
-        list[position].isMyLike = !list[position].isMyLike
+        list[position-2].isMyLike = !list[position-2].isMyLike
 
 
 
         notifyItemChanged(position, position)
 
-        activity.likeDislike(list.get(position).post_id, URL.userId)
+        activity.likeDislike(list.get(position-2).post_id, URL.userId)
 
 
     }
 
     private fun setUSerImageNameAndTime(holder: ViewHolder, position: Int) {
 
-
         Glide.with(context)
-            .load(URL.profilePicPath + list.get(position)
+            .load(URL.profilePicPath + list.get(position-2)
                 .profile_pic).apply(
                 RequestOptions().placeholder(R.drawable.placeholder_profile))
             .thumbnail(0.01f).into(holder.postProfilePic!!)
 
 
-        holder.postUserName.text = list.get(position).posted_by
-        holder.postTime.text = list.get(position).posted_on
+        holder.postUserName.text = list.get(position-2).posted_by
+        holder.postTime.text = list.get(position-2).posted_on
 
 
-        if (!list.get(position).post.equals(""))
-            holder.postStatus.text = list.get(position).post
+        if (!list.get(position-2).post.equals(""))
+            holder.postStatus.text = list.get(position-2).post
         else
             goneOtherImageLayout(holder, holder.postStatus)
 
 
 
 
-        if (!list.get(position).total_likes.equals("0"))
-            holder.likesText.text = list.get(position).total_likes
+        if (!list.get(position-2).total_likes.equals("0"))
+            holder.likesText.text = list.get(position-2).total_likes
         else
             holder.likesText.text = ""
 
 
-        println("total_likes" + list.get(position).total_likes)
+        println("total_likes_kaif" + list.get(position-2).total_likes)
+        println("isMyLIke" + list.get(position-2).isMyLike)
 
 
-        if (!list.get(position).total_share.equals("0"))
-            holder.shareText.text = list.get(position).total_share
+        if (!list.get(position-2).total_share.equals("0"))
+            holder.shareText.text = list.get(position-2).total_share
         else
             holder.shareText.text = ""
 
 
-        if (!list.get(position).total_comments.equals("0"))
-            holder.commentText.text = list.get(position).total_comments
+        if (!list.get(position-2).total_comments.equals("0"))
+            holder.commentText.text = list.get(position-2).total_comments
         else
             holder.commentText.text = ""
 
 
         // holder.likeIcon.setImageResource(if (list.get(position).isMyLike) R.drawable.ic_like_fill else R.drawable.ic_like)
 
-        holder.likeIcon.isLiked = list.get(position).isMyLike
+        holder.likeIcon.isLiked = list.get(position-2).isMyLike
 
     }
 
@@ -517,12 +529,12 @@ if(position==0) {
         holder.post_menu.setOnClickListener(View.OnClickListener {
 
             //self post
-            if (list.get(position).user_id.equals(URL.userId))
-                activity.showMenu(position, list.get(position).post_id, holder.post_menu, true)
+            if (list.get(position-2).user_id.equals(URL.userId))
+                activity.showMenu(position, list.get(position-2).post_id, holder.post_menu, true)
 
             //other post
             else
-                activity.showMenu(position, list.get(position).post_id, holder.post_menu, false)
+                activity.showMenu(position, list.get(position-2).post_id, holder.post_menu, false)
 
         })
 
@@ -530,24 +542,22 @@ if(position==0) {
     }
 
 
-    private fun setCommentLayoutLIstener(
-        holder: ViewHolder,
-        position: Int
-    ) {
+    private fun setCommentLayoutLIstener(holder: ViewHolder, position: Int) {
 
         holder.commentButton.setOnClickListener(View.OnClickListener {
             context.startActivity(
                 Intent(context, Show_Comment_Activity::class.java)
-                    .putExtra("isImage",checkIsImage(position).toString())
-                    .putExtra("post_id",list.get(position).post_id)
-                    .putExtra("user_name",list.get(position).posted_by)
-                    .putExtra("user_pic",list.get(position).profile_pic)
-                    .putExtra("time",list.get(position).posted_on)
-                    .putExtra("total_likes",list.get(position).total_likes)
-                    .putExtra("total_comment",list.get(position).total_comments)
-                    .putExtra("total_shared",list.get(position).total_share)
-                    .putExtra("staus",list.get(position).post)
-                    .putStringArrayListExtra("files",list.get(position).post_files)
+                    .putExtra("isImage",checkIsImage(position-2).toString())
+                    .putExtra("post_id",list.get(position-2).post_id)
+                    .putExtra("user_name",list.get(position-2).posted_by)
+                    .putExtra("user_pic",list.get(position-2).profile_pic)
+                    .putExtra("time",list.get(position-2).posted_on)
+                    .putExtra("total_likes",list.get(position-2).total_likes)
+                    .putExtra("total_comment",list.get(position-2).total_comments)
+                    .putExtra("total_shared",list.get(position-2).total_share)
+                    .putExtra("staus",list.get(position-2).post)
+                    .putExtra("isMyLike",list.get(position-2).isMyLike.toString())
+                    .putStringArrayListExtra("files",list.get(position-2).post_files)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 )
             )

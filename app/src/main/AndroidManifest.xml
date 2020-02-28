@@ -46,7 +46,7 @@
             android:theme="@style/AppThemeMat" />
         <activity
             android:name=".activity.Show_Comment_Activity"
-            android:theme="@style/AppThemeMat" />
+            android:theme="@style/MateriaApptheme" />
         <activity
             android:name=".activity.Forget_Pwd_Activity"
             android:theme="@style/AppThemeMat" />
