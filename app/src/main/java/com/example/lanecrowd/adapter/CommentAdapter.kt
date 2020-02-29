@@ -77,9 +77,20 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
 
 
 
-        holder.likesText.text = mediaData.total_likes
-        holder.shareText.text = mediaData.total_shared
-        holder.commentText.text = mediaData.totalComment
+        if (!mediaData.total_likes.equals("0"))
+            holder.likesText.text = mediaData.total_likes
+        else
+            holder.likesText.text = ""
+
+        if (!mediaData.total_shared.equals("0"))
+            holder.shareText.text = mediaData.total_shared
+        else
+            holder.shareText.text = ""
+
+        if (!mediaData.totalComment.equals("0"))
+            holder.commentText.text = mediaData.totalComment
+        else
+            holder.commentText.text = ""
 
 
 
@@ -225,7 +236,6 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
 
         })
 
-        println("skdfsd"+URL.profilePicPath + list.get(position-1))
 
         setProfileImage(URL.profilePicPath + list.get(position-1).profile_picture,holder.comment_profile_pic)
 
@@ -248,8 +258,6 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
         videoIcona: ImageView
     ) {
 
-
-        println("sayed_url" + url)
 
 
 

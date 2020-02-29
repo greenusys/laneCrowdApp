@@ -1,13 +1,13 @@
 package com.example.lanecrowd.modal
 
-class CommentModel(val id:String,
-                   val post_id:String,
-                   val commented_by_:String,
-                   val comment:String,
-                   val commented_on:String,
-                   val user_id:String,
-                   val full_name:String,
-                   val profile_picture:String)
+class CommentModel(var id:String,
+                   var post_id:String,
+                   var commented_by_:String,
+                   var comment:String,
+                   var commented_on:String,
+                   var user_id:String,
+                   var full_name:String,
+                   var profile_picture:String)
 
 
 

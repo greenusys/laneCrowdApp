@@ -9,9 +9,11 @@ import android.os.Bundle
 import android.os.Vibrator
 import android.util.Log
 import android.view.*
-import android.widget.*
+import android.widget.AbsListView
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -25,25 +27,25 @@ import com.example.lancrowd.activity.modal.Story_Modal
 import com.example.lanecrowd.R
 import com.example.lanecrowd.activity.Add_Post_Activity
 import com.example.lanecrowd.adapter.Home_Post_Adapter
-import com.example.lanecrowd.adapter.Story_Adapter
+import com.example.lanecrowd.modal.CommentModel
 import com.example.lanecrowd.modal.PowerMenuUtils
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.FetchPostVm
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
 import com.skydoves.powermenu.OnMenuItemClickListener
 import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
-import kotlinx.android.synthetic.main.activity_show__comment_.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.reflect.Type
 
 
-class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
-
-
+class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -56,23 +58,24 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
 
     //for menu
-    var firstTime: Boolean=false
+    var firstTime: Boolean = false
 
-    var isScrolling = false;
-    var counting:Int=0
-    var currentItems:Int=0
-    var totalItems:Int=0
-    var scrollOutItems:Int=0
+    var isScrolling = false
+    var postCounting: Int = 0
+    var storyCounting: Int = 0
+    var currentItems: Int = 0
+    var totalItems: Int = 0
+    var scrollOutItems: Int = 0
 
 
-    internal var postId:String=""
-    internal var postposition:Int = -1
+    internal var postId: String = ""
+    internal var postposition: Int = -1
 
     private var selPostfMenu: PowerMenu? = null
     private var otherPostMenu: PowerMenu? = null
     private var main_layout: RelativeLayout? = null
     private var swipe: SwipeRefreshLayout? = null
-    var loading_more_anim: SpinKitView?=null
+    var loading_more_anim: SpinKitView? = null
 
     private var no_data_anim_post: LottieAnimationView? = null
     private var add_post: TextView? = null
@@ -86,15 +89,14 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
     private var vibe: Vibrator? = null
 
-    var home_post_rv: RecyclerView?=null
+    var home_post_rv: RecyclerView? = null
 
-      var homePostAdapter:Home_Post_Adapter?=null
+    var homePostAdapter: Home_Post_Adapter? = null
 
-      var home_post_list= ArrayList<Home_Post_Modal>()
-      var story_list= ArrayList<Story_Modal>()
+    var home_post_list = ArrayList<Home_Post_Modal>()
+    var story_list = ArrayList<Story_Modal>()
     lateinit var viewmodel: FetchPostVm
     var layoutManager: LinearLayoutManager? = null
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,26 +106,37 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
     }
 
     @SuppressLint("WrongConstant")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view: View = inflater.inflate(R.layout.fragment_home__post_, container, false)
 
 
+        /*   story_list.add(Story_Modal())
+           story_list.add(Story_Modal())
+           story_list.add(Story_Modal())
+           story_list.add(Story_Modal())
+           story_list.add(Story_Modal())
+           story_list.add(Story_Modal())
 
-        story_list.add(Story_Modal())
-        story_list.add(Story_Modal())
-        story_list.add(Story_Modal())
-        story_list.add(Story_Modal())
-        story_list.add(Story_Modal())
-        story_list.add(Story_Modal())
-
-
+   */
         viewmodel = ViewModelProvider(this).get(FetchPostVm::class.java)
 
 
         //power menu
-        selPostfMenu = PowerMenuUtils.getSelfPostMenu(context!!, this, onHamburgerItemClickListener, onHamburgerMenuDismissedListener)
-        otherPostMenu = PowerMenuUtils.getOtherPostMenu(context!!, this, onHamburgerItemClickListener, onHamburgerMenuDismissedListener)
+        selPostfMenu = PowerMenuUtils.getSelfPostMenu(
+            context!!,
+            this,
+            onHamburgerItemClickListener,
+            onHamburgerMenuDismissedListener
+        )
+        otherPostMenu = PowerMenuUtils.getOtherPostMenu(
+            context!!,
+            this,
+            onHamburgerItemClickListener,
+            onHamburgerMenuDismissedListener
+        )
 
         vibe = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
@@ -153,61 +166,57 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
 
 
-        layoutManager =  LinearLayoutManager(context);
-        home_post_rv!!.setLayoutManager(layoutManager);
-        homePostAdapter = Home_Post_Adapter(story_list,home_post_list, context!!,this@Home_Post_Fragment)
-        home_post_rv!!.setAdapter(homePostAdapter)
+        layoutManager = LinearLayoutManager(context)
+        home_post_rv!!.layoutManager = layoutManager
+        homePostAdapter =
+            Home_Post_Adapter(story_list, home_post_list, context!!, this@Home_Post_Fragment)
+        home_post_rv!!.adapter = homePostAdapter
 
 
 
         swiperefresh_Listener()
 
-         initScrollListener()
+        initScrollListener()
 
 
         if (!isNetworkAvailable(context!!)) {
             visible_no_internet_layout(true)
-        }
-        else {
+        } else {
             setRefreshingfalse(true)
 
-            fetchPost(counting.toString(), "")
+            fetchPost(postCounting.toString(), "")
         }
 
 
 
 
 
-        return  view
+        return view
     }
 
-    private fun visible_no_internet_layout(value:Boolean) {
+    private fun visible_no_internet_layout(value: Boolean) {
 
         retry!!.setOnClickListener(View.OnClickListener {
 
             if (!isNetworkAvailable(context!!)) {
                 visible_no_internet_layout(true)
-            }
-            else {
+            } else {
                 setRefreshingfalse(true)
-                fetchPost(counting.toString(), "")
+                fetchPost(postCounting.toString(), "")
             }
 
         })
 
 
-        if(value)
-        {
-            no_internet_anim!!.visibility=View.VISIBLE
-            retry!!.visibility=View.VISIBLE
-            internet_text!!.visibility=View.VISIBLE
+        if (value) {
+            no_internet_anim!!.visibility = View.VISIBLE
+            retry!!.visibility = View.VISIBLE
+            internet_text!!.visibility = View.VISIBLE
             no_internet_anim!!.playAnimation()
-        }
-        else
-        {
-            no_internet_anim!!.visibility=View.GONE
-            retry!!.visibility=View.GONE
-            internet_text!!.visibility=View.GONE
+        } else {
+            no_internet_anim!!.visibility = View.GONE
+            retry!!.visibility = View.GONE
+            internet_text!!.visibility = View.GONE
             no_internet_anim!!.pauseAnimation()
         }
 
@@ -216,7 +225,8 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
     fun isNetworkAvailable(context: Context)//check internet of device
             : Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return connectivityManager.activeNetworkInfo != null && connectivityManager.activeNetworkInfo!!.isConnected
     }
 
@@ -224,23 +234,25 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
         add_post!!.setOnClickListener(View.OnClickListener {
 
-            startActivity(Intent(context, Add_Post_Activity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            startActivity(
+                Intent(
+                    context,
+                    Add_Post_Activity::class.java
+                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
 
         })
 
 
-        if(value)
-        {
-            no_data_anim_post!!.visibility=View.VISIBLE
-            add_post!!.visibility=View.VISIBLE
-            no_post_text!!.visibility=View.VISIBLE
+        if (value) {
+            no_data_anim_post!!.visibility = View.VISIBLE
+            add_post!!.visibility = View.VISIBLE
+            no_post_text!!.visibility = View.VISIBLE
             no_data_anim_post!!.playAnimation()
-        }
-        else
-        {
-            no_data_anim_post!!.visibility=View.GONE
-            add_post!!.visibility=View.GONE
-            no_post_text!!.visibility=View.GONE
+        } else {
+            no_data_anim_post!!.visibility = View.GONE
+            add_post!!.visibility = View.GONE
+            no_post_text!!.visibility = View.GONE
             no_data_anim_post!!.pauseAnimation()
         }
     }
@@ -254,9 +266,8 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
-                {
-                    isScrolling = true;
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    isScrolling = true
                 }
 
             }
@@ -264,22 +275,20 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                currentItems = layoutManager!!.getChildCount();
-                totalItems = layoutManager!!.getItemCount();
-                scrollOutItems = layoutManager!!.findFirstVisibleItemPosition();
+                currentItems = layoutManager!!.childCount
+                totalItems = layoutManager!!.itemCount
+                scrollOutItems = layoutManager!!.findFirstVisibleItemPosition()
 
-                if(isScrolling && (currentItems + scrollOutItems == totalItems))
-                {
+                if (isScrolling && (currentItems + scrollOutItems == totalItems)) {
                     visibleLoadingMoreAnim(true)
 
                     println("load_more_called")
-                    isScrolling = false;
-                    counting++
+                    isScrolling = false
+                    postCounting++
                     if (!isNetworkAvailable(context!!)) {
                         visible_no_internet_layout(true)
-                    }
-                    else
-                    fetchPost(counting.toString(),"more")
+                    } else
+                        fetchPost(postCounting.toString(), "more")
 
 
                 }
@@ -288,15 +297,13 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
         })
 
 
-
-
     }
 
     private fun visibleLoadingMoreAnim(value: Boolean) {
-        if(value)
-            loading_more_anim!!.visibility=View.VISIBLE
+        if (value)
+            loading_more_anim!!.visibility = View.VISIBLE
         else
-            loading_more_anim!!.visibility=View.GONE
+            loading_more_anim!!.visibility = View.GONE
 
     }
 
@@ -306,15 +313,14 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
         swipe!!.setOnRefreshListener(OnRefreshListener {
             try {
 
-                counting = 0
+                postCounting = 0
                 if (!isNetworkAvailable(context!!)) {
                     setRefreshingfalse(false)
                     showSnackBar("Please check your internet connection")
-                    if(home_post_list.size<=0 && no_data_anim_post!!.visibility!=View.VISIBLE)
-                    visible_no_internet_layout(true)
-                }
-                else {
-                    fetchPost(counting.toString(), "swipe")
+                    if (home_post_list.size <= 0 && no_data_anim_post!!.visibility != View.VISIBLE)
+                        visible_no_internet_layout(true)
+                } else {
+                    fetchPost(postCounting.toString(), "swipe")
                 }
             } catch (e: IndexOutOfBoundsException) {
                 println("on_Refresh_Exception_Found_$e")
@@ -338,7 +344,7 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
     }
 
-    private fun setRefreshingfalse(value:Boolean) {
+    private fun setRefreshingfalse(value: Boolean) {
 
         swipe!!.isRefreshing = value
 
@@ -350,144 +356,225 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
         try {
 
-            viewmodel.fetchPostvm(URL.userId,offsettt).observe(viewLifecycleOwner, Observer { resultPi ->
 
-                println("fetch_post" + resultPi)
+            viewmodel.fetchStoryVM(URL.userId, storyCounting.toString())
+                .observe(viewLifecycleOwner, Observer { story_result ->
+
+                    println("fetch_story" + story_result)
+
+                    setStoryPost(story_result)
+
+
+                })
+
+            viewmodel.fetchPostvm(URL.userId, offsettt)
+                .observe(viewLifecycleOwner, Observer { resultPi ->
+
+                    println("fetch_post" + resultPi)
 
 
 
-                storepostDataTOModal(resultPi,from)
+                    storepostDataTOModal(resultPi, from)
 
 
-            })
+                })
+
+
+
+
 
 
         } catch (e: Exception) {
             e.printStackTrace()
 
 
+        }
+
+
+    }
+
+    private fun setStoryPost(storyResult: JsonObject?) {
+
+        var main: JSONObject? = null
+
+        if (storyResult != null) {
+
+
+            try {
+
+
+                main = JSONObject(storyResult.toString())
+                if (storyResult != null && main.getString("code").equals("1"))
+                {
+
+                    val data: JSONArray = main.getJSONArray("data")
+
+                    for(i in 0 until data.length())
+                    {
+
+                        var postList: ArrayList<String> = ArrayList()
+
+                        var item=data.getJSONObject(i);
+
+
+                        //for post files
+                        try {
+
+                            if (!item.getString("story_files").equals("null")) {
+                                postList = item.getString("story_files").split(",") as ArrayList<String>
+
+                            } else {
+
+                                postList.add("empty")
+                            }
+
+                        } catch (e: Exception) {
+                            postList.add(item.getString("story_files"))
+
+                        }
+
+
+
+                        story_list.add(Story_Modal(
+                            item.getString("story_id"),
+                            item.getString("user_id"),
+                            item.getString("story"),
+                            postList,
+                            item.getString("posted_by"),
+                            item.getString("profile_pic"),
+                            item.getString("posted_on")
+                        ))
+                    }
+
+
+
+                }
+
+            } catch (e: Exception)
+            {
+                e.printStackTrace()
+            }
+        } else {
 
         }
 
 
+        println("Sotry_size"+story_list.size)
 
     }
 
     private fun storepostDataTOModal(resultPi: JsonObject?, from: String) {
 
-        var isMylike =false
-        var isImage =false
-        var main:JSONObject?=null
+        var isMylike = false
+        var isImage = false
+        var main: JSONObject? = null
 
 
-             if(from.equals("swipe"))
+        if (from.equals("swipe"))
             ClearForRefreshData()
 
 
-            //call after load more
-         updateAdapterForMultipleData()
+        //call after load more
+        updateAdapterForMultipleData()
 
 
-        if(resultPi!=null)
-        {
+        if (resultPi != null) {
 
             try {
 
 
-            main = JSONObject(resultPi.toString())
+                main = JSONObject(resultPi.toString())
 
 
 
-            if (resultPi != null && main!!.getString("code").equals("1")) {
+                if (resultPi != null && main.getString("code").equals("1")) {
 
-                if(no_data_anim_post!!.visibility==View.VISIBLE)
-                visibleNoDataFound(false)
+                    if (no_data_anim_post!!.visibility == View.VISIBLE)
+                        visibleNoDataFound(false)
 
-                if(no_internet_anim!!.visibility==View.VISIBLE)
-                    visible_no_internet_layout(false)
-
-
+                    if (no_internet_anim!!.visibility == View.VISIBLE)
+                        visible_no_internet_layout(false)
 
 
-                val data: JSONArray = main.getJSONArray("data")
+                    val data: JSONArray = main.getJSONArray("data")
 
-               // println("data_size" + data.length())
+                    // println("data_size" + data.length())
 
-                for (i in 0 until data.length()) {
+                    for (i in 0 until data.length()) {
 
-                    var item = data.getJSONObject(i)
+                        var item = data.getJSONObject(i)
 
-                    var postList: ArrayList<String> = ArrayList()
+                        var postList: ArrayList<String> = ArrayList()
 
 
+                        //for post files
+                        try {
 
-                    //for post files
-                    try {
+                            if (!item.getString("post_files").equals("null")) {
+                                postList =
+                                    item.getString("post_files").split(",") as ArrayList<String>
 
-                        if (!item.getString("post_files").equals("null")) {
-                            postList = item.getString("post_files").split(",") as ArrayList<String>
+                                isImage =
+                                    item.getString("post_files").contains(".jpg") || item.getString(
+                                        "post_files"
+                                    ).contains(
+                                        ".jpeg"
+                                    ) || item.getString("post_files").contains(".png")
 
-                            isImage =
-                                item.getString("post_files").contains(".jpg") || item.getString("post_files").contains(
-                                    ".jpeg"
-                                ) || item.getString("post_files").contains(".png")
+                            } else {
+                                isImage = false
+                                postList.add("empty")
+                            }
 
-                        } else {
+                        } catch (e: Exception) {
                             isImage = false
-                            postList.add("empty")
+                            postList.add(item.getString("post_files"))
+
                         }
 
-                    } catch (e: Exception) {
-                        isImage = false
-                        postList.add(item.getString("post_files"))
+
+                        //for likes
+                        val like: JSONArray = item.getJSONArray("likes_data")
+                        if (like.length() > 0) {
+
+                            // println("like_kaif" +i+" " +like)
+
+                            var likeitem = like.getJSONObject(0)
+
+                            isMylike = likeitem.getString("like_or_dislike").equals("1")
+
+                        } else
+                            isMylike = false
+
+
+                        //  println("isMyLIke"+i+ " "+isMylike+ " "+item.getString("post"))
+
+
+                        //store data to list
+                        home_post_list.add(
+                            Home_Post_Modal(
+                                item.getString("post_id"),
+                                item.getString("user_id"),
+                                item.getString("post"),
+                                postList,
+                                item.getString("posted_by"),
+                                item.getString("profile_pic"),
+                                item.getString("posted_on"),
+                                item.getString("total_likes"),
+                                item.getString("total_share"),
+                                item.getString("total_comments"),
+                                isImage,
+                                isMylike
+                            )
+                        )
+
 
                     }
 
 
-                    //for likes
-                    val like: JSONArray = item.getJSONArray("likes_data")
-                    if (like.length() > 0) {
-
-                       // println("like_kaif" +i+" " +like)
-
-                        var likeitem = like.getJSONObject(0)
-
-                        isMylike = likeitem.getString("like_or_dislike").equals("1")
-
-                    } else
-                        isMylike = false
-
-
-                  //  println("isMyLIke"+i+ " "+isMylike+ " "+item.getString("post"))
-
-
-                    //store data to list
-                    home_post_list.add(
-                        Home_Post_Modal(
-                            item.getString("post_id"),
-                            item.getString("user_id"),
-                            item.getString("post"),
-                            postList,
-                            item.getString("posted_by"),
-                            item.getString("profile_pic"),
-                            item.getString("posted_on"),
-                            item.getString("total_likes"),
-                            item.getString("total_share"),
-                            item.getString("total_comments"),
-                            isImage,
-                            isMylike
-                        )
-                    )
-
-
                 }
 
-
-            }
-
-            }
-            catch (e:Exception)
-            {
+            } catch (e: Exception) {
 
                 visibleLoadingMoreAnim(false)
                 setRefreshingfalse(false)
@@ -495,25 +582,21 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
         }
         //for no post available
-        else
-        {
+        else {
             println("no_Data_found")
-            if(home_post_list.size<=0)
-            visibleNoDataFound(true)
+            if (home_post_list.size <= 0)
+                visibleNoDataFound(true)
 
             setRefreshingfalse(false)
         }
 
 
-            notifiyAdapter()
+        notifiyAdapter()
 
 
 
-        if(from.equals("more"))
+        if (from.equals("more"))
             visibleLoadingMoreAnim(false)
-
-
-
 
 
     }
@@ -521,11 +604,11 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
     private fun updateAdapterForMultipleData() {
 
 
-        if (swipe!!.isRefreshing()) {
+        if (swipe!!.isRefreshing) {
             if (activity != null) {
                 activity!!.runOnUiThread {
                     if (homePostAdapter != null) {
-                        home_post_rv!!.getRecycledViewPool().clear()
+                        home_post_rv!!.recycledViewPool.clear()
                         homePostAdapter!!.notifyDataSetChanged()
                         setRefreshingfalse(false)
                     }
@@ -541,7 +624,7 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
     private fun notifiyAdapter() {
 
 
-        println("check_value"+home_post_list.size)
+        println("check_value" + home_post_list.size)
         homePostAdapter!!.notifyDataSetChanged()
 
     }
@@ -549,18 +632,18 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
     //power option menu
     private val onHamburgerItemClickListener =
-            OnMenuItemClickListener<PowerMenuItem> { position, item ->
-                // hamburgerMenu!!.selectedPosition = position
+        OnMenuItemClickListener<PowerMenuItem> { position, item ->
+            // hamburgerMenu!!.selectedPosition = position
 
-                if(!firstTime) {
-
-
-                    println("menu_clcked")
+            if (!firstTime) {
 
 
+                println("menu_clcked")
 
-                    if (item.title.equals(getString(R.string.delete)))
-                       askToDeleteSelfPost(postId)
+
+
+                if (item.title.equals(getString(R.string.delete)))
+                    askToDeleteSelfPost(postId)
 
 
 /*
@@ -571,10 +654,10 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
                         share()
                     else if (item.title.equals(getString(R.string.about)))
                         gotoABoutActivity()*/
-                }
-
-
             }
+
+
+        }
 
     private fun askToDeleteSelfPost(postId: String) {
 
@@ -585,7 +668,7 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
             .setNegativeButton("No") { dialogInterface, i ->
             }
             .setPositiveButton("Yes") { dialogInterface, i ->
-                println("show_psoitio_2"+postposition)
+                println("show_psoitio_2" + postposition)
 
 
                 viewmodel.deletePosetAPI(postId)
@@ -596,19 +679,19 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
     }
 
     private val onHamburgerMenuDismissedListener = {
-        Log.d("Test", "onDismissed hamburger menu") }
+        Log.d("Test", "onDismissed hamburger menu")
+    }
 
 
-
-    fun showMenu(position:Int,postId:String,menu: ImageView, value: Boolean) {
+    fun showMenu(position: Int, postId: String, menu: ImageView, value: Boolean) {
         showVibration()
 
 
-        println("show_psoitio"+position)
+        println("show_psoitio" + position)
 
 
-        this.postId=postId
-        this.postposition=position
+        this.postId = postId
+        this.postposition = position
 
         if (selPostfMenu!!.isShowing) {
             selPostfMenu!!.dismiss()
@@ -621,12 +704,12 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
         }
 
 
-        println("menu_check"+value)
+        println("menu_check" + value)
 
-        if(value)
-        selPostfMenu!!.showAsDropDown(menu)
+        if (value)
+            selPostfMenu!!.showAsDropDown(menu)
         else
-        otherPostMenu!!.showAsDropDown(menu)
+            otherPostMenu!!.showAsDropDown(menu)
 
 
     }
@@ -643,18 +726,32 @@ class Home_Post_Fragment :Fragment(), SearchView.OnQueryTextListener {
 
     }
 
-     fun showVibration() {
+    fun showVibration() {
 
-        vibe!!.vibrate(80);
+        vibe!!.vibrate(80)
     }
 
     fun likeDislike(postId: String, userId: String) {
 
 
-        viewmodel.likeDislikeAPI(postId,userId)
+        viewmodel.likeDislikeAPI(postId, userId)
 
     }
 
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        println("OnAcivity_ckjad")
+        if (resultCode == 1) {
+
+            println("total_likes" + data!!.getStringExtra("total_likes"))
+            println("total_comments" + data.getStringExtra("total_comment"))
+
+
+        }
+
+    }
 
 
 }

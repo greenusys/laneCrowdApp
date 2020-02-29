@@ -1,7 +1,9 @@
 package com.example.lanecrowd.activity
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Vibrator
@@ -40,6 +42,11 @@ import de.hdodenhof.circleimageview.CircleImageView
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.reflect.Type
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.ArrayList
 
 class Show_Comment_Activity : AppCompatActivity() {
 
@@ -48,6 +55,7 @@ class Show_Comment_Activity : AppCompatActivity() {
     private var vibe: Vibrator? = null
 
 
+    var edit = false
     var isScrolling = false
     var currentItems: Int = 0
     var totalItems: Int = 0
@@ -59,7 +67,7 @@ class Show_Comment_Activity : AppCompatActivity() {
     var files: ArrayList<String>? = null
     var post_id: String? = null
     var user_name: String? = null
-    var isMyLike: Boolean=false
+    var isMyLike: Boolean = false
     var isImage: String? = null
     var time: String? = null
     var staus: String? = null
@@ -70,10 +78,10 @@ class Show_Comment_Activity : AppCompatActivity() {
     var total_shared: String? = null
     var comment_list = ArrayList<CommentModel>()
     var counting: Int = 0
+    var post_position: String?=null
 
-    internal var comment_id:String=""
-    internal var postposition:Int = -1
-
+    internal var comment_id: String = ""
+    internal var postposition: Int = -1
     var layoutManager: LinearLayoutManager? = null
     lateinit var viewmodellike: FetchPostVm
 
@@ -93,10 +101,11 @@ class Show_Comment_Activity : AppCompatActivity() {
 
         files = intent.extras!!.getStringArrayList("files")
         post_id = intent.extras!!.getString("post_id")
+        post_position = intent.extras!!.getString("post_position")
         isImage = intent.extras!!.getString("isImage")
         user_name = intent.extras!!.getString("user_name")
         time = intent.extras!!.getString("time")
-       var mYLIke = intent.extras!!.getString("isMyLike")
+        var mYLIke = intent.extras!!.getString("isMyLike")
         staus = intent.extras!!.getString("staus")
         user_pic = intent.extras!!.getString("user_pic")
         total_likes = intent.extras!!.getString("total_likes")
@@ -109,13 +118,12 @@ class Show_Comment_Activity : AppCompatActivity() {
             url = URL.videoPath
 
 
-        if(mYLIke.equals("true")) {
+        if (mYLIke.equals("true")) {
             isMyLike = true
 
         }
 
         initViesForVM()
-
 
 
     }
@@ -132,14 +140,29 @@ class Show_Comment_Activity : AppCompatActivity() {
     private fun initViesForVM() {
 
         //power
-        hamburgerMenu = PowerMenuUtils.getCommentMenu(this, this, onHamburgerItemClickListener, onHamburgerMenuDismissedListener)
+        hamburgerMenu = PowerMenuUtils.getCommentMenu(
+            this,
+            this,
+            onHamburgerItemClickListener,
+            onHamburgerMenuDismissedListener
+        )
         vibe = this@Show_Comment_Activity.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         viewmodellike = ViewModelProvider(this).get(FetchPostVm::class.java)
 
 
 
-        mediaData = CommentMediaModal(post_id!!,isMyLike,files!!, url, staus!!, total_likes!!, isImage!!, total_shared!!,total_comment!!)
+        mediaData = CommentMediaModal(
+            post_id!!,
+            isMyLike,
+            files!!,
+            url,
+            staus!!,
+            total_likes!!,
+            isImage!!,
+            total_shared!!,
+            total_comment!!
+        )
         swipe = findViewById<SwipeRefreshLayout>(R.id.comment_swipe)
         loading_more_anim = findViewById<SpinKitView>(R.id.loading_more_anim)
         iv_sendComment = findViewById<ImageView>(R.id.iv_sendComment)
@@ -150,12 +173,12 @@ class Show_Comment_Activity : AppCompatActivity() {
         val post_time_comment = findViewById<TextView>(R.id.post_time_comment)
 
 
-        setProfileImage(URL.profilePicPath+user_pic, user_profile_comment)
+        setProfileImage(URL.profilePicPath + user_pic, user_profile_comment)
         user_name_comment.text = user_name
         post_time_comment.text = time
         user_name_comment.isAllCaps = true
 
-        println("user_pic"+URL.profilePicPath+user_pic)
+        println("user_pic" + URL.profilePicPath + user_pic)
 
 
         comment_rv = findViewById<RecyclerView>(R.id.comment_rv)
@@ -181,18 +204,49 @@ class Show_Comment_Activity : AppCompatActivity() {
         }
 
 
+        //send button listener
         iv_sendComment!!.setOnClickListener(View.OnClickListener {
 
-            if(edt_comment!!.text.toString().length>0) {
-                edt_comment!!.text.clear()
-                hideSoftKeyBoard()
-                callAddCommentAPI(post_id!!, edt_comment!!.text.toString(), URL.userId)
-
-
-            }})
+           CallAPI()
+        })
 
     }
 
+    private fun CallAPI() {
+
+        hideSoftKeyBoard()
+
+        //for insert
+        if (edit==false &&  edt_comment!!.text.toString().length > 0) {
+
+            callAddCommentAPI(post_id!!, edt_comment!!.text.toString(), URL.userId)
+
+        }
+        //for edit comment
+        else if (edit &&  edt_comment!!.text.toString().length > 0)
+        {
+
+
+            edit=false
+            viewmodel.editCommentVM(URL.userId, edt_comment!!.text.toString(), comment_id)
+
+            comment_list.get(postposition-1).comment=edt_comment!!.text.toString()
+            comment_list.get(postposition-1).commented_on=getCurrentTime()
+
+            adapter!!.notifyItemChanged(postposition,postposition)
+
+            clearEditText()
+        }
+
+
+
+    }
+
+    private fun clearEditText() {
+        edt_comment!!.text.clear()
+
+
+    }
 
 
     private fun hideSoftKeyBoard() {
@@ -215,11 +269,10 @@ class Show_Comment_Activity : AppCompatActivity() {
         try {
 
 
-            viewmodel.addCommentVM(post_id,comment,comment_by)
+            viewmodel.addCommentVM(post_id, comment, comment_by)
                 .observe(this, Observer { resultPi ->
 
-
-
+                    updateList(resultPi)
 
                 })
 
@@ -227,6 +280,58 @@ class Show_Comment_Activity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+    }
+
+    private fun updateList(resultPi: JsonObject?) {
+
+        var main: JSONObject? = null
+
+
+        if (resultPi != null) {
+
+            try {
+
+
+                main = JSONObject(resultPi.toString())
+
+
+                println("newskd"+edt_comment!!.text.toString())
+
+                if (resultPi != null && main!!.getString("code").equals("1")) {
+
+                    var comment_id=main.getString("id")
+
+                    comment_list.add(CommentModel(
+                        comment_id,
+                        post_id!!,
+                        URL.userId,
+                        edt_comment!!.text.toString(),
+                        getCurrentTime(),
+                        URL.userId,
+                        user_name!!,
+                        user_pic!!))
+
+                    adapter!!.notifyItemChanged(postposition)
+                    comment_rv!!.scrollToPosition(comment_list.size)
+
+                    clearEditText()
+
+
+                }
+
+
+            } catch (e: Exception) {
+
+                clearEditText()
+            }
+
+        }
+        else
+        {
+            clearEditText()
+        }
+
 
     }
 
@@ -387,8 +492,6 @@ class Show_Comment_Activity : AppCompatActivity() {
     private fun storepostDataTOModal(resultPi: JsonObject?, from: String) {
 
 
-
-
         if (from.equals("swipe"))
             ClearForRefreshData()
 
@@ -396,24 +499,19 @@ class Show_Comment_Activity : AppCompatActivity() {
         updateAdapterForMultipleData()
 
 
-        if(resultPi!=null) {
+        if (resultPi != null) {
             var main = JSONObject(resultPi.toString())
 
             if (resultPi != null && main.getString("code").equals("1")) {
 
                 val data: JSONArray = main.getJSONArray("data")
 
-                println("comement_list_before" + comment_list.size)
-
-
                 val gson = Gson()
                 val listType: Type = object : TypeToken<ArrayList<CommentModel?>?>() {}.type
-                comment_list.addAll( gson.fromJson(data.toString(), listType))
-
-                println("Comment_list_xize" + comment_list.size)
+                comment_list.addAll(gson.fromJson(data.toString(), listType))
 
             }
-        }else {
+        } else {
 
             println("no_data_found_for_offset" + counting.toString())
 
@@ -421,10 +519,8 @@ class Show_Comment_Activity : AppCompatActivity() {
         }
 
 
-        if (from.equals("more"))
-            visibleLoadingMoreAnim(false)
 
-
+        visibleLoadingMoreAnim(false)
         notifiyAdapter()
 
 
@@ -432,7 +528,7 @@ class Show_Comment_Activity : AppCompatActivity() {
 
     private fun notifiyAdapter() {
         println("comement_list" + comment_list.size)
-        println("check_value"+layoutManager!!.itemCount)
+        println("check_value" + layoutManager!!.itemCount)
 
         // adapter = CommentAdapter(this, comment_list, mediaData!!)
         //comment_rv!!.adapter = adapter
@@ -441,6 +537,23 @@ class Show_Comment_Activity : AppCompatActivity() {
 
 
 
+    fun showMenu(frndMenu: ImageView, comment_id: String, position: Int) {
+        showVibration()
+
+        println("menu_comment_id"+comment_id)
+        println("menu_position"+position)
+
+        this.comment_id = comment_id
+        this.postposition = position
+
+
+        if (hamburgerMenu!!.isShowing) {
+            hamburgerMenu!!.dismiss()
+            return
+        }
+        hamburgerMenu!!.showAsDropDown(frndMenu)
+
+    }
 
 
     //power option menu
@@ -448,24 +561,30 @@ class Show_Comment_Activity : AppCompatActivity() {
         OnMenuItemClickListener<PowerMenuItem> { position, item ->
             // hamburgerMenu!!.selectedPosition = position
 
-            if (!firstTime) {
 
-                    if (item.title.equals(getString(R.string.delete)))
-                       askToDeleteSelfPost()
 
-                         else  if (item.title.equals(getString(R.string.edit)))
-                            callEditCommentAPI()
+            if (firstTime) {
+
+
+                println("sallu"+item.title)
+
+                if (item.title.equals(getString(R.string.delete)))
+                    askToDeleteSelfPost()
+
+                    else if (item.title.equals(getString(R.string.edit)))
+                {
+                    edit=true
+                    edt_comment!!.setText(comment_list.get(postposition-1).comment)
+
+                }
 
             }
+            firstTime=true
 
 
         }
 
-    private fun callEditCommentAPI() {
 
-        viewmodel.editCommentVM(URL.userId,edt_comment!!.text.toString(),comment_id)
-
-    }
 
 
     private fun askToDeleteSelfPost() {
@@ -477,9 +596,12 @@ class Show_Comment_Activity : AppCompatActivity() {
             .setNegativeButton("No") { dialogInterface, i ->
             }
             .setPositiveButton("Yes") { dialogInterface, i ->
-                println("show_psoitio_2"+postposition)
+                println("show_psoitio_2" + postposition)
 
 
+
+                visibleLoadingMoreAnim(false)
+                comment_list.removeAt(postposition-1)
                 viewmodel.deleteCommentVM(comment_id)
                 adapter!!.notifyItemRemoved(postposition)
 
@@ -492,22 +614,9 @@ class Show_Comment_Activity : AppCompatActivity() {
     }
 
 
-    fun showMenu(frndMenu: ImageView,comment_id:String,position:Int) {
-        showVibration()
-
-        this.comment_id=comment_id
-        this.postposition=position
-
-        if (hamburgerMenu!!.isShowing) {
-            hamburgerMenu!!.dismiss()
-            return
-        }
-        hamburgerMenu!!.showAsDropDown(frndMenu)
 
 
-    }
-
-     fun showVibration() {
+    fun showVibration() {
 
         vibe!!.vibrate(80)
     }
@@ -515,13 +624,31 @@ class Show_Comment_Activity : AppCompatActivity() {
     fun likeDislike(postId: String, userId: String) {
 
 
-        viewmodellike.likeDislikeAPI(postId,userId)
+        viewmodellike.likeDislikeAPI(postId, userId)
 
+
+    }
+
+    private fun getCurrentTime():String {
+
+       var formatter =  SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    var date =  Date();
+
+        return  formatter.format(date)
     }
 
 
     fun back_activity(view: View) {
+
+        /*var resultIntent =  Intent();
+        resultIntent.putExtra("total_likes",mediaData!!.total_likes);
+        resultIntent.putExtra("total_comment",mediaData!!.totalComment);
+        resultIntent.putExtra("post_position",post_position.toString());
+        startActivityForResult(resultIntent,1)
+        finish()*/
         onBackPressed()
+
     }
+
 
 }

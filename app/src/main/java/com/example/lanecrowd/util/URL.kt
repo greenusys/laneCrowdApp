@@ -7,6 +7,8 @@ object URL {
     val videoPath = "http://www.lanecrowd.com/assets/uploads/videos/"
     val profilePicPath = "http://lanecrowd.com/new/assets/img/Profile_Pic/"
     val coverPicPath = "http://lanecrowd.com/new/assets/img/Cover_Photo/"
+    val storyImagePath = "http://www.lanecrowd.com/assets/stories/images/"
+    val storyVideoPath = "http://www.lanecrowd.com/assets/stories/videos/"
 
 
     //user's session value are stored here

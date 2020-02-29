@@ -51,7 +51,13 @@ import retrofit2.http.*
     fun fetchpost(@Field("android") android: String, @Field("user_id") user_id: String, @Field("offset") offset: String): Call<JsonObject>
 
 
-    @FormUrlEncoded
+     @FormUrlEncoded
+     @POST("/fetchstories")
+     fun fetchStory(@Field("android") android: String, @Field("user_id") user_id: String, @Field("offset") offset: String): Call<JsonObject>
+
+
+
+     @FormUrlEncoded
     @POST("/deletePost")
     fun deletePost(@Field("post_id") post_id: String): Call<JsonObject>
 

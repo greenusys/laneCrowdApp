@@ -556,6 +556,7 @@ if(position==0) {
                     .putExtra("total_comment",list.get(position-2).total_comments)
                     .putExtra("total_shared",list.get(position-2).total_share)
                     .putExtra("staus",list.get(position-2).post)
+                    .putExtra("post_position",position)
                     .putExtra("isMyLike",list.get(position-2).isMyLike.toString())
                     .putStringArrayListExtra("files",list.get(position-2).post_files)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
