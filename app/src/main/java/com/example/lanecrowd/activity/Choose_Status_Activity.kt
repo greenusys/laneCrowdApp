@@ -60,11 +60,16 @@ class Choose_Status_Activity : AppCompatActivity() {
 
     lateinit var viewmodel: AddPostVM;
     internal var files = java.util.ArrayList<File>()
+    var from: String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose__status_)
+
+        from= intent.getStringExtra("from")
+
+
 
         initViews()
     }
@@ -163,12 +168,17 @@ class Choose_Status_Activity : AppCompatActivity() {
 
     private fun uploadStatusPost() {
 
+
+
         if (findViewById<EditText>(R.id.theme_txt).text.toString().length <= 0) {
 
             showSnackBar("Please add text status")
         }
         else
         {
+
+            visibleLoadingAnimation(true)
+
 
             val savingLayout = findViewById(R.id.lay_theme) as RelativeLayout
             val file = saveBitMap(this@Choose_Status_Activity, savingLayout)
@@ -186,7 +196,7 @@ class Choose_Status_Activity : AppCompatActivity() {
 
 
 
-                    viewmodel.addPostvm("","",files,true,applicationContext).observe(this, Observer { resultPi ->
+                    viewmodel.addPostvm(from!!,"","",files,true,applicationContext).observe(this, Observer { resultPi ->
 
                         println("add_post"+resultPi)
 
@@ -207,6 +217,9 @@ class Choose_Status_Activity : AppCompatActivity() {
                 }catch (e:java.lang.Exception)
                 {
                     e.printStackTrace()
+
+                    visibleLoadingAnimation(false)
+
                 }
 
 

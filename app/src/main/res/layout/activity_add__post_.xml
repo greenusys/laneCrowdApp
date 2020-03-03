@@ -202,6 +202,7 @@
             android:padding="10dp"
             android:text="Camera" />
    <TextView
+       android:id="@+id/tag_friend"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

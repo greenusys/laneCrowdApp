@@ -145,8 +145,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         profileImage: ImageView?,
         headerView: ImageView?,
         txtName: TextView,
-        txtMail: TextView
-    ) {
+        txtMail: TextView) {
 
 
         txtName.text = URL.fullName

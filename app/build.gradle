@@ -39,8 +39,6 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
 
-
-
     //story progess view
     implementation 'com.github.shts:StoriesProgressView:3.0.0'
 
@@ -91,7 +89,6 @@ dependencies {
 
 
     implementation 'com.github.tcking:ijkplayer-arm64:0.8.8'
-
 
 
     // for circular imageview

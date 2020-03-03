@@ -86,6 +86,7 @@ class Show_Comment_Activity : AppCompatActivity() {
     lateinit var viewmodellike: FetchPostVm
 
 
+    private var no_comment: TextView? = null
     private var edt_comment: EditText? = null
     private var iv_sendComment: ImageView? = null
     private var swipe: SwipeRefreshLayout? = null
@@ -101,7 +102,7 @@ class Show_Comment_Activity : AppCompatActivity() {
 
         files = intent.extras!!.getStringArrayList("files")
         post_id = intent.extras!!.getString("post_id")
-        post_position = intent.extras!!.getString("post_position")
+       // post_position = intent.extras!!.getString("post_position")
         isImage = intent.extras!!.getString("isImage")
         user_name = intent.extras!!.getString("user_name")
         time = intent.extras!!.getString("time")
@@ -163,6 +164,7 @@ class Show_Comment_Activity : AppCompatActivity() {
             total_shared!!,
             total_comment!!
         )
+        no_comment = findViewById<TextView>(R.id.no_comment)
         swipe = findViewById<SwipeRefreshLayout>(R.id.comment_swipe)
         loading_more_anim = findViewById<SpinKitView>(R.id.loading_more_anim)
         iv_sendComment = findViewById<ImageView>(R.id.iv_sendComment)
@@ -200,7 +202,7 @@ class Show_Comment_Activity : AppCompatActivity() {
         } else {
             setRefreshingfalse(true)
 
-            fetchPostCommentAPI("")
+            fetchPostCommentAPI("firsttime")
         }
 
 
@@ -285,13 +287,13 @@ class Show_Comment_Activity : AppCompatActivity() {
 
     private fun updateList(resultPi: JsonObject?) {
 
+        visibleNoComment(false)
         var main: JSONObject? = null
 
 
         if (resultPi != null) {
 
             try {
-
 
                 main = JSONObject(resultPi.toString())
 
@@ -495,11 +497,18 @@ class Show_Comment_Activity : AppCompatActivity() {
         if (from.equals("swipe"))
             ClearForRefreshData()
 
+
+
+
         //call after load more
         updateAdapterForMultipleData()
 
 
-        if (resultPi != null) {
+        try {
+
+
+
+        if (resultPi != null && resultPi.has("code")) {
             var main = JSONObject(resultPi.toString())
 
             if (resultPi != null && main.getString("code").equals("1")) {
@@ -513,17 +522,40 @@ class Show_Comment_Activity : AppCompatActivity() {
             }
         } else {
 
+
+
+
             println("no_data_found_for_offset" + counting.toString())
 
 
         }
+        }catch (e:Exception)
+        {
 
+
+            e.printStackTrace()
+        }
+
+
+        if(comment_list.size<=0)
+            visibleNoComment(true)
+        else
+            visibleNoComment(false)
 
 
         visibleLoadingMoreAnim(false)
         notifiyAdapter()
 
 
+    }
+
+    private fun visibleNoComment(value: Boolean) {
+
+        println("visibleNoComment"+value)
+        if(value)
+            no_comment!!.visibility=View.VISIBLE
+        else
+            no_comment!!.visibility=View.GONE
     }
 
     private fun notifiyAdapter() {
@@ -604,6 +636,9 @@ class Show_Comment_Activity : AppCompatActivity() {
                 comment_list.removeAt(postposition-1)
                 viewmodel.deleteCommentVM(comment_id)
                 adapter!!.notifyItemRemoved(postposition)
+
+                if(comment_list.size<=0)
+                    visibleNoComment(true)
 
             }
             .show()

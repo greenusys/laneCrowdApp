@@ -59,6 +59,19 @@
         <!--title layout-->
 
 
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
+            android:id="@+id/status_loading_anim"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            app:lottie_rawRes="@raw/loading_anim"
+            app:lottie_loop="true"
+            app:lottie_autoPlay="false"/>
+
+
+
+
         <RelativeLayout
             android:layout_marginTop="40dp"
             android:layout_width="match_parent"
@@ -75,16 +88,6 @@
                 android:layout_height="300dp"
                 android:scaleType="fitXY"
                 android:background="@color/colorPrimary"/>
-
-            <com.airbnb.lottie.LottieAnimationView
-                android:layout_marginTop="20dp"
-                android:visibility="gone"
-                android:id="@+id/status_loading_anim"
-                android:layout_width="match_parent"
-                android:layout_height="70dp"
-                app:lottie_rawRes="@raw/loading_anim"
-                app:lottie_loop="true"
-                app:lottie_autoPlay="false"/>
 
 
             <EditText

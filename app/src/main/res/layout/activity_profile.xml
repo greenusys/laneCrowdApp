@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
     android:id="@+id/CoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -47,7 +48,7 @@
 
                 <TextView
                     android:layout_marginLeft="30dp"
-                    android:id="@+id/edit_profile"
+                    android:id="@+id/user_name"
                     style="@style/TextAppearance.AppCompat.Headline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -75,6 +76,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -93,10 +97,10 @@
                         android:id="@+id/iv_cover_image_profile"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/login" />
+                        android:scaleType="centerCrop" />
 
                     <TextView
+                        android:visibility="gone"
                         android:id="@+id/txt_doneChangeCover"
                         android:layout_width="wrap_content"
                         android:layout_height="25dp"
@@ -144,7 +148,7 @@
                         android:id="@+id/iv_profile_image_profile"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:src="@drawable/profile" />
+                        />
 
                     <TextView
                         android:id="@+id/txt_changeProfile"
@@ -161,17 +165,17 @@
                         android:paddingTop="2dp"
                         android:paddingRight="5dp"
                         android:paddingBottom="2dp"
-
                         android:textAllCaps="true"
                         android:textColor="#fff"
                         android:textSize="12sp" />
 
                     <TextView
+                        android:visibility="gone"
                         android:id="@+id/txt_doneChangeProfile"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"
                         android:layout_gravity="top"
-                        android:layout_marginLeft="0dp"
+                        android:layout_marginLeft="4dp"
                         android:layout_marginRight="2dp"
                         android:layout_marginBottom="2dp"
                         android:background="#ffffff"
@@ -180,30 +184,30 @@
                         android:paddingTop="2dp"
                         android:paddingRight="5dp"
                         android:paddingBottom="2dp"
-                        android:text="Use Profile Picture"
+                        android:text="Update Profile"
                         android:textAllCaps="true"
                         android:textColor="#000"
                         android:textSize="10sp" />
 
                 </FrameLayout>
 
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Headline"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:layout_marginTop="5dp"
-                    android:background="#ffffff"
-                    android:gravity="center"
-                    android:text="Sayed Md. Kaif"
-                    android:textAllCaps="true"
-                    android:textColor="#000" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="10dp"
                     android:background="@color/light_grey" />
+
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:visibility="gone"
+                    android:id="@+id/upload_loading_animLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    app:lottie_rawRes="@raw/loading_anim"
+                    app:lottie_loop="true"
+                    app:lottie_autoPlay="false"/>
 
 
                 <LinearLayout

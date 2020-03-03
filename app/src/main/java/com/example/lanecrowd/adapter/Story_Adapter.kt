@@ -18,47 +18,93 @@ import com.bumptech.glide.request.target.Target
 import com.example.lancrowd.activity.modal.Home_Post_Modal
 import com.example.lancrowd.activity.modal.Story_Modal
 import com.example.lanecrowd.R
+import com.example.lanecrowd.activity.Add_Post_Activity
 import com.example.lanecrowd.activity.View_Story_Activity
 import com.example.lanecrowd.util.URL
 import de.hdodenhof.circleimageview.CircleImageView
 
 class Story_Adapter(val list: ArrayList<Story_Modal>, val context: Context) : RecyclerView.Adapter<Story_Adapter.ViewHolder>() {
 
+
+
+    private val TYPE_ITEM_ADD_STORY = 0
+    private val TYPE_ITEM_NORMAL = 1
+
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+
+        if (viewType == TYPE_ITEM_ADD_STORY) {
+            val view = LayoutInflater.from(context).inflate(R.layout.add_story_layout, parent, false);
+            return ViewHolder(view)
+
+        }
+
+        else if (viewType == TYPE_ITEM_NORMAL) {
+            val view = LayoutInflater.from(context).inflate(R.layout.story_item, parent, false);
+            return ViewHolder(view)
+
+        }
+
         val view = LayoutInflater.from(context).inflate(R.layout.story_item, parent, false);
         return ViewHolder(view)
+
+
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return list.size+1
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        if(position==0)
+            return TYPE_ITEM_ADD_STORY
+
+        return TYPE_ITEM_NORMAL
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        holder.main_layout.setOnClickListener(View.OnClickListener {
-            context.startActivity(Intent(context,View_Story_Activity::class.java)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                .putStringArrayListExtra("story_files",list.get(position).story_files)
+        if(position==0)
+        {
+            setStoryImage(position, URL.profilePicPath + URL.profilePic, holder.user_image)
+            holder.add_to_StoryLayout.setOnClickListener(View.OnClickListener {
+
+                context.startActivity(
+                    Intent(
+                        context, Add_Post_Activity::class.java)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        .putExtra("from","story")
+                )
+            })
 
 
-            )
-        })
+        }
+
+        else {
+
+            holder.main_layout.setOnClickListener(View.OnClickListener {
+                context.startActivity(
+                    Intent(context, View_Story_Activity::class.java)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        .putStringArrayListExtra("story_files", list.get(position-1).story_files)
 
 
-        holder.story_userName.setText(list.get(position).posted_by)
+                )
+            })
 
 
+            holder.story_userName.setText(list.get(position-1).posted_by)
 
+            setStoryImage(position, list.get(position-1).story_files.get(0), holder.story_image)
 
-        setStoryImage(position,list.get(position).story_files.get(0),holder.story_image)
-
-
+        }
 
     }
 
     private fun checkIsImage(position: Int): Boolean {
 
-        if(list.get(position).story_files.get(0).contains("jpg") || list.get(position).story_files.get(0).contains("png") || list.get(position).story_files.get(0).contains("jpeg"))
+        if(list.get(position-1).story_files.get(0).contains("jpg") || list.get(position-1).story_files.get(0).contains("png") || list.get(position-1).story_files.get(0).contains("jpeg"))
             return true
 
         return false
@@ -70,10 +116,13 @@ class Story_Adapter(val list: ArrayList<Story_Modal>, val context: Context) : Re
 
         var url:String=""
 
-        if(checkIsImage(position))
-            url=URL.storyImagePath
-        else
-            url=URL.storyVideoPath
+
+        if(position!=0) {
+            if (checkIsImage(position))
+                url = URL.storyImagePath
+            else
+                url = URL.storyVideoPath
+        }
 
 
         println("Story_path"+url+path)
@@ -97,7 +146,7 @@ class Story_Adapter(val list: ArrayList<Story_Modal>, val context: Context) : Re
                     return false
                 }
             })
-            .apply(RequestOptions().placeholder(R.drawable.profile))
+            .apply(RequestOptions().placeholder(R.drawable.placeholder_profile))
 
             .thumbnail(0.01f).into(layott!!).waitForLayout()
 
@@ -110,6 +159,8 @@ class Story_Adapter(val list: ArrayList<Story_Modal>, val context: Context) : Re
         val main_layout=view.findViewById<LinearLayout>(R.id.main_layout)
         val story_image=view.findViewById<CircleImageView>(R.id.story_image)
         val story_userName=view.findViewById<TextView>(R.id.story_userName)
+        val add_to_StoryLayout=view.findViewById<LinearLayout>(R.id.add_to_StoryLayout)
+        val user_image=view.findViewById<CircleImageView>(R.id.user_image)
 
     }
 }

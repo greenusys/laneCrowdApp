@@ -21,13 +21,7 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysHidden">
 
-        <activity android:name=".activity.testss">
-
-           <!-- <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+        <activity android:name=".activity.test">
         </activity>
         <activity android:name=".activity.Test5" />
         <activity android:name=".activity.Test2" />
@@ -36,6 +30,7 @@
         <activity
             android:name=".activity.View_Story_Activity"
             android:theme="@style/AppThemeMat" >
+
 
         </activity>
 
@@ -61,7 +56,11 @@
             android:theme="@style/Apptheme2" />
         <activity
             android:name=".activity.Profile_Activity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppThemeMat" >
+
+        </activity>
+
+
         <activity
             android:name=".activity.Post_Activity"
             android:theme="@style/AppTheme.NoActionBar" />

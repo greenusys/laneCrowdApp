@@ -1,16 +1,11 @@
 package com.example.lanecrowd.activity
 
 import android.graphics.drawable.Drawable
-import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Toast
-import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -32,7 +27,7 @@ import java.util.concurrent.TimeUnit
 class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesListener {
 
     private var storiesProgressView: StoriesProgressView? = null
-    private var videoView: VideoView? = null
+    private var image: ImageView? = null
     private var counter = 0
     private val resources = intArrayOf(
         R.drawable.test,
@@ -53,6 +48,7 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
     var send_reply_Button: ImageView? = null
     var reply_comment: EditText? = null
     var staus_video_icon: ImageView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view__story_)
@@ -60,7 +56,6 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
 
         files = intent.extras!!.getStringArrayList("story_files")
-
 
         initViews()
 
@@ -75,9 +70,11 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
     private fun initViews() {
 
 
+
+
+
         send_reply_Button = findViewById<ImageView>(R.id.send_reply_Button)
         reply_comment = findViewById<EditText>(R.id.reply_comment)
-        staus_video_icon = findViewById<ImageView>(R.id.staus_video_icon)
 
 
         storiesProgressView = findViewById<View>(R.id.stories) as StoriesProgressView
@@ -91,12 +88,10 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
         counter = 0
 
         storiesProgressView!!.startStories(counter)
-        videoView = findViewById<View>(R.id.image) as VideoView
+        image = findViewById<View>(R.id.image) as ImageView
 
-        playVideo()
-       // image!!.setImageResource(resources[counter])
 
-        //setStoryImage(counter,files!!.get(counter),image)
+        setStoryImage(counter,files!!.get(counter),image)
 
         // bind reverse view
         val reverse = findViewById<View>(R.id.reverse)
@@ -135,37 +130,15 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
             }
 
 
-        staus_video_icon!!.setOnClickListener(View.OnClickListener {
 
 
 
-        })
 
-
-        playVideo()
 
 
     }
 
-    private fun playVideo() {
-     videoView!!.setVideoURI(Uri.parse("http://www.lanecrowd.com/assets/stories/videos/story-video-2020-02-29-11-12-260.mp4"))
-        videoView!!.requestFocus()
-        videoView!!.start()
 
-        videoView!!.setOnCompletionListener(MediaPlayer.OnCompletionListener { mp ->
-            Toast.makeText(applicationContext, "Video over", Toast.LENGTH_SHORT).show()
-
-            onNext()
-
-        })
-
-        videoView!!.setOnErrorListener(MediaPlayer.OnErrorListener { mp, what, extra ->
-            Log.d("API123", "What $what extra $extra")
-            false
-        })
-
-
-    }
 
 
     private fun checkIsImage(position: Int): Boolean {
@@ -177,18 +150,48 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
     }
 
+
+    private fun playVideo(url: String) {
+
+        //visible video view and gone image layout
+        visiBleExoPLayerGOneImage(true)
+
+        //pause the storyprogrss view
+        pauseStoryProgressView(true)
+
+        //play url when ready
+        //andExoPlayerView!!.setSource("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4")
+
+
+    }
+
+    private fun visiBleExoPLayerGOneImage(value: Boolean) {
+
+            if(value)
+            {
+                image!!.setBackgroundResource(R.color.dark_grey2)
+               // andExoPlayerView!!.visibility=View.VISIBLE
+
+            }else
+            {
+
+                image!!.visibility=View.VISIBLE
+            }
+    }
+
+
     private fun setStoryImage(position: Int,path: String, layott: ImageView?) {
 
 
         var url:String=""
 
         if(checkIsImage(position)) {
-            staus_video_icon!!.visibility=View.GONE
             url = URL.storyImagePath
         }
         else {
-            staus_video_icon!!.visibility=View.VISIBLE
             url = URL.storyVideoPath
+           // playVideo(url+path)
+
         }
 
 
@@ -196,13 +199,10 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
             .listener(object : RequestListener<Drawable?> {
                 override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
 
-                  println("story_failed")
-
                     return false
                 }
 
                 override fun onResourceReady(resource: Drawable?, model: Any, target: Target<Drawable?>, dataSource: DataSource, isFirstResource: Boolean): Boolean {
-                    println("story_ready")
 
                     return false
                 }
@@ -250,9 +250,11 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
     override fun onNext() {
 
+
+
 // image!!.setImageResource(resources[++counter])
 
-       // setStoryImage(++counter,files!!.get(counter),image)
+        setStoryImage(++counter,files!!.get(counter),image)
 
     }
 
@@ -263,7 +265,7 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
        // setStoryImage(--counter,files!!.get(counter),image)
 
-       // image!!.setImageResource(resources[--counter])
+        image!!.setImageResource(resources[--counter])
     }
 
     override fun onComplete() {

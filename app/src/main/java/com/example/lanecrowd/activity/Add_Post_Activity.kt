@@ -65,16 +65,21 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     private var videoFilePath: String? = null
 
 
+    var tag_friend: TextView? = null
     var post_loading_anim: LottieAnimationView? = null
     var openCameraChooser: TextView? = null
     var openPhotoVideoChooser: TextView? = null
 
     var rv_addFiles: RecyclerView? = null
     var adapter: Show_Selected_File_Adapter? = null
+    var from: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add__post_)
+
+
+       from= intent.getStringExtra("from")
 
         initViews()
     }
@@ -89,6 +94,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
         appController = applicationContext as AppController
 
+        tag_friend = findViewById(R.id.tag_friend)
         post_loading_anim = findViewById(R.id.post_loading_animLogin)
         openCameraChooser = findViewById(R.id.openCameraChooser)
         openPhotoVideoChooser = findViewById(R.id.openPhotoVideoChooser)
@@ -115,6 +121,11 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
 
+        if(from.equals("story")) {
+            tag_friend!!.visibility = View.GONE
+            findViewById<EditText>(R.id.status_input)!!.visibility = View.GONE
+        }
+
 
     }
 
@@ -124,7 +135,9 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         startActivity(Intent(
             applicationContext,
                 Choose_Status_Activity::class.java
-            ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .putExtra("from",from)
         )
 
     }
@@ -540,7 +553,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
         if (this@Add_Post_Activity != null) {
             this@Add_Post_Activity.runOnUiThread(Runnable {
-                val dialog = Dialog(this@Add_Post_Activity, R.style.RoundShapeTheme)
+                val dialog = Dialog(this@Add_Post_Activity, R.style.AlertDialogTheme)
                 dialog.setCancelable(true)
                 val inflater = layoutInflater
                 val dialogLayout: View = inflater.inflate(R.layout.photo_video_aler, null)
@@ -732,28 +745,30 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
                 visibleLoadingAnimation(true)
 
+                    //add post
+                    viewmodel.addPostvm(from!!,
+                        "",
+                        findViewById<EditText>(R.id.status_input).text.toString(),
+                        files,
+                        isImage,
+                        applicationContext
+                    ).observe(this, Observer { resultPi ->
 
-                viewmodel.addPostvm(
-                    "",
-                    findViewById<EditText>(R.id.status_input).text.toString(),
-                    files,
-                    isImage,
-                    applicationContext
-                ).observe(this, Observer { resultPi ->
+                        println("add_post" + resultPi)
 
-                    println("add_post" + resultPi)
-
-
-
-                    if (resultPi != null && resultPi.getString("status").equals("1")) {
-                        visibleLoadingAnimation(false)
-                        finish()
-                    } else {
-                        visibleLoadingAnimation(false)
-                    }
+                        if (resultPi != null && resultPi.getString("status").equals("1")) {
+                            visibleLoadingAnimation(false)
+                            finish()
+                        } else {
+                            visibleLoadingAnimation(false)
+                        }
 
 
-                })
+                    })
+
+
+
+
 
 
             } catch (e: java.lang.Exception) {

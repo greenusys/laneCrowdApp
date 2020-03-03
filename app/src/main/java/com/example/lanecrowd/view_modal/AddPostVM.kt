@@ -1,34 +1,19 @@
 package com.example.lanecrowd.view_modal
 
 
-import android.app.Activity
 import android.content.Context
-import android.util.Log
-import android.widget.EditText
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.lancrowd.activity.modal.RegisterResModal
-import com.example.lanecrowd.R
-import com.example.lanecrowd.retrofit.ApiClient
-import com.example.lanecrowd.retrofit.ApiInterface
 import com.example.lanecrowd.retrofit.AppController
 import com.example.lanecrowd.util.URL
-import com.google.gson.JsonObject
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.Request
 import okhttp3.RequestBody
-import org.json.JSONException
 import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.File
 import java.io.IOException
-import java.lang.Exception
-import java.util.ArrayList
-import java.util.logging.Handler
+import java.util.*
 
 
 class AddPostVM : ViewModel() {
@@ -61,7 +46,7 @@ class AddPostVM : ViewModel() {
      }
 
 
-    fun addPostvm(imgageData:String,status:String,files:ArrayList<File>,isImage: Boolean?,context: Context): MutableLiveData<JSONObject> {
+    fun addPostvm(from:String,imgageData:String,status:String,files:ArrayList<File>,isImage: Boolean?,context: Context): MutableLiveData<JSONObject> {
 
         addPostRes = MutableLiveData()
         this.context=context
@@ -76,17 +61,39 @@ class AddPostVM : ViewModel() {
 
 
 
-        addPost(isOnlyText,status,imgageData,URL.userId,files,isImage)
+        addPost(from,isOnlyText,status,imgageData,URL.userId,files,isImage)
 
 
         return addPostRes as MutableLiveData<JSONObject>
 
     }
 
-    private fun addPost(isOnlyText:Boolean,post: String?, imgageData: String, user_id: String,
+    private fun addPost(from:String,isOnlyText:Boolean,post: String?, imgageData: String, user_id: String,
                         files: ArrayList<File>, isImage: Boolean?) {
 
+
+
         var post_type:String=""
+        var type_key:String=""
+        var post_key:String=""
+        var url:String=""
+
+
+        //for add post
+        if(from.equals("post")) {
+            type_key = "post_type"
+            post_key = "post"
+            url = URL.add_post
+        }
+        //for add story
+        else {
+            type_key = "story_type"
+            post_key = "story"
+            url = URL.add_story
+        }
+
+
+
         if(isOnlyText)
             post_type="0"
         else {
@@ -99,6 +106,7 @@ class AddPostVM : ViewModel() {
 
 
         println("add_post_called")
+        println("from"+from)
         println("isImage"+isImage)
         println("isOnlytext"+isOnlyText)
         println("post_type"+post_type)
@@ -107,8 +115,8 @@ class AddPostVM : ViewModel() {
         val builder = MultipartBody.Builder()
         builder.setType(MultipartBody.FORM)
         builder.addFormDataPart("android", "")
-        builder.addFormDataPart("post_type", post_type)
-        builder.addFormDataPart("post", post)
+        builder.addFormDataPart(type_key, post_type)
+        builder.addFormDataPart(post_key, post)
         builder.addFormDataPart("imgageData", imgageData)
         builder.addFormDataPart("user_id", user_id)
 
@@ -120,13 +128,13 @@ class AddPostVM : ViewModel() {
 
             val filePath = f.absolutePath
 
-            println("file_path"+filePath)
+          //  println("file_path"+filePath)
             val mediaType = MediaType.parse(if (isImage!!) "image/" else "video/" + filePath.substring(filePath.lastIndexOf(".") + 1))
             builder.addFormDataPart("files[]", filePath.substring(filePath.lastIndexOf("/") + 1),
                     RequestBody.create(mediaType, f))
         }
 
-         request = Request.Builder().url(URL.add_post).tag("requestKey").post(builder.build()).build()
+         request = Request.Builder().url(url).tag("requestKey").post(builder.build()).build()
 
         cancleNetworkCall()
 

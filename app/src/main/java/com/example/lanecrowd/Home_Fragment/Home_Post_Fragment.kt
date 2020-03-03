@@ -113,14 +113,6 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
         val view: View = inflater.inflate(R.layout.fragment_home__post_, container, false)
 
 
-        /*   story_list.add(Story_Modal())
-           story_list.add(Story_Modal())
-           story_list.add(Story_Modal())
-           story_list.add(Story_Modal())
-           story_list.add(Story_Modal())
-           story_list.add(Story_Modal())
-
-   */
         viewmodel = ViewModelProvider(this).get(FetchPostVm::class.java)
 
 
@@ -168,15 +160,13 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
         layoutManager = LinearLayoutManager(context)
         home_post_rv!!.layoutManager = layoutManager
-        homePostAdapter =
-            Home_Post_Adapter(story_list, home_post_list, context!!, this@Home_Post_Fragment)
+        homePostAdapter = Home_Post_Adapter(story_list, home_post_list, context!!, this@Home_Post_Fragment)
         home_post_rv!!.adapter = homePostAdapter
 
 
 
         swiperefresh_Listener()
-
-        initScrollListener()
+        initPostScrollListener()
 
 
         if (!isNetworkAvailable(context!!)) {
@@ -258,7 +248,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
-    private fun initScrollListener() {
+    private fun initPostScrollListener() {
 
         home_post_rv!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
@@ -353,7 +343,6 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun fetchPost(offsettt: String, from: String) {
 
-
         try {
 
 
@@ -366,7 +355,6 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
                 })
-
             viewmodel.fetchPostvm(URL.userId, offsettt)
                 .observe(viewLifecycleOwner, Observer { resultPi ->
 

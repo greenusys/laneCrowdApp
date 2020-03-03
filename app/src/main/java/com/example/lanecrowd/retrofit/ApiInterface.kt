@@ -3,12 +3,11 @@ package com.example.lanecrowd.retrofit
 
 import com.example.lancrowd.activity.modal.RegisterResModal
 import com.google.gson.JsonObject
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.*
 import retrofit2.Call
 import retrofit2.http.*
 
- interface ApiInterface {
+interface ApiInterface {
 
 
     @FormUrlEncoded
@@ -34,63 +33,65 @@ import retrofit2.http.*
     ): Call<RegisterResModal>
 
 
-    @Multipart
-    @POST("/addPost")
-    fun uploadPostAPI(
-        @Part("android") android: RequestBody,
-        @Part("post_type") post_type: RequestBody,
-        @Part("post") post: RequestBody,
-        @Part("imgageData") imgageData: RequestBody,
-        @Part files: List<MultipartBody.Part>,
-        @Part("user_id") user_id: RequestBody
-    ): Call<JsonObject>
-
-
     @FormUrlEncoded
     @POST("/fetchpost")
     fun fetchpost(@Field("android") android: String, @Field("user_id") user_id: String, @Field("offset") offset: String): Call<JsonObject>
 
 
-     @FormUrlEncoded
-     @POST("/fetchstories")
-     fun fetchStory(@Field("android") android: String, @Field("user_id") user_id: String, @Field("offset") offset: String): Call<JsonObject>
+    @FormUrlEncoded
+    @POST("/fetchstories")
+    fun fetchStory(@Field("android") android: String, @Field("user_id") user_id: String, @Field("offset") offset: String): Call<JsonObject>
 
 
-
-     @FormUrlEncoded
+    @FormUrlEncoded
     @POST("/deletePost")
     fun deletePost(@Field("post_id") post_id: String): Call<JsonObject>
 
 
-
     @FormUrlEncoded
     @POST("/likeOrdislike")
-    fun likeDislikePost(@Field("android") android: String, @Field("post_id") post_id: String, @Field("user_id") user_id: String): Call<JsonObject>
+    fun likeDislikePost(
+        @Field("android") android: String, @Field("post_id") post_id: String, @Field(
+            "user_id"
+        ) user_id: String
+    ): Call<JsonObject>
 
 
-
-     @FormUrlEncoded
+    @FormUrlEncoded
     @POST("/getComments")
-    fun getComments(@Field("post_id") post_id: String,@Field("offset") offset: String): Call<JsonObject>
+    fun getComments(@Field("post_id") post_id: String, @Field("offset") offset: String): Call<JsonObject>
 
     @FormUrlEncoded
     @POST("/deleteComment")
     fun deleteComments(@Field("c_id") c_id: String): Call<JsonObject>
 
 
- @FormUrlEncoded
+    @FormUrlEncoded
     @POST("/editcomment")
-    fun editComments(@Field("user_id") user_id: String,@Field("comment") comment: String,@Field("c_id") c_id: String,@Field("android") android: String): Call<JsonObject>
+    fun editComments(
+        @Field("user_id") user_id: String, @Field("comment") comment: String, @Field("c_id") c_id: String, @Field(
+            "android"
+        ) android: String
+    ): Call<JsonObject>
 
 
-@FormUrlEncoded
+    @FormUrlEncoded
     @POST("/addComment")
-    fun addComment(@Field("android") android: String,
-                   @Field("post_id") post_id: String,
-                   @Field("comment") comment: String,
-                   @Field("commented_by_") user_id: String): Call<JsonObject>
+    fun addComment(
+        @Field("android") android: String,
+        @Field("post_id") post_id: String,
+        @Field("comment") comment: String,
+        @Field("commented_by_") user_id: String
+    ): Call<JsonObject>
 
 
+    @Multipart
+    @POST("/changeprofilepic")
+    fun changeProfilePic(@Part file: MultipartBody.Part?, @Part("user_id") user_id: RequestBody?, @Part("android") android: RequestBody?): Call<RegisterResModal?>?
+
+    @Multipart
+    @POST("/changecoverpic")
+    fun changeCoverePic(@Part file: MultipartBody.Part?, @Part("user_id") user_id: RequestBody?, @Part("android") android: RequestBody?): Call<RegisterResModal?>?
 
 
 }
