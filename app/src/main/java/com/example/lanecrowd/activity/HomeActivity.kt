@@ -19,6 +19,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -30,10 +32,11 @@ import com.example.lanecrowd.Home_Fragment.Search_Fragment
 import com.example.lanecrowd.R
 import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.util.URL
+import com.example.lanecrowd.view_modal.MySessionVM
+import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
-import java.util.*
 import kotlin.collections.ArrayList
 
 
@@ -45,9 +48,20 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     var viewPage: ViewPager? = null
     private var session: SessionManager? = null
 
+    //this factory method will create and return one object of SessionVM
+    var videomodelfactory:ViewModelProvider_Custom?=null
+    var mySessionVM:MySessionVM?=null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
+
+        //this factory method will create and return one object
+        videomodelfactory = ViewModelProvider_Custom(MySessionVM.instance)
+        mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
+
+
 
         println("oncreate")
         initViews()
@@ -85,7 +99,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         session = SessionManager(applicationContext)
 
-        storeUserSessionValue()
+        storeUserSessionValueTOURLCLass()
 
 
         tabLayout = findViewById<View>(R.id.tabs) as TabLayout
@@ -147,54 +161,87 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         txtName: TextView,
         txtMail: TextView) {
 
-
-        txtName.text = URL.fullName
-
-
-        println("mahar2" + URL.phone)
-        println("mahar" + URL.phone == null)
-        println("profilePic" + URL.profilePic)
-        println("coverPic" + URL.coverPic)
-
-        if (URL.phone.equals(""))
-            txtMail.text = URL.email
-        else
-            txtMail.text = URL.phone
+        val user: HashMap<String, String?> = session!!.userDetails
+        setUseDataTOVIew(txtName,txtMail,profileImage,headerView,user!!)
 
 
 
-            Glide.with(baseContext)
-            .load(URL.profilePicPath + URL.profilePic)
-            .apply(RequestOptions().placeholder(R.drawable.placeholder_profile))
-            .thumbnail(0.01f).into(profileImage!!)
+        mySessionVM!!.getName()!!.observe(this, Observer { resultPi ->
 
-             Glide.with(baseContext)
-            .load(URL.coverPicPath + URL.coverPic).apply(
-                RequestOptions().placeholder(R.drawable.placeholder)
-            ).thumbnail(0.01f).into(headerView!!)
+
+            setUseDataTOVIew(txtName,txtMail,profileImage,headerView,resultPi)
+
+
+        })
+
+
+
 
 
     }
 
-    private fun storeUserSessionValue() {
+    private fun setUseDataTOVIew(
+        txtName: TextView,
+        txtMail: TextView,
+        profileImage: ImageView?,
+        headerView: ImageView?,
+        resultPi: HashMap<String, String?>
+    ) {
+
+
+        txtName.text = resultPi[SessionManager.KEY_FULL_NAME]
+
+        if (URL.phone.equals(""))
+            txtMail.text = resultPi[SessionManager.KEY_EMAIL]
+        else
+            txtMail.text = resultPi[SessionManager.KEY_PHONE]
+
+
+        Glide.with(baseContext)
+            .load(URL.profilePicPath + resultPi[SessionManager.KEY_PROFILE_PICTURE])
+            .apply(RequestOptions().placeholder(R.drawable.placeholder_profile))
+            .thumbnail(0.01f).into(profileImage!!)
+
+        Glide.with(baseContext)
+            .load(URL.coverPicPath +resultPi[SessionManager.KEY_COVER_PHOTO]).apply(
+                RequestOptions().placeholder(R.drawable.placeholder)
+            ).thumbnail(0.01f).into(headerView!!)
+
+
+
+        println("ObserChanged")
+        println("KEY_PROFILE_PICTURE"+URL.profilePicPath + resultPi[SessionManager.KEY_PROFILE_PICTURE])
+        println("KEY_COVER_PHOTO"+URL.coverPicPath +resultPi[SessionManager.KEY_COVER_PHOTO])
+
+    }
+
+    private fun storeUserSessionValueTOURLCLass() {
 
         // get user data from session
-        val user: HashMap<String, String> = session!!.userDetails
+        val user: HashMap<String, String?> = session!!.userDetails
 
 
-        val KEY_USERID = user[SessionManager.KEY_USERID]
-        val KEY_FULL_NAME = user[SessionManager.KEY_FULL_NAME]
-        val KEY_EMAIL = user[SessionManager.KEY_EMAIL]
-        val KEY_PHONE = user[SessionManager.KEY_PHONE]
-        val KEY_PROFILE_PICTURE = user[SessionManager.KEY_PROFILE_PICTURE]
-        val KEY_COVER_PHOTO = user[SessionManager.KEY_COVER_PHOTO]
 
-        URL.userId = KEY_USERID!!
-        URL.fullName = KEY_FULL_NAME!!
-        URL.email = KEY_EMAIL!!
-        URL.phone = KEY_PHONE!!
-        URL.profilePic = KEY_PROFILE_PICTURE!!
-        URL.coverPic = KEY_COVER_PHOTO!!
+            val KEY_USERID = user[SessionManager.KEY_USERID]
+            val KEY_FULL_NAME = user[SessionManager.KEY_FULL_NAME]
+            val KEY_EMAIL = user[SessionManager.KEY_EMAIL]
+            val KEY_PHONE = user[SessionManager.KEY_PHONE]
+            val KEY_PROFILE_PICTURE = user[SessionManager.KEY_PROFILE_PICTURE]
+            val KEY_COVER_PHOTO = user[SessionManager.KEY_COVER_PHOTO]
+
+            URL.userId = KEY_USERID!!
+            URL.fullName = KEY_FULL_NAME!!
+            URL.email = KEY_EMAIL!!
+            URL.phone = KEY_PHONE!!
+            URL.profilePic = KEY_PROFILE_PICTURE!!
+            URL.coverPic = KEY_COVER_PHOTO!!
+
+
+
+
+
+
+
 
 
     }

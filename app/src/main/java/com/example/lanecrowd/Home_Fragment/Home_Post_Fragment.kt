@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.Vibrator
 import android.util.Log
 import android.view.*
@@ -27,22 +28,20 @@ import com.example.lancrowd.activity.modal.Story_Modal
 import com.example.lanecrowd.R
 import com.example.lanecrowd.activity.Add_Post_Activity
 import com.example.lanecrowd.adapter.Home_Post_Adapter
-import com.example.lanecrowd.modal.CommentModel
 import com.example.lanecrowd.modal.PowerMenuUtils
+import com.example.lanecrowd.retrofit.TimeShow
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.FetchPostVm
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.google.gson.reflect.TypeToken
 import com.skydoves.powermenu.OnMenuItemClickListener
 import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
 import org.json.JSONArray
 import org.json.JSONObject
-import java.lang.reflect.Type
+import java.sql.Time
 
 
 class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
@@ -60,9 +59,11 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
     //for menu
     var firstTime: Boolean = false
 
-    var isScrolling = false
     var postCounting: Int = 0
     var storyCounting: Int = 0
+
+    var isScrolling = false
+
     var currentItems: Int = 0
     var totalItems: Int = 0
     var scrollOutItems: Int = 0
@@ -174,6 +175,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
         } else {
             setRefreshingfalse(true)
 
+            //call only once
+            fetchStory()
             fetchPost(postCounting.toString(), "")
         }
 
@@ -192,6 +195,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                 visible_no_internet_layout(true)
             } else {
                 setRefreshingfalse(true)
+                //call only once
+                fetchStory()
                 fetchPost(postCounting.toString(), "")
             }
 
@@ -278,7 +283,14 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                     if (!isNetworkAvailable(context!!)) {
                         visible_no_internet_layout(true)
                     } else
-                        fetchPost(postCounting.toString(), "more")
+
+                        Handler().postDelayed({
+
+                            fetchPost(postCounting.toString(), "more")
+
+                        }, 2000)
+
+
 
 
                 }
@@ -310,6 +322,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                     if (home_post_list.size <= 0 && no_data_anim_post!!.visibility != View.VISIBLE)
                         visible_no_internet_layout(true)
                 } else {
+                    //call only once
+                    fetchStory()
                     fetchPost(postCounting.toString(), "swipe")
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -338,6 +352,22 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
         swipe!!.isRefreshing = value
 
+
+
+    }
+
+    private fun fetchStory() {
+
+        viewmodel.fetchStoryVM(URL.userId, storyCounting.toString())
+            .observe(viewLifecycleOwner, Observer { story_result ->
+
+                println("fetch_story" + story_result)
+
+                setStoryPost(story_result)
+
+
+            })
+
     }
 
 
@@ -346,15 +376,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
         try {
 
 
-            viewmodel.fetchStoryVM(URL.userId, storyCounting.toString())
-                .observe(viewLifecycleOwner, Observer { story_result ->
 
-                    println("fetch_story" + story_result)
-
-                    setStoryPost(story_result)
-
-
-                })
             viewmodel.fetchPostvm(URL.userId, offsettt)
                 .observe(viewLifecycleOwner, Observer { resultPi ->
 
@@ -392,7 +414,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
                 main = JSONObject(storyResult.toString())
-                if (storyResult != null && main.getString("code").equals("1"))
+                if (storyResult != null && main.has("code") && main.getString("code").equals("1"))
                 {
 
                     val data: JSONArray = main.getJSONArray("data")
@@ -438,6 +460,11 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
                 }
 
+                else
+                {
+
+                }
+
             } catch (e: Exception)
             {
                 e.printStackTrace()
@@ -453,6 +480,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun storepostDataTOModal(resultPi: JsonObject?, from: String) {
 
+
+
         var isMylike = false
         var isImage = false
         var main: JSONObject? = null
@@ -463,7 +492,12 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
         //call after load more
-        updateAdapterForMultipleData()
+        //updateAdapterForMultipleData()
+
+        if (swipe!!.isRefreshing) {
+            setRefreshingfalse(false)
+
+        }
 
 
         if (resultPi != null) {
@@ -535,7 +569,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                             isMylike = false
 
 
-                        //  println("isMyLIke"+i+ " "+isMylike+ " "+item.getString("post"))
+                        var date=TimeShow.getTime(item.getString("posted_on"));
 
 
                         //store data to list
@@ -547,7 +581,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                                 postList,
                                 item.getString("posted_by"),
                                 item.getString("profile_pic"),
-                                item.getString("posted_on"),
+                                date,
                                 item.getString("total_likes"),
                                 item.getString("total_share"),
                                 item.getString("total_comments"),
@@ -588,6 +622,9 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
     }
+
+
+
 
     private fun updateAdapterForMultipleData() {
 

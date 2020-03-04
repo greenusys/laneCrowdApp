@@ -94,6 +94,7 @@ class Show_Comment_Activity : AppCompatActivity() {
 
     lateinit var viewmodel: CommentVM
 
+    var user_image: CircleImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,6 +152,7 @@ class Show_Comment_Activity : AppCompatActivity() {
 
         viewmodellike = ViewModelProvider(this).get(FetchPostVm::class.java)
 
+        user_image = findViewById<CircleImageView>(R.id.user_image)
 
 
         mediaData = CommentMediaModal(
@@ -175,7 +177,11 @@ class Show_Comment_Activity : AppCompatActivity() {
         val post_time_comment = findViewById<TextView>(R.id.post_time_comment)
 
 
+
         setProfileImage(URL.profilePicPath + user_pic, user_profile_comment)
+        setProfileImage(URL.profilePicPath + URL.profilePic, user_image)
+
+
         user_name_comment.text = user_name
         post_time_comment.text = time
         user_name_comment.isAllCaps = true

@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -14,9 +15,11 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.example.lanecrowd.R
+import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.util.URL
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
+import de.hdodenhof.circleimageview.CircleImageView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
@@ -48,6 +51,12 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
     var send_reply_Button: ImageView? = null
     var reply_comment: EditText? = null
     var staus_video_icon: ImageView? = null
+    var name_by: TextView? = null
+    var image_by: CircleImageView? = null
+    var user_image: CircleImageView? = null
+
+    var name: String? = null
+    var imageva: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +65,10 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
 
         files = intent.extras!!.getStringArrayList("story_files")
+        name = intent.extras!!.getString("name")
+        imageva = intent.extras!!.getString("imageva")
+
+
 
         initViews()
 
@@ -75,6 +88,11 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
         send_reply_Button = findViewById<ImageView>(R.id.send_reply_Button)
         reply_comment = findViewById<EditText>(R.id.reply_comment)
+        name_by = findViewById<TextView>(R.id.name_by)
+        image_by = findViewById<CircleImageView>(R.id.image_by)
+        user_image = findViewById<CircleImageView>(R.id.user_image)
+
+        setImageAndName()
 
 
         storiesProgressView = findViewById<View>(R.id.stories) as StoriesProgressView
@@ -138,7 +156,30 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
     }
 
+    private fun setImageAndName() {
 
+
+        //set profile pic's user name and image
+        name_by!!.setText(name)
+        setImageToGLide(URL.profilePicPath+imageva!!,image_by)
+
+
+        //set self image
+        setImageToGLide(URL.profilePicPath + URL.profilePic,user_image)
+
+
+        println("imageby"+URL.profilePicPath+imageva)
+        println("useriamge"+URL.profilePicPath + URL.profilePic)
+
+    }
+
+    private fun setImageToGLide(url: String, image: CircleImageView?) {
+
+        Glide.with(baseContext)
+            .load(url)
+            .apply(RequestOptions().placeholder(R.drawable.placeholder_profile))
+            .thumbnail(0.01f).into(image!!)
+    }
 
 
     private fun checkIsImage(position: Int): Boolean {

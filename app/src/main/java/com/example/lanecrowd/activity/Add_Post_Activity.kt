@@ -14,24 +14,26 @@ import android.provider.MediaStore
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.lanecrowd.R
+import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.adapter.Show_Selected_File_Adapter
 import com.example.lanecrowd.retrofit.AppController
 import com.example.lanecrowd.util.ImageFilePath
 import com.example.lanecrowd.util.RuntimePermissionsActivity
+import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.AddPostVM
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import de.hdodenhof.circleimageview.CircleImageView
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -67,8 +69,11 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     var tag_friend: TextView? = null
     var post_loading_anim: LottieAnimationView? = null
+    var selected_layout: LinearLayout? = null
     var openCameraChooser: TextView? = null
     var openPhotoVideoChooser: TextView? = null
+    var userName: TextView? = null
+    var userImage: CircleImageView? = null
 
     var rv_addFiles: RecyclerView? = null
     var adapter: Show_Selected_File_Adapter? = null
@@ -94,6 +99,13 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
         appController = applicationContext as AppController
 
+        userName = findViewById(R.id.user_name)
+        userImage = findViewById(R.id.user_image)
+
+        setNameandImage()
+
+
+        selected_layout = findViewById(R.id.selected_layout)
         tag_friend = findViewById(R.id.tag_friend)
         post_loading_anim = findViewById(R.id.post_loading_animLogin)
         openCameraChooser = findViewById(R.id.openCameraChooser)
@@ -127,6 +139,16 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         }
 
 
+    }
+
+    private fun setNameandImage() {
+
+        userName!!.setText(URL.fullName)
+
+        Glide.with(baseContext)
+            .load(URL.profilePicPath + URL.profilePic)
+            .apply(RequestOptions().placeholder(R.drawable.placeholder_profile))
+            .thumbnail(0.01f).into(userImage!!)
     }
 
 
@@ -378,8 +400,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                 }
                 //disable Camera TextView
                 disableCameraTextView(true, false)
-                // txt_share.setTextColor(Color.parseColor("#000000"));
-                adapter!!.notifyDataSetChanged()
+
+                notifyAdapter()
             }
 
             //for camera images
@@ -396,7 +418,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                 files.add(File(imageFilePath))
                 //files.add(new File(imageFilePath));
                 //txt_share.setTextColor(Color.parseColor("#000000"));
-                adapter!!.notifyDataSetChanged()
+                notifyAdapter()
             }
 
             //for gallery video
@@ -430,7 +452,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
                 //disable Camera TextView
                 disableCameraTextView(true, false)
-                adapter!!.notifyDataSetChanged()
+                notifyAdapter()
             }
             //for camera video
             else if (requestCode == 4) {
@@ -444,7 +466,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
                 rv_video_list.add(videoFilePath!!)
                 files.add(File(videoFilePath))
-                adapter!!.notifyDataSetChanged()
+                notifyAdapter()
 
             }
 
@@ -453,6 +475,27 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
             e.printStackTrace()
         }
 
+    }
+
+    private fun notifyAdapter() {
+
+        if(rv_video_list.size>0)
+        visibleRVlayout(true)
+        else
+            visibleRVlayout(false)
+
+
+        adapter!!.notifyDataSetChanged()
+
+
+    }
+
+    private fun visibleRVlayout(value: Boolean) {
+
+        if(value)
+            selected_layout!!.visibility=View.VISIBLE
+        else
+            selected_layout!!.visibility=View.GONE
     }
 
 
@@ -724,7 +767,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         }
 
         rv_video_list.removeAt(position)
-        adapter!!.notifyDataSetChanged()
+       notifyAdapter()
 
 
     }

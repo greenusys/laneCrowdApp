@@ -18,6 +18,17 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:layout_collapseMode="pin"
+            android:layout_width="match_parent"
+
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimaryDark"
+            app:popupTheme="@style/AppTheme.PopupOverlay" >
+
+
 
         <!--title layout-->
         <LinearLayout
@@ -35,10 +46,11 @@
                 android:layout_height="30dp"
                 android:onClick="back_activity"
                 android:src="@drawable/back_arrow"
-                android:tint="@color/black" />
+                android:tint="@color/white" />
 
 
             <TextView
+                android:textColor="@color/white"
                 android:id="@+id/txt_postUserName"
                 style="@style/TextAppearance.AppCompat.Headline"
                 android:layout_width="wrap_content"
@@ -53,12 +65,14 @@
                 style="@style/TextAppearance.AppCompat.Headline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/box_2"
                 android:text="Post" />
 
 
         </LinearLayout>
         <!--title layout-->
+
+        </androidx.appcompat.widget.Toolbar>
 
 
         <com.airbnb.lottie.LottieAnimationView
@@ -88,6 +102,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/user_name"
                     style="@style/TextAppearance.MaterialComponents.Headline5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -104,7 +119,7 @@
                     android:layout_gravity="right"
                     android:layout_marginLeft="20dp"
                     android:gravity="right"
-                    android:text="Whats is your mind... Md. Kaif?"
+                    android:text="Whats is your mind..."
                     android:textColor="@color/black" />
 
 
@@ -117,10 +132,13 @@
                 android:orientation="vertical">
 
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
+                   android:layout_marginTop="10dp"
+                    android:id="@+id/user_image"
                     android:layout_width="50dp"
+                    android:scaleType="centerCrop"
                     android:layout_height="70dp"
-                    android:layout_gravity="right"
+                    android:layout_gravity="center"
                     android:src="@drawable/test" />
 
             </LinearLayout>
@@ -131,6 +149,7 @@
 
 
         <EditText
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/status_input"
@@ -145,6 +164,8 @@
 
         <!--show selected images or videos-->
         <LinearLayout
+            android:id="@+id/selected_layout"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="160dp"
             android:gravity="center">
@@ -160,6 +181,7 @@
 
 
         <LinearLayout
+            android:layout_marginTop="50dp"
             android:id="@+id/list_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

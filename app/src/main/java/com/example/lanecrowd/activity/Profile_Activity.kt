@@ -22,12 +22,15 @@ import com.example.lancrowd.activity.modal.Home_Post_Modal
 import com.example.lancrowd.activity.modal.Photo_Video_Modal
 import com.example.lancrowd.activity.modal.RegisterResModal
 import com.example.lanecrowd.R
+import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.adapter.Photos_Video_Adapter
 import com.example.lanecrowd.adapter.Profile_Post_Adapter
 import com.example.lanecrowd.util.ImageFilePath
 import com.example.lanecrowd.util.RuntimePermissionsActivity
 import com.example.lanecrowd.util.URL
+import com.example.lanecrowd.view_modal.MySessionVM
 import com.example.lanecrowd.view_modal.Profile_VM
+import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jakewharton.rxbinding2.view.RxView
 import de.hdodenhof.circleimageview.CircleImageView
@@ -48,6 +51,8 @@ class Profile_Activity : RuntimePermissionsActivity() {
     var timeline: TextView? = null
     var photos: TextView? = null
     var videos: TextView? = null
+    private var session: SessionManager? = null
+
 
     private val REQ_PER_GALLERY_PROFILE = 1
     private val REQ_PER_GALLERY_COVER = 2
@@ -69,10 +74,21 @@ class Profile_Activity : RuntimePermissionsActivity() {
     var upload_loading_animLogin: LottieAnimationView? = null
     lateinit var viewmodel: Profile_VM
 
+    //this factory method will create and return one object of SessionVM
+    var videomodelfactory: ViewModelProvider_Custom? = null
+    var mySessionVM: MySessionVM? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
+
+
+        //this factory method will create and return one object
+        videomodelfactory = ViewModelProvider_Custom(MySessionVM.instance)
+        mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
+
+
 
         initViews()
 
@@ -82,6 +98,7 @@ class Profile_Activity : RuntimePermissionsActivity() {
 
     private fun initViews() {
 
+        session = SessionManager(applicationContext)
 
         viewmodel = ViewModelProvider(this).get(Profile_VM::class.java)
 
@@ -108,7 +125,8 @@ class Profile_Activity : RuntimePermissionsActivity() {
         setUserDataWithImages()
 
 
-        val observable1 = RxView.clicks(txt_changeProfile!!).map<Any> { o: Any? -> txt_changeProfile }
+        val observable1 =
+            RxView.clicks(txt_changeProfile!!).map<Any> { o: Any? -> txt_changeProfile }
         val observable2 = RxView.clicks(txt_changeCover!!).map<Any> { o: Any? -> txt_changeCover }
         val observable3 =
             RxView.clicks(txt_doneChangeProfile!!).map<Any> { o: Any? -> txt_doneChangeProfile }
@@ -132,16 +150,17 @@ class Profile_Activity : RuntimePermissionsActivity() {
     private fun visibleLoadingAnimation(value: Boolean) {
 
         if (value) {
-            goneView(upload_loading_animLogin!!,true)
+            goneView(upload_loading_animLogin!!, true)
             upload_loading_animLogin!!.playAnimation()
 
         } else {
-            goneView(upload_loading_animLogin!!,false)
+            goneView(upload_loading_animLogin!!, false)
             upload_loading_animLogin!!.pauseAnimation()
         }
 
 
     }
+
     private fun setUserDataWithImages() {
 
         user_name!!.text = URL.fullName
@@ -155,8 +174,6 @@ class Profile_Activity : RuntimePermissionsActivity() {
             .load(URL.coverPicPath + URL.coverPic).apply(
                 RequestOptions().placeholder(R.drawable.placeholder)
             ).thumbnail(0.01f).into(iv_cover_image_profile!!)
-
-
 
 
     }
@@ -325,13 +342,13 @@ class Profile_Activity : RuntimePermissionsActivity() {
                 coverUri = data.data
                 Glide.with(baseContext).load(coverUri).into(iv_cover_image_profile!!)
                 myCoverPhoto = File(ImageFilePath.getPath(baseContext, coverUri))
-                goneView(txt_doneChangeCover!!!!,true)
+                goneView(txt_doneChangeCover!!, true)
 
             } else if (requestCode == 1 && resultCode == RESULT_OK) {
                 profileUri = data.data
                 Glide.with(baseContext).load(profileUri).into(iv_profile_image_profile!!)
                 myProfilePhoto = File(ImageFilePath.getPath(baseContext, profileUri))
-                goneView(txt_doneChangeProfile!!!!,true)
+                goneView(txt_doneChangeProfile!!, true)
 
             }
 
@@ -347,17 +364,16 @@ class Profile_Activity : RuntimePermissionsActivity() {
 
         visibleLoadingAnimation(true)
 
-        var uri:String?=null
-        if(from.equals("profile"))
-            uri=profileUri.toString()
+        var uri: String? = null
+        if (from.equals("profile"))
+            uri = profileUri.toString()
         else
-            uri=coverUri.toString()
-
+            uri = coverUri.toString()
 
 
         var file = File(ImageFilePath.getPath(baseContext, Uri.parse(uri)))
 
-        println("file_name"+file.name)
+        println("file_name" + file.name)
 
 
         // Create a request body with file and image media type
@@ -374,7 +390,7 @@ class Profile_Activity : RuntimePermissionsActivity() {
             viewmodel.changeProfileCoverPic(from, part, userId, android)
                 .observe(this, Observer { resultPi ->
 
-                    setAndUpdateProfileOrCoverPic(from,resultPi)
+                    setAndUpdateProfileOrCoverPic(from, resultPi)
 
 
                 })
@@ -386,25 +402,48 @@ class Profile_Activity : RuntimePermissionsActivity() {
 
     }
 
-    private fun setAndUpdateProfileOrCoverPic(from:String,resultPi: RegisterResModal?) {
+    private fun setAndUpdateProfileOrCoverPic(from: String, resultPi: RegisterResModal?) {
 
 
-        if(from.equals("profile"))
-            goneView(txt_doneChangeProfile,false)
+        if (from.equals("profile"))
+            goneView(txt_doneChangeProfile, false)
         else
-            goneView(txt_doneChangeCover,false)
+            goneView(txt_doneChangeCover, false)
 
 
         visibleLoadingAnimation(false)
         println("changeApiResponse" + resultPi)
         if (resultPi!!.msg.equals("profile pic uploaded Successfully")) {
 
+            //update session value of profile
+            session!!.updateProfilePic(resultPi.pic)
+            URL.profilePic = resultPi.pic
+            updateSessionVM()
 
-        } else if(resultPi!!.msg.equals("Cover pic uploaded Successfully")) {
 
+        } else if (resultPi.msg.equals("Cover pic uploaded Successfully")) {
+
+            //update session value of profile
+            session!!.updateCoverPic(resultPi.pic)
+            URL.coverPic = resultPi.pic
+            updateSessionVM()
         }
     }
 
+    private fun updateSessionVM() {
+
+        //set session data to MysessionVM
+        mySessionVM!!.StoreValueTOLiveData(
+            URL.userId,
+            URL.email,
+            URL.phone,
+            URL.fullName,
+            "",
+            URL.profilePic,
+            URL.coverPic
+        )
+
+    }
 
 
     @SuppressLint("WrongConstant")
@@ -440,14 +479,15 @@ class Profile_Activity : RuntimePermissionsActivity() {
     }
 
 
-    private fun goneView(view: View?,value:Boolean) {
+    private fun goneView(view: View?, value: Boolean) {
 
-        if(value)
-            view!!.visibility=View.VISIBLE
+        if (value)
+            view!!.visibility = View.VISIBLE
         else
-            view!!.visibility=View.GONE
+            view!!.visibility = View.GONE
 
     }
+
     override fun onPermissionsGranted(requestCode: Int) {
 
         if (requestCode == REQ_PER_GALLERY_PROFILE) {

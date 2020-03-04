@@ -13,7 +13,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
@@ -109,8 +111,8 @@ class Home_Post_Adapter(
 
             val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             layoutManager.initialPrefetchItemCount = 8
-            val storyAdapter = Story_Adapter(storyLIst, context)
             holder.story_rv.layoutManager = layoutManager
+            val storyAdapter = Story_Adapter(layoutManager,activity,holder.story_rv,storyLIst, context)
             holder.story_rv.adapter = storyAdapter
             holder.story_rv.setRecycledViewPool(viewPool)
         }
@@ -646,7 +648,6 @@ class Home_Post_Adapter(
                 }
             })
             .apply(RequestOptions().placeholder(R.drawable.placeholder))
-
             .thumbnail(0.01f).into(post_img).waitForLayout()
 
 

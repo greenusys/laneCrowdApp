@@ -6,6 +6,7 @@ import java.io.Serializable
 
 class RegisterResModal(val status:String,
                        val msg:String,
+                       val pic:String,
                        val name:String,
                        val email_phone:String,
                        val password:String,

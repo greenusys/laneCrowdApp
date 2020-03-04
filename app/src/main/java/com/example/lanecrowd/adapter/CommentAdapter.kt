@@ -18,6 +18,7 @@ import com.example.lanecrowd.R
 import com.example.lanecrowd.activity.Show_Comment_Activity
 import com.example.lanecrowd.modal.CommentMediaModal
 import com.example.lanecrowd.modal.CommentModel
+import com.example.lanecrowd.retrofit.TimeShow
 import com.example.lanecrowd.util.URL
 import com.like.LikeButton
 import com.like.OnLikeListener
@@ -241,7 +242,10 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
 
 
         holder.txt_comment.setText(list.get(position-1).comment)
-        holder.txt_time.setText(list.get(position-1).commented_on)
+
+        var date= TimeShow.getTime(list.get(position-1).commented_on);
+
+        holder.txt_time.setText(date)
         holder.txt_name.setText(list.get(position-1).full_name)
 
     }

@@ -71,14 +71,14 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="0dp"
+                android:id="@+id/image_by"
                 android:layout_weight=".5"
-                android:layout_height="60dp"
-                android:src="@drawable/profile"/>
+                android:layout_height="60dp" />
 
 
             <TextView
                 android:layout_gravity="center_vertical"
-                android:id="@+id/txt_postUserName"
+                android:id="@+id/name_by"
                 style="@style/TextAppearance.AppCompat.Headline"
                 android:layout_width="0dp"
                 android:layout_weight="1.5"
@@ -116,10 +116,9 @@
         android:padding="8dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/ivProfileImageComment"
+            android:id="@+id/user_image"
             android:layout_width="35dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/profile"/>
+            android:layout_height="match_parent" />
 
         <EditText
             android:id="@+id/reply_comment"
