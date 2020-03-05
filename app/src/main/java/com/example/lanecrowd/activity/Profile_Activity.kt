@@ -33,7 +33,6 @@ import com.example.lanecrowd.view_modal.Profile_VM
 import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jakewharton.rxbinding2.view.RxView
-import de.hdodenhof.circleimageview.CircleImageView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import okhttp3.MediaType
@@ -70,7 +69,7 @@ class Profile_Activity : RuntimePermissionsActivity() {
     var txt_doneChangeProfile: TextView? = null
     var txt_doneChangeCover: TextView? = null
     var iv_cover_image_profile: ImageView? = null
-    var iv_profile_image_profile: CircleImageView? = null
+    var iv_profile_image_profile: ImageView? = null
     var upload_loading_animLogin: LottieAnimationView? = null
     lateinit var viewmodel: Profile_VM
 
@@ -119,7 +118,7 @@ class Profile_Activity : RuntimePermissionsActivity() {
         txt_doneChangeCover = findViewById<TextView>(R.id.txt_doneChangeCover)
 
         iv_cover_image_profile = findViewById<ImageView>(R.id.iv_cover_image_profile)
-        iv_profile_image_profile = findViewById<CircleImageView>(R.id.iv_profile_image_profile)
+        iv_profile_image_profile = findViewById<ImageView>(R.id.iv_profile_image_profile)
 
 
         setUserDataWithImages()
@@ -161,22 +160,52 @@ class Profile_Activity : RuntimePermissionsActivity() {
 
     }
 
+
+
+
     private fun setUserDataWithImages() {
+
+
+        val user: HashMap<String, String?> = session!!.userDetails
+        setUseDataTOVIew(user)
+
+
+
+        mySessionVM!!.getName()!!.observe(this, Observer { resultPi ->
+
+
+            setUseDataTOVIew(resultPi)
+
+
+        })
+
+
+
+
+    }
+
+
+
+
+
+
+    private fun setUseDataTOVIew(result: HashMap<String, String?>) {
+
 
         user_name!!.text = URL.fullName
 
         Glide.with(baseContext)
-            .load(URL.profilePicPath + URL.profilePic)
+            .load(URL.profilePicPath + result.get(SessionManager.KEY_PROFILE_PICTURE))
             .apply(RequestOptions().placeholder(R.drawable.placeholder_profile))
             .thumbnail(0.01f).into(iv_profile_image_profile!!)
 
         Glide.with(baseContext)
-            .load(URL.coverPicPath + URL.coverPic).apply(
+            .load(URL.coverPicPath + result.get(SessionManager.KEY_COVER_PHOTO)).apply(
                 RequestOptions().placeholder(R.drawable.placeholder)
             ).thumbnail(0.01f).into(iv_cover_image_profile!!)
 
-
     }
+
 
     private fun setClickListeneToSlider(
         observable1: Observable<Any>?,

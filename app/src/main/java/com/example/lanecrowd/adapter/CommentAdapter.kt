@@ -1,6 +1,7 @@
 package com.example.lanecrowd.adapter
 
 
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.example.lanecrowd.R
+import com.example.lanecrowd.activity.ShowPhotoActivity
 import com.example.lanecrowd.activity.Show_Comment_Activity
 import com.example.lanecrowd.modal.CommentMediaModal
 import com.example.lanecrowd.modal.CommentModel
@@ -59,6 +61,9 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
     if(position==0)
     {
 
+
+
+
         holder.main_cardView.radius = 0f
 
 
@@ -94,7 +99,7 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
             holder.commentText.text = ""
 
 
-
+        setPhotoVideoViewListener(position, holder)
 
         goneLayout(holder.post_menu)
 
@@ -155,6 +160,8 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
 
             goneLayout(holder.frame_postC)
         } else if (mediaData.files!!.size == 4) {
+
+            holder.more_text.visibility=View.GONE
 
             set_Success_Glide_Data(
                 mediaData.urlPath + mediaData.files!!.get(0),
@@ -306,6 +313,69 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
     }
 
 
+    private fun checkIsImage(position: Int): Boolean {
+
+        if (mediaData.files.get(0).contains("jpg") || mediaData.files.get(0).contains("png") || mediaData.files.get(0).contains("jpeg")
+        )
+            return true
+
+        return false
+
+    }
+    private fun setPhotoVideoViewListener(position: Int, holder: MyViewHolder) {
+
+
+        holder.iv_postImgA.setOnClickListener(View.OnClickListener {
+            println("checkImageee" + checkIsImage(position))
+            context.startActivity(
+                Intent(context, ShowPhotoActivity::class.java)
+                    .putExtra("isImage", checkIsImage(position).toString())
+                    .putExtra("position", "0")
+                    .putExtra("name", mediaData.postUserName)
+                    .putStringArrayListExtra("files", mediaData.files)
+            )
+
+        })
+
+        holder.iv_postImgB.setOnClickListener(View.OnClickListener {
+            println("checkImageee" + checkIsImage(position))
+            context.startActivity(
+                Intent(context, ShowPhotoActivity::class.java)
+                    .putExtra("isImage", checkIsImage(position ).toString())
+                    .putExtra("position", "1")
+                    .putExtra("name",mediaData.postUserName)
+                    .putStringArrayListExtra("files", mediaData.files)
+            )
+
+        })
+        holder.postImageC.setOnClickListener(View.OnClickListener {
+            println("checkImageee" + checkIsImage(position))
+            context.startActivity(
+                Intent(context, ShowPhotoActivity::class.java)
+                    .putExtra("isImage", checkIsImage(position).toString())
+                    .putExtra("position", "2")
+                    .putExtra("name", mediaData.postUserName)
+                    .putStringArrayListExtra("files", mediaData.files)
+            )
+
+        })
+
+        holder.iv_postImgD.setOnClickListener(View.OnClickListener {
+            println("checkImageee" + checkIsImage(position ))
+            context.startActivity(
+                Intent(context, ShowPhotoActivity::class.java)
+                    .putExtra("isImage", checkIsImage(position).toString())
+                    .putExtra("position", "3")
+                    .putExtra("name", mediaData.postUserName)
+                    .putStringArrayListExtra("files", mediaData.files)
+            )
+
+        })
+
+
+    }
+
+
     private fun setLikeListener(holder: MyViewHolder, position: Int) {
 
         // var position:Int=position-2
@@ -314,7 +384,7 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
             override fun liked(likeButton: LikeButton) {
 
                 println("bbbbb_liked"+position)
-                likePost(position)
+                likePost(holder,position)
 
             }
 
@@ -322,7 +392,7 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
 
                 println("bbbbb_disliked"+position)
 
-                likePost(position)
+                likePost(holder,position)
 
 
             }
@@ -333,7 +403,7 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
 
 
 
-    private fun likePost(position: Int) {
+    private fun likePost(holder: MyViewHolder,position: Int) {
 
 
 
@@ -352,11 +422,9 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
         mediaData.isMyLike= !mediaData.isMyLike
 
 
-
         notifyItemChanged(position, position)
 
-        context.likeDislike(mediaData.postId, URL.userId)
-
+        context.likeDislike(mediaData.total_likes,mediaData.totalComment,mediaData.postId, URL.userId)
 
     }
 

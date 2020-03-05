@@ -1,6 +1,7 @@
 package com.example.lanecrowd.activity
 
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -37,7 +38,6 @@ import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
-import kotlin.collections.ArrayList
 
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -49,25 +49,23 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var session: SessionManager? = null
 
     //this factory method will create and return one object of SessionVM
-    var videomodelfactory:ViewModelProvider_Custom?=null
-    var mySessionVM:MySessionVM?=null
+    var videomodelfactory: ViewModelProvider_Custom? = null
+    var mySessionVM: MySessionVM? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        //this factory method will create and return one object
-        videomodelfactory = ViewModelProvider_Custom(MySessionVM.instance)
-        mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
-
-
-
-        println("oncreate")
         initViews()
         set_Up_Tab_Text_And_Icons()
 
     }
+
+
+
+
+
 
 
     private fun set_Up_Tab_Text_And_Icons() {
@@ -93,13 +91,21 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun initViews() {
 
+        session = SessionManager(applicationContext)
+        //this factory method will create and return one object
+        videomodelfactory = ViewModelProvider_Custom(MySessionVM.instance)
+        mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
+
+
+        storeUserSessionValueTOURLCLass()
+
         viewPage = findViewById<ViewPager>(R.id.viewpager)
         viewPage!!.offscreenPageLimit = 5
         setupViewPager(viewPage!!)
 
-        session = SessionManager(applicationContext)
 
-        storeUserSessionValueTOURLCLass()
+
+
 
 
         tabLayout = findViewById<View>(R.id.tabs) as TabLayout
@@ -162,20 +168,17 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         txtMail: TextView) {
 
         val user: HashMap<String, String?> = session!!.userDetails
-        setUseDataTOVIew(txtName,txtMail,profileImage,headerView,user!!)
+        setUseDataTOVIew(txtName, txtMail, profileImage, headerView, user)
 
 
 
         mySessionVM!!.getName()!!.observe(this, Observer { resultPi ->
 
 
-            setUseDataTOVIew(txtName,txtMail,profileImage,headerView,resultPi)
+            setUseDataTOVIew(txtName, txtMail, profileImage, headerView, resultPi)
 
 
         })
-
-
-
 
 
     }
@@ -203,15 +206,15 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .thumbnail(0.01f).into(profileImage!!)
 
         Glide.with(baseContext)
-            .load(URL.coverPicPath +resultPi[SessionManager.KEY_COVER_PHOTO]).apply(
+            .load(URL.coverPicPath + resultPi[SessionManager.KEY_COVER_PHOTO]).apply(
                 RequestOptions().placeholder(R.drawable.placeholder)
             ).thumbnail(0.01f).into(headerView!!)
 
 
 
         println("ObserChanged")
-        println("KEY_PROFILE_PICTURE"+URL.profilePicPath + resultPi[SessionManager.KEY_PROFILE_PICTURE])
-        println("KEY_COVER_PHOTO"+URL.coverPicPath +resultPi[SessionManager.KEY_COVER_PHOTO])
+        println("KEY_PROFILE_PICTURE" + URL.profilePicPath + resultPi[SessionManager.KEY_PROFILE_PICTURE])
+        println("KEY_COVER_PHOTO" + URL.coverPicPath + resultPi[SessionManager.KEY_COVER_PHOTO])
 
     }
 
@@ -221,27 +224,24 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val user: HashMap<String, String?> = session!!.userDetails
 
 
+        val KEY_USERID = user[SessionManager.KEY_USERID]
+        val KEY_FULL_NAME = user[SessionManager.KEY_FULL_NAME]
+        val KEY_EMAIL = user[SessionManager.KEY_EMAIL]
+        val KEY_PASSWORD = user[SessionManager.KEY_PASSWORD]
+        val KEY_PHONE = user[SessionManager.KEY_PHONE]
+        val KEY_PROFILE_PICTURE = user[SessionManager.KEY_PROFILE_PICTURE]
+        val KEY_COVER_PHOTO = user[SessionManager.KEY_COVER_PHOTO]
 
-            val KEY_USERID = user[SessionManager.KEY_USERID]
-            val KEY_FULL_NAME = user[SessionManager.KEY_FULL_NAME]
-            val KEY_EMAIL = user[SessionManager.KEY_EMAIL]
-            val KEY_PHONE = user[SessionManager.KEY_PHONE]
-            val KEY_PROFILE_PICTURE = user[SessionManager.KEY_PROFILE_PICTURE]
-            val KEY_COVER_PHOTO = user[SessionManager.KEY_COVER_PHOTO]
-
-            URL.userId = KEY_USERID!!
-            URL.fullName = KEY_FULL_NAME!!
-            URL.email = KEY_EMAIL!!
-            URL.phone = KEY_PHONE!!
-            URL.profilePic = KEY_PROFILE_PICTURE!!
-            URL.coverPic = KEY_COVER_PHOTO!!
-
-
-
+        URL.userId = KEY_USERID!!
+        URL.fullName = KEY_FULL_NAME!!
+        URL.email = KEY_EMAIL!!
+        URL.password = KEY_PASSWORD!!
+        URL.phone = KEY_PHONE!!
+        URL.profilePic = KEY_PROFILE_PICTURE!!
+        URL.coverPic = KEY_COVER_PHOTO!!
 
 
-
-
+        println("activity_password"+URL.password)
 
 
     }
@@ -375,8 +375,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             drawer!!.closeDrawer(GravityCompat.START)
         } else {
             if (doubleBackToExitPressedOnce) {
-                //  finishAffinity()
-                super.onBackPressed()
+                  finishAffinity()
+              //  super.onBackPressed()
                 return
             }
             this.doubleBackToExitPressedOnce = true

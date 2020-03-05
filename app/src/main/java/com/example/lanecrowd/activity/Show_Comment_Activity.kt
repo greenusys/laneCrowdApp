@@ -15,6 +15,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.lanecrowd.R
+import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.adapter.CommentAdapter
 import com.example.lanecrowd.modal.CommentMediaModal
 import com.example.lanecrowd.modal.CommentModel
@@ -30,8 +32,11 @@ import com.example.lanecrowd.modal.PowerMenuUtils
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.CommentVM
 import com.example.lanecrowd.view_modal.FetchPostVm
+import com.example.lanecrowd.view_modal.MySessionVM
+import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
@@ -43,8 +48,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -89,10 +92,20 @@ class Show_Comment_Activity : AppCompatActivity() {
     private var no_comment: TextView? = null
     private var edt_comment: EditText? = null
     private var iv_sendComment: ImageView? = null
+    private var user_profile_comment: ImageView? = null
     private var swipe: SwipeRefreshLayout? = null
     var loading_more_anim: SpinKitView? = null
 
     lateinit var viewmodel: CommentVM
+
+
+    private var session: SessionManager? = null
+
+    //this factory method will create and return one object of SessionVM
+    var videomodelfactory: ViewModelProvider_Custom? = null
+    var mySessionVM: MySessionVM? = null
+
+
 
     var user_image: CircleImageView? = null
 
@@ -103,7 +116,7 @@ class Show_Comment_Activity : AppCompatActivity() {
 
         files = intent.extras!!.getStringArrayList("files")
         post_id = intent.extras!!.getString("post_id")
-       // post_position = intent.extras!!.getString("post_position")
+        post_position = intent.extras!!.getString("post_position")
         isImage = intent.extras!!.getString("isImage")
         user_name = intent.extras!!.getString("user_name")
         time = intent.extras!!.getString("time")
@@ -130,7 +143,7 @@ class Show_Comment_Activity : AppCompatActivity() {
 
     }
 
-    private fun setProfileImage(url: String, layott: CircleImageView?) {
+    private fun setProfileImage(url: String, layott: ImageView?) {
         Glide.with(applicationContext).load(url).apply(
             RequestOptions().placeholder(R.drawable.placeholder_profile)
         )
@@ -140,6 +153,13 @@ class Show_Comment_Activity : AppCompatActivity() {
 
     @SuppressLint("WrongConstant")
     private fun initViesForVM() {
+
+        session = SessionManager(applicationContext)
+        //this factory method will create and return one object
+        videomodelfactory = ViewModelProvider_Custom(MySessionVM.instance)
+        mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
+
+
 
         //power
         hamburgerMenu = PowerMenuUtils.getCommentMenu(
@@ -157,6 +177,7 @@ class Show_Comment_Activity : AppCompatActivity() {
 
         mediaData = CommentMediaModal(
             post_id!!,
+            user_name!!,
             isMyLike,
             files!!,
             url,
@@ -172,14 +193,13 @@ class Show_Comment_Activity : AppCompatActivity() {
         iv_sendComment = findViewById<ImageView>(R.id.iv_sendComment)
         edt_comment = findViewById<EditText>(R.id.edt_comment)
 
-        val user_profile_comment = findViewById<CircleImageView>(R.id.user_profile_comment)
+         user_profile_comment = findViewById<ImageView>(R.id.user_profile_comment)
         val user_name_comment = findViewById<TextView>(R.id.user_name_comment)
         val post_time_comment = findViewById<TextView>(R.id.post_time_comment)
 
 
 
-        setProfileImage(URL.profilePicPath + user_pic, user_profile_comment)
-        setProfileImage(URL.profilePicPath + URL.profilePic, user_image)
+        setUserDataWithImages()
 
 
         user_name_comment.text = user_name
@@ -204,7 +224,7 @@ class Show_Comment_Activity : AppCompatActivity() {
 
 
         if (!isNetworkAvailable(applicationContext!!)) {
-            // visible_no_internet_layout(true)
+             visible_no_internet_layout(true)
         } else {
             setRefreshingfalse(true)
 
@@ -219,6 +239,59 @@ class Show_Comment_Activity : AppCompatActivity() {
         })
 
     }
+
+    private fun visible_no_internet_layout(value: Boolean) {
+
+        if(value)
+        {
+            visibleNoComment(true)
+            no_comment!!.setText("Please Check Your Internet Connection")
+
+        }
+        else
+        {
+
+            visibleNoComment(false)
+        }
+
+    }
+
+
+    private fun setUserDataWithImages() {
+
+
+        val user: HashMap<String, String?> = session!!.userDetails
+        setUseDataTOVIew(user)
+
+
+
+
+        mySessionVM!!.getName()!!.observe(this, Observer { resultPi ->
+
+
+            setUseDataTOVIew(resultPi)
+
+
+        })
+
+
+
+
+    }
+
+
+    private fun setUseDataTOVIew(result: HashMap<String, String?>) {
+
+
+
+        //user's post image
+         setProfileImage(URL.profilePicPath + user_pic, user_profile_comment!!)
+
+        //self images
+        setProfileImage(URL.profilePicPath + result[SessionManager.KEY_PROFILE_PICTURE], user_image)
+
+    }
+
 
     private fun CallAPI() {
 
@@ -341,6 +414,16 @@ class Show_Comment_Activity : AppCompatActivity() {
         }
 
 
+        setTotalComment()
+
+
+    }
+
+    private fun setTotalComment() {
+
+        mediaData!!.totalComment=comment_list.size.toString()
+        total_comment=comment_list.size.toString()
+        adapter!!.notifyItemChanged(0,0)
     }
 
 
@@ -401,14 +484,17 @@ class Show_Comment_Activity : AppCompatActivity() {
             try {
 
                 counting = 0
-                //if (!isNetworkAvailable(applicationContext!!)) {
-                ////  setRefreshingfalse(false)
-                // showSnackBar("Please check your internet connection")
-                //  if (comment_list.size <= 0 && no_data_anim_post!!.visibility != View.VISIBLE)
-                //   visible_no_internet_layout(true)
-                //  } else {
+                if (!isNetworkAvailable(applicationContext!!)) {
+                 setRefreshingfalse(false)
+                showSnackBar("Please check your internet connection")
+                  if (comment_list.size <= 0 && no_comment!!.visibility != View.VISIBLE)
+                   visible_no_internet_layout(true)
+                  }
+                else {
+                    setRefreshingfalse(true)
+                    visible_no_internet_layout(false)
                 fetchPostCommentAPI("swipe")
-                //  }
+                  }
             } catch (e: IndexOutOfBoundsException) {
                 println("on_Refresh_Exception_Found_$e")
             }
@@ -416,10 +502,12 @@ class Show_Comment_Activity : AppCompatActivity() {
 
     }
 
-    /*  private fun showSnackBar(msg: String) {
-          val snackbar = Snackbar.make(main_layout!!, msg, Snackbar.LENGTH_SHORT)
+      private fun showSnackBar(msg: String) {
+          val snackbar = Snackbar.make(swipe!!, msg, Snackbar.LENGTH_SHORT)
+          snackbar.setBackgroundTint(ContextCompat.getColor(this, (R.color.red)))
+          snackbar.setTextColor(ContextCompat.getColor(this, (R.color.white)))
           snackbar.show()
-      }*/
+      }
 
     private fun visibleLoadingMoreAnim(value: Boolean) {
         if (value)
@@ -528,9 +616,6 @@ class Show_Comment_Activity : AppCompatActivity() {
             }
         } else {
 
-
-
-
             println("no_data_found_for_offset" + counting.toString())
 
 
@@ -542,9 +627,12 @@ class Show_Comment_Activity : AppCompatActivity() {
             e.printStackTrace()
         }
 
+        no_comment!!.setText("No Comment Found")
 
-        if(comment_list.size<=0)
+        if(comment_list.size<=0) {
+            no_comment!!.setText("No Comment Found")
             visibleNoComment(true)
+        }
         else
             visibleNoComment(false)
 
@@ -662,8 +750,13 @@ class Show_Comment_Activity : AppCompatActivity() {
         vibe!!.vibrate(80)
     }
 
-    fun likeDislike(postId: String, userId: String) {
+    fun likeDislike(totalLike:String,totalComment:String,postId: String, userId: String) {
 
+        this.total_likes=totalLike
+        this.total_comment=totalComment
+
+        println("likkk"+totalLike)
+        println("totalComment"+totalComment)
 
         viewmodellike.likeDislikeAPI(postId, userId)
 
@@ -680,16 +773,29 @@ class Show_Comment_Activity : AppCompatActivity() {
 
 
     fun back_activity(view: View) {
+        setDataTOBack()
+    }
 
-        /*var resultIntent =  Intent();
-        resultIntent.putExtra("total_likes",mediaData!!.total_likes);
-        resultIntent.putExtra("total_comment",mediaData!!.totalComment);
-        resultIntent.putExtra("post_position",post_position.toString());
-        startActivityForResult(resultIntent,1)
-        finish()*/
-        onBackPressed()
+    private fun setDataTOBack() {
+
+        val intent = Intent()
+        intent.putExtra("total_likes",total_likes)
+        intent.putExtra("total_comment", total_comment)
+        intent.putExtra("postPosition", post_position)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+        super.onBackPressed()
 
     }
+
+    override fun onBackPressed() {
+        setDataTOBack()
+
+    }
+
+
+
+
 
 
 }

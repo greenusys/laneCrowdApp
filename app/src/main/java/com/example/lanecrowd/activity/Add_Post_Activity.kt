@@ -2,6 +2,7 @@ package com.example.lanecrowd.activity
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -84,6 +85,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         setContentView(R.layout.activity_add__post_)
 
 
+        println("add_post_activity_oncreate")
        from= intent.getStringExtra("from")
 
         initViews()
@@ -140,6 +142,9 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
     }
+
+
+
 
     private fun setNameandImage() {
 

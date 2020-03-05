@@ -6,6 +6,13 @@ import java.util.concurrent.TimeUnit;
 
 public class TimeShow
 {
+    public static void main(String[] args) {
+
+
+        System.out.println("time"+getTime(""));
+    }
+
+
 
 
    public static String getTime(String time)

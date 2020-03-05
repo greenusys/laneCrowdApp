@@ -23,6 +23,7 @@ class SessionManager(// Context
     fun createLoginSession(
         userId: String?,
         email: String?,
+        password: String?,
         phone: String?,
         fullName: String?,
         biography: String?,
@@ -40,6 +41,10 @@ class SessionManager(// Context
         editor.putString(
             KEY_EMAIL,
             email
+        )
+        editor.putString(
+            KEY_PASSWORD,
+            password
         )
         editor.putString(
             KEY_PHONE,
@@ -113,6 +118,10 @@ class SessionManager(// Context
                 KEY_EMAIL,
                 ""
             )
+            user[KEY_PASSWORD] = pref.getString(
+                KEY_PASSWORD,
+                ""
+            )
             user[KEY_PHONE] = pref.getString(
                 KEY_PHONE,
                 ""
@@ -170,6 +179,7 @@ class SessionManager(// Context
         private const val IS_LOGIN = "IsLoggedIn"
         const val KEY_USERID = "id"
         const val KEY_EMAIL = "email"
+        const val KEY_PASSWORD = "password"
         const val KEY_PHONE = "phone"
         const val KEY_FULL_NAME = "full_name"
         const val KEY_BIOGRAPHY = "biography"

@@ -38,7 +38,7 @@
         <ImageView
             android:id="@+id/back"
             android:onClick="back_activity"
-            android:layout_width="40dp"
+            android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/back_arrow"
             android:tint="@color/white"/>
@@ -128,7 +128,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="No Comment Founds"
-            android:textColor="@color/black" />
+            android:textColor="@color/red" />
 
 
 

@@ -6,8 +6,8 @@ object URL {
     val add_story = "http://www.lanecrowd.com/addstories"
     val imagePath = "http://www.lanecrowd.com/assets/uploads/images/"
     val videoPath = "http://www.lanecrowd.com/assets/uploads/videos/"
-    val profilePicPath = "http://lanecrowd.com/assets/img/Profile_Pic/"
-    val coverPicPath = "http://lanecrowd.com/assets/img/Cover_Photo/"
+    val profilePicPath = "http://lanecrowd.com/assets/uploads/images/"
+    val coverPicPath = "http://lanecrowd.com/assets/uploads/images/"
     val storyImagePath = "http://www.lanecrowd.com/assets/stories/images/"
     val storyVideoPath = "http://www.lanecrowd.com/assets/stories/videos/"
 
@@ -18,6 +18,7 @@ object URL {
     var profilePic=""
     var coverPic=""
     var email=""
+    var password=""
     var phone=""
 
     val themeImage = arrayOf<String>(

@@ -3,6 +3,7 @@ package com.example.lanecrowd.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -68,6 +69,7 @@ class Choose_Status_Activity : AppCompatActivity() {
         setContentView(R.layout.activity_choose__status_)
 
         from= intent.getStringExtra("from")
+        println("choose_From"+from)
 
 
 
@@ -109,6 +111,7 @@ class Choose_Status_Activity : AppCompatActivity() {
     }
 
     fun back_activity(view: View) {
+
 
         onBackPressed()
     }
@@ -204,6 +207,7 @@ class Choose_Status_Activity : AppCompatActivity() {
 
                         if (resultPi != null && resultPi.getString("status").equals("1")) {
                             visibleLoadingAnimation(false)
+
                             onBackPressed()
                         } else {
                             visibleLoadingAnimation(false)
@@ -211,6 +215,8 @@ class Choose_Status_Activity : AppCompatActivity() {
 
 
                     })
+
+
 
 
 
@@ -234,6 +240,10 @@ class Choose_Status_Activity : AppCompatActivity() {
 
 
     }
+
+
+
+
 
     private fun hideSoftKeyBoard() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -291,21 +301,16 @@ class Choose_Status_Activity : AppCompatActivity() {
             return null
         }
 
-        println("one")
         val filename = pictureFileDir.path + File.separator + System.currentTimeMillis() + ".jpg"
         val pictureFile = File(filename)
         val bitmap = getBitmapFromView(drawView)
-        println("two$bitmap")
         try {
-            println("three")
             pictureFile.createNewFile()
-            println("four")
             val oStream = FileOutputStream(pictureFile)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, oStream)
             oStream.flush()
             oStream.close()
         } catch (e: IOException) {
-            println("five")
             e.printStackTrace()
             Log.i("TAG", "There was an issue saving the image.")
         }

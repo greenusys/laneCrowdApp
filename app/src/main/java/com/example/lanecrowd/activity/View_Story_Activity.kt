@@ -8,6 +8,8 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -17,6 +19,8 @@ import com.bumptech.glide.request.target.Target
 import com.example.lanecrowd.R
 import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.util.URL
+import com.example.lanecrowd.view_modal.MySessionVM
+import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import de.hdodenhof.circleimageview.CircleImageView
@@ -57,6 +61,11 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
     var name: String? = null
     var imageva: String? = null
+    private var session: SessionManager? = null
+
+    //this factory method will create and return one object of SessionVM
+    var videomodelfactory: ViewModelProvider_Custom? = null
+    var mySessionVM: MySessionVM? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +90,11 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
 
     private fun initViews() {
+
+        session = SessionManager(applicationContext)
+        //this factory method will create and return one object
+        videomodelfactory = ViewModelProvider_Custom(MySessionVM.instance)
+        mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
 
 
 
@@ -109,6 +123,9 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
         image = findViewById<View>(R.id.image) as ImageView
 
 
+        pauseStoryProgressView(true,"start")
+
+
         setStoryImage(counter,files!!.get(counter),image)
 
         // bind reverse view
@@ -130,9 +147,9 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
                     //pause story view
                     if(charSequence.toString().length>0)
-                        pauseStoryProgressView(true)
+                        pauseStoryProgressView(true,"text")
                     else
-                        pauseStoryProgressView(false)
+                        pauseStoryProgressView(false,"text")
 
 
 
@@ -159,19 +176,41 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
     private fun setImageAndName() {
 
 
+
+        val user: HashMap<String, String?> = session!!.userDetails
+        setUseDataTOVIew(user)
+
+
+
+        mySessionVM!!.getName()!!.observe(this, Observer { resultPi ->
+
+
+            setUseDataTOVIew(resultPi)
+
+
+        })
+
+
+
+
+    }
+
+    private fun setUseDataTOVIew(result: HashMap<String, String?>) {
+
         //set profile pic's user name and image
         name_by!!.setText(name)
+
+
         setImageToGLide(URL.profilePicPath+imageva!!,image_by)
 
 
         //set self image
-        setImageToGLide(URL.profilePicPath + URL.profilePic,user_image)
+        setImageToGLide(URL.profilePicPath + result.get(SessionManager.KEY_PROFILE_PICTURE),user_image)
 
-
-        println("imageby"+URL.profilePicPath+imageva)
-        println("useriamge"+URL.profilePicPath + URL.profilePic)
 
     }
+
+
 
     private fun setImageToGLide(url: String, image: CircleImageView?) {
 
@@ -198,7 +237,7 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
         visiBleExoPLayerGOneImage(true)
 
         //pause the storyprogrss view
-        pauseStoryProgressView(true)
+        pauseStoryProgressView(true,"")
 
         //play url when ready
         //andExoPlayerView!!.setSource("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4")
@@ -240,10 +279,13 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
             .listener(object : RequestListener<Drawable?> {
                 override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
 
+                    pauseStoryProgressView(false,"failed")
+
                     return false
                 }
 
                 override fun onResourceReady(resource: Drawable?, model: Any, target: Target<Drawable?>, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                    pauseStoryProgressView(false,"success")
 
                     return false
                 }
@@ -258,8 +300,11 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
 
 
-    private fun pauseStoryProgressView(value: Boolean)
+    private fun pauseStoryProgressView(value: Boolean,from:String)
     {
+
+        println("pauseStoryProgressView "+from)
+
 
         if (value)
             storiesProgressView!!.pause()

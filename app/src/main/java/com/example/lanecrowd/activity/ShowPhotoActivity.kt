@@ -16,6 +16,7 @@ class ShowPhotoActivity : AppCompatActivity() {
      var files:ArrayList<String>?=null
      var isImage:String?=null
      var position:String?=null
+     var name:String?=null
 
 
     var backCount:Int=0;
@@ -28,6 +29,7 @@ class ShowPhotoActivity : AppCompatActivity() {
          files = intent.extras!!.getStringArrayList("files")
         isImage = intent.extras!!.getString("isImage")
         position = intent.extras!!.getString("position")
+        name = intent.extras!!.getString("name")
 
 
         println("files_size"+files!!.size)
@@ -49,7 +51,7 @@ class ShowPhotoActivity : AppCompatActivity() {
             .setToolbarTitleColor(ZColor.WHITE)
             .setGalleryBackgroundColor(ZColor.WHITE)
             .setToolbarColorResId(R.color.colorPrimary)
-            .setTitle("Gallery")
+            .setTitle(name)
             .setSelectedImgPosition(position!!.toInt())
             .show(isImage)
 

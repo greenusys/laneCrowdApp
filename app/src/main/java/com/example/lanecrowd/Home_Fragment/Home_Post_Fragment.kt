@@ -1,6 +1,7 @@
 package com.example.lanecrowd.Home_Fragment
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -15,6 +16,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -24,14 +26,19 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.airbnb.lottie.LottieAnimationView
 import com.example.lancrowd.activity.modal.Home_Post_Modal
+import com.example.lancrowd.activity.modal.RegisterResModal
 import com.example.lancrowd.activity.modal.Story_Modal
 import com.example.lanecrowd.R
+import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.activity.Add_Post_Activity
 import com.example.lanecrowd.adapter.Home_Post_Adapter
 import com.example.lanecrowd.modal.PowerMenuUtils
 import com.example.lanecrowd.retrofit.TimeShow
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.FetchPostVm
+import com.example.lanecrowd.view_modal.LoginRegUserVM
+import com.example.lanecrowd.view_modal.MySessionVM
+import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -56,11 +63,17 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
+    private var session: SessionManager? = null
+
+    //this factory method will create and return one object of SessionVM
+    var videomodelfactory: ViewModelProvider_Custom?=null
+    var mySessionVM: MySessionVM?=null
+
+
     //for menu
     var firstTime: Boolean = false
 
     var postCounting: Int = 0
-    var storyCounting: Int = 0
 
     var isScrolling = false
 
@@ -97,6 +110,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
     var home_post_list = ArrayList<Home_Post_Modal>()
     var story_list = ArrayList<Story_Modal>()
     lateinit var viewmodel: FetchPostVm
+    lateinit var loginVM: LoginRegUserVM;
+
     var layoutManager: LinearLayoutManager? = null
 
 
@@ -115,6 +130,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
         viewmodel = ViewModelProvider(this).get(FetchPostVm::class.java)
+        loginVM = ViewModelProvider(this).get(LoginRegUserVM::class.java!!)
 
 
         //power menu
@@ -130,6 +146,15 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
             onHamburgerItemClickListener,
             onHamburgerMenuDismissedListener
         )
+
+
+
+        session = SessionManager(context!!)
+        //this factory method will create and return one object
+        videomodelfactory = ViewModelProvider_Custom(MySessionVM.instance)
+        mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
+
+
 
         vibe = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
@@ -171,6 +196,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
         if (!isNetworkAvailable(context!!)) {
+            clearHomePostRV()
             visible_no_internet_layout(true)
         } else {
             setRefreshingfalse(true)
@@ -195,8 +221,16 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                 visible_no_internet_layout(true)
             } else {
                 setRefreshingfalse(true)
+
+                    homePostAdapter = Home_Post_Adapter(story_list, home_post_list, context!!, this@Home_Post_Fragment)
+                    home_post_rv!!.adapter=homePostAdapter
+
+                visibleInvisibleNoInternet(false)
+
                 //call only once
+                fetchUpdateUserDetails()
                 fetchStory()
+
                 fetchPost(postCounting.toString(), "")
             }
 
@@ -204,17 +238,33 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
         if (value) {
-            no_internet_anim!!.visibility = View.VISIBLE
+            visibleInvisibleNoInternet(true)
+        } else {
+            visibleInvisibleNoInternet(false)
+        }
+
+
+
+
+    }
+
+    private fun visibleInvisibleNoInternet(value: Boolean) {
+
+        if(value)
+        { no_internet_anim!!.visibility = View.VISIBLE
             retry!!.visibility = View.VISIBLE
             internet_text!!.visibility = View.VISIBLE
             no_internet_anim!!.playAnimation()
-        } else {
+
+        }
+        else
+        {
             no_internet_anim!!.visibility = View.GONE
             retry!!.visibility = View.GONE
             internet_text!!.visibility = View.GONE
             no_internet_anim!!.pauseAnimation()
-        }
 
+        }
 
     }
 
@@ -316,13 +366,28 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
             try {
 
                 postCounting = 0
-                if (!isNetworkAvailable(context!!)) {
+                if (!isNetworkAvailable(context!!))
+                {
                     setRefreshingfalse(false)
                     showSnackBar("Please check your internet connection")
                     if (home_post_list.size <= 0 && no_data_anim_post!!.visibility != View.VISIBLE)
+                    {
+                        clearHomePostRV()
                         visible_no_internet_layout(true)
-                } else {
+                    }
+
+                }
+                else {
+
+                    homePostAdapter = Home_Post_Adapter(story_list, home_post_list, context!!, this@Home_Post_Fragment)
+                    home_post_rv!!.adapter=homePostAdapter
+
+                    visibleInvisibleNoInternet(false)
+
+
+
                     //call only once
+                    fetchUpdateUserDetails()
                     fetchStory()
                     fetchPost(postCounting.toString(), "swipe")
                 }
@@ -333,8 +398,84 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
     }
 
+    private fun fetchUpdateUserDetails() {
+
+        try {
+            loginVM.loginUser(URL.email,URL.password).observe(viewLifecycleOwner, Observer { resultPi ->
+
+
+
+                val userdata: ArrayList<RegisterResModal.UserData> =resultPi.data
+
+
+                if(resultPi.status.equals("1")) {
+
+                    createUserSession(userdata)
+                }
+
+
+
+
+            })
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
+        }
+
+
+
+    }
+
+
+
+    private fun createUserSession(userdata: ArrayList<RegisterResModal.UserData>) {
+
+        var phone: String = ""
+        var email: String = ""
+
+        if (userdata.get(0).phone == null)
+        else
+            phone = userdata.get(0).phone
+
+        if (userdata.get(0).email == null)
+        else
+            email = userdata.get(0).email
+
+
+        println("new_profile_pic"+userdata.get(0).profile_picture)
+
+
+        //creating user's session
+        session!!.createLoginSession(
+            userdata.get(0).user_id,
+            email,
+            URL.password,
+            phone,
+            userdata.get(0).full_name,
+            userdata.get(0).bio_graphy,
+            userdata.get(0).profile_picture,
+            userdata.get(0).cover_photo
+        )
+
+
+        //set session data to MysessionVM
+        mySessionVM!!.StoreValueTOLiveData(
+            userdata.get(0).user_id,
+            email,
+            phone,
+            userdata.get(0).full_name,
+            userdata.get(0).bio_graphy,
+            userdata.get(0).profile_picture,
+            userdata.get(0).cover_photo
+        )
+
+
+    }
+
     private fun showSnackBar(msg: String) {
         val snackbar = Snackbar.make(main_layout!!, msg, Snackbar.LENGTH_SHORT)
+        snackbar.setBackgroundTint(ContextCompat.getColor(context!!, (R.color.red)))
+        snackbar.setTextColor(ContextCompat.getColor(context!!, (R.color.white)))
         snackbar.show()
     }
 
@@ -348,6 +489,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
     }
 
+
+
     private fun setRefreshingfalse(value: Boolean) {
 
         swipe!!.isRefreshing = value
@@ -358,7 +501,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun fetchStory() {
 
-        viewmodel.fetchStoryVM(URL.userId, storyCounting.toString())
+        viewmodel.fetchStoryVM(URL.userId, "0")
             .observe(viewLifecycleOwner, Observer { story_result ->
 
                 println("fetch_story" + story_result)
@@ -403,6 +546,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
     }
 
+
+    //this will run only once
     private fun setStoryPost(storyResult: JsonObject?) {
 
         var main: JSONObject? = null
@@ -416,6 +561,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                 main = JSONObject(storyResult.toString())
                 if (storyResult != null && main.has("code") && main.getString("code").equals("1"))
                 {
+
+                    story_list.clear()
 
                     val data: JSONArray = main.getJSONArray("data")
 
@@ -442,6 +589,10 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                             postList.add(item.getString("story_files"))
 
                         }
+
+
+
+                        var u=item.getString("user_id")
 
 
 
@@ -578,6 +729,7 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                                 item.getString("post_id"),
                                 item.getString("user_id"),
                                 item.getString("post"),
+                                item.getString("post_head"),
                                 postList,
                                 item.getString("posted_by"),
                                 item.getString("profile_pic"),
@@ -621,30 +773,21 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
             visibleLoadingMoreAnim(false)
 
 
+
+
+    }
+
+    private fun clearHomePostRV() {
+
+        home_post_list.clear()
+        home_post_rv!!.recycledViewPool.clear()
+        home_post_rv!!.adapter=null
+        homePostAdapter!!.notifyDataSetChanged()
+
     }
 
 
 
-
-    private fun updateAdapterForMultipleData() {
-
-
-        if (swipe!!.isRefreshing) {
-            if (activity != null) {
-                activity!!.runOnUiThread {
-                    if (homePostAdapter != null) {
-                        home_post_rv!!.recycledViewPool.clear()
-                        homePostAdapter!!.notifyDataSetChanged()
-                        setRefreshingfalse(false)
-                    }
-                    home_post_list.clear()
-
-                }
-            }
-        }
-
-
-    }
 
     private fun notifiyAdapter() {
 
@@ -767,16 +910,27 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        println("OnAcivity_ckjad")
-        if (resultCode == 1) {
+        if (resultCode == Activity.RESULT_OK) {
 
             println("total_likes" + data!!.getStringExtra("total_likes"))
             println("total_comments" + data.getStringExtra("total_comment"))
+            println("postPosition" + data.getStringExtra("postPosition"))
 
+
+            home_post_list.get(data.getStringExtra("postPosition").toInt()-2).total_likes=data!!.getStringExtra("total_likes")
+
+            if(!data!!.getStringExtra("total_likes").equals("0"))
+            home_post_list.get(data.getStringExtra("postPosition").toInt()-2).isMyLike=true
+
+            home_post_list.get(data.getStringExtra("postPosition").toInt()-2).total_comments=data!!.getStringExtra("total_comment")
+            homePostAdapter!!.notifyItemChanged(data.getStringExtra("postPosition").toInt())
 
         }
 
     }
+
+
+
 
 
 }
