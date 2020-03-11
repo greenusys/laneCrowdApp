@@ -20,15 +20,19 @@ import com.chaos.view.PinView
 import com.example.lancrowd.activity.modal.RegisterResModal
 import com.example.lanecrowd.R
 import com.example.lanecrowd.view_modal.LoginRegUserVM
+import com.example.lanecrowd.view_modal.factory.ViewModelFactoryC
 import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.kodein
+import org.kodein.di.generic.instance
 import java.util.concurrent.TimeUnit
 
 
-class Verify_OTP_Activity : AppCompatActivity() {
+class Verify_OTP_Activity : AppCompatActivity(), KodeinAware {
 
 
     var pinView: PinView? = null
@@ -39,6 +43,12 @@ class Verify_OTP_Activity : AppCompatActivity() {
 
     var response: RegisterResModal? = null
     var mainlayout: LinearLayout? = null
+
+
+    override val kodein by kodein()
+    //get factory depencey from outside using kodein framework
+    private val factory: ViewModelFactoryC by instance()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +71,7 @@ class Verify_OTP_Activity : AppCompatActivity() {
         response = intent.getSerializableExtra("result") as RegisterResModal
 
 
-        viewmodel = ViewModelProviders.of(this).get(LoginRegUserVM::class.java)
+        viewmodel = ViewModelProviders.of(this,factory).get(LoginRegUserVM::class.java)
 
         pinView = findViewById(R.id.pinView_verify)
         verfiOtp = findViewById(R.id.verify_otp)
@@ -74,6 +84,7 @@ class Verify_OTP_Activity : AppCompatActivity() {
         RxView.clicks(findViewById(R.id.verify_otp)).throttleFirst(3, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(object : Consumer<Any> {
                     override fun accept(o: Any) {
+                        print("sallu")
 
                         checkValidation()
 
@@ -85,6 +96,8 @@ class Verify_OTP_Activity : AppCompatActivity() {
                 .filter { s -> s.toString().length > 3 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
+
+                    println("sallu_2")
 
                     hideKeyboardFrom(applicationContext!!, findViewById(R.id.root))
 
@@ -130,22 +143,36 @@ class Verify_OTP_Activity : AppCompatActivity() {
     private fun callVerifyOTPAPI() {
 
 
+        println("pinview"+pinView!!.text.toString())
+        println("response!!.otp"+response!!.otp)
+        println("response!!.email_phone"+response!!.email_phone)
+        println("response!!.password"+response!!.password)
+        println("response!!.name"+response!!.name)
+        println("response!!.dob"+response!!.date_of_birth)
+        println("pinview"+response!!.gender.trim())
+
+
         try {
             viewmodel.verifyOTPUSER(pinView!!.text.toString(),
                     response!!.otp,
                     response!!.email_phone,
                     response!!.password,
-                    response!!.name).observe(this, Observer { resultPi ->
+                    response!!.name,
+                    response!!.date_of_birth,
+                    response!!.gender.trim()
+            ).observe(this, Observer { resultPi ->
 
+                visibleAnimation(false)
 
-                println("verifyresult" + resultPi.status)
-                if (resultPi.status.equals("1")) {
-                    visibleAnimation(false)
-                    gotoLoginActivity()
-                } else {
-                    visibleAnimation(false)
-                    showSnackBar("OTP does not matched")
+                if(resultPi!=null) {
+                    if (resultPi.status.equals("1")) {
+                        gotoLoginActivity()
+                    } else {
+                        showSnackBar("OTP does not matched")
+                    }
                 }
+                else
+                    showSnackBar("Please try again later")
 
             })
         } catch (e: Exception) {

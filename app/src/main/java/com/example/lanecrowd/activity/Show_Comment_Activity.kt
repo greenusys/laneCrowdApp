@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -34,6 +35,7 @@ import com.example.lanecrowd.view_modal.CommentVM
 import com.example.lanecrowd.view_modal.FetchPostVm
 import com.example.lanecrowd.view_modal.MySessionVM
 import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
+import com.example.lanecrowd.view_modal.factory.ViewModelFactoryC
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -46,12 +48,15 @@ import com.skydoves.powermenu.PowerMenuItem
 import de.hdodenhof.circleimageview.CircleImageView
 import org.json.JSONArray
 import org.json.JSONObject
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.kodein
+import org.kodein.di.generic.instance
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class Show_Comment_Activity : AppCompatActivity() {
+class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
 
     var firstTime: Boolean = false
     private var hamburgerMenu: PowerMenu? = null
@@ -76,6 +81,7 @@ class Show_Comment_Activity : AppCompatActivity() {
     var staus: String? = null
     var user_pic: String? = null
     var url: String = ""
+    var isMylikepost: Boolean = false
     var total_comment: String? = null
     var total_likes: String? = null
     var total_shared: String? = null
@@ -86,7 +92,10 @@ class Show_Comment_Activity : AppCompatActivity() {
     internal var comment_id: String = ""
     internal var postposition: Int = -1
     var layoutManager: LinearLayoutManager? = null
-    lateinit var viewmodellike: FetchPostVm
+
+
+
+
 
 
     private var no_comment: TextView? = null
@@ -96,6 +105,14 @@ class Show_Comment_Activity : AppCompatActivity() {
     private var swipe: SwipeRefreshLayout? = null
     var loading_more_anim: SpinKitView? = null
 
+
+    override val kodein by kodein()
+
+    //get factory depencey from outside using kodein framework
+    private val factory: ViewModelFactoryC by instance()
+
+    lateinit var viewmodellike: FetchPostVm
+
     lateinit var viewmodel: CommentVM
 
 
@@ -104,6 +121,7 @@ class Show_Comment_Activity : AppCompatActivity() {
     //this factory method will create and return one object of SessionVM
     var videomodelfactory: ViewModelProvider_Custom? = null
     var mySessionVM: MySessionVM? = null
+
 
 
 
@@ -170,7 +188,11 @@ class Show_Comment_Activity : AppCompatActivity() {
         )
         vibe = this@Show_Comment_Activity.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
-        viewmodellike = ViewModelProvider(this).get(FetchPostVm::class.java)
+        viewmodellike = ViewModelProviders.of(this,factory).get(FetchPostVm::class.java)
+
+        viewmodel = ViewModelProviders.of(this,factory).get(CommentVM::class.java)
+
+
 
         user_image = findViewById<CircleImageView>(R.id.user_image)
 
@@ -216,7 +238,6 @@ class Show_Comment_Activity : AppCompatActivity() {
         comment_rv!!.adapter = adapter
 
 
-        viewmodel = ViewModelProvider(this).get(CommentVM::class.java)
 
 
         swiperefresh_Listener()
@@ -750,13 +771,15 @@ class Show_Comment_Activity : AppCompatActivity() {
         vibe!!.vibrate(80)
     }
 
-    fun likeDislike(totalLike:String,totalComment:String,postId: String, userId: String) {
+    fun likeDislike(isMylike:Boolean,totalLike:String,totalComment:String,postId: String, userId: String) {
 
         this.total_likes=totalLike
         this.total_comment=totalComment
+        this.isMylikepost=isMylike
 
         println("likkk"+totalLike)
         println("totalComment"+totalComment)
+        println("isMylikepost"+isMylikepost)
 
         viewmodellike.likeDislikeAPI(postId, userId)
 
@@ -782,6 +805,7 @@ class Show_Comment_Activity : AppCompatActivity() {
         intent.putExtra("total_likes",total_likes)
         intent.putExtra("total_comment", total_comment)
         intent.putExtra("postPosition", post_position)
+        intent.putExtra("isMylike", isMylikepost.toString())
         setResult(Activity.RESULT_OK, intent)
         finish()
         super.onBackPressed()

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -46,7 +47,7 @@ class Home_Post_Adapter(
      var viewmodel: FetchPostVm
 
     init {
-        viewmodel = ViewModelProvider(activity).get(FetchPostVm::class.java)
+        viewmodel = ViewModelProviders.of(activity).get(FetchPostVm::class.java)
 
     }
 

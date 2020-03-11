@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
@@ -99,7 +100,7 @@ class Profile_Activity : RuntimePermissionsActivity() {
 
         session = SessionManager(applicationContext)
 
-        viewmodel = ViewModelProvider(this).get(Profile_VM::class.java)
+        viewmodel = ViewModelProviders.of(this).get(Profile_VM::class.java)
 
         upload_loading_animLogin = findViewById(R.id.upload_loading_animLogin)
         timeline = findViewById(R.id.timeline)
@@ -469,7 +470,9 @@ class Profile_Activity : RuntimePermissionsActivity() {
             URL.fullName,
             "",
             URL.profilePic,
-            URL.coverPic
+            URL.coverPic,
+            URL.dob,
+            URL.gender
         )
 
     }

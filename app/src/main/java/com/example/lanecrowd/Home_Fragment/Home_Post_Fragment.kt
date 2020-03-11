@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -28,6 +29,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.example.lancrowd.activity.modal.Home_Post_Modal
 import com.example.lancrowd.activity.modal.RegisterResModal
 import com.example.lancrowd.activity.modal.Story_Modal
+import com.example.lanecrowd.view_modal.factory.ViewModelFactoryC
 import com.example.lanecrowd.R
 import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.activity.Add_Post_Activity
@@ -48,10 +50,12 @@ import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
 import org.json.JSONArray
 import org.json.JSONObject
-import java.sql.Time
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.x.kodein
+import org.kodein.di.generic.instance
 
 
-class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
+class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener {
 
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -61,6 +65,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onQueryTextChange(newText: String?): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+
 
 
     private var session: SessionManager? = null
@@ -109,9 +115,18 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
     var home_post_list = ArrayList<Home_Post_Modal>()
     var story_list = ArrayList<Story_Modal>()
-    lateinit var viewmodel: FetchPostVm
-    lateinit var loginVM: LoginRegUserVM;
 
+
+    override val kodein by kodein()
+
+    //get factory depencey from outside using kodein framework
+    private val factory: ViewModelFactoryC by instance()
+
+
+    private lateinit var viewmodel: FetchPostVm
+
+
+    lateinit var loginVM: LoginRegUserVM;
     var layoutManager: LinearLayoutManager? = null
 
 
@@ -129,8 +144,11 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
         val view: View = inflater.inflate(R.layout.fragment_home__post_, container, false)
 
 
-        viewmodel = ViewModelProvider(this).get(FetchPostVm::class.java)
-        loginVM = ViewModelProvider(this).get(LoginRegUserVM::class.java!!)
+
+        viewmodel = ViewModelProviders.of(this, factory).get(FetchPostVm::class.java)
+
+        loginVM = ViewModelProviders.of(this,factory).get(LoginRegUserVM::class.java)
+
 
 
         //power menu
@@ -277,6 +295,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun visibleNoDataFound(value: Boolean) {
 
+
+        println("visible_no_found"+value)
         add_post!!.setOnClickListener(View.OnClickListener {
 
             startActivity(
@@ -324,7 +344,14 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
                 totalItems = layoutManager!!.itemCount
                 scrollOutItems = layoutManager!!.findFirstVisibleItemPosition()
 
-                if (isScrolling && (currentItems + scrollOutItems == totalItems)) {
+
+
+                println("currentItems"+currentItems)
+                println("totalItems"+totalItems)
+                println("scrollOutItems"+scrollOutItems)
+                println("home_post_list"+home_post_list.size)
+
+                if (isScrolling && home_post_list.size>8 && (currentItems + scrollOutItems == totalItems)) {
                     visibleLoadingMoreAnim(true)
 
                     println("load_more_called")
@@ -361,6 +388,13 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
     private fun swiperefresh_Listener() {
+
+
+        var c1 = ContextCompat.getColor(context!!,R.color.box_1)
+        var c2 = ContextCompat.getColor(context!!,R.color.box_2)
+        var c3 = ContextCompat.getColor(context!!,R.color.box_8)
+        swipe!!.setColorSchemeColors(c1, c2, c3);
+
 
         swipe!!.setOnRefreshListener(OnRefreshListener {
             try {
@@ -454,7 +488,9 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
             userdata.get(0).full_name,
             userdata.get(0).bio_graphy,
             userdata.get(0).profile_picture,
-            userdata.get(0).cover_photo
+            userdata.get(0).cover_photo,
+            userdata.get(0).date_of_birth,
+            userdata.get(0).gender
         )
 
 
@@ -466,7 +502,9 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
             userdata.get(0).full_name,
             userdata.get(0).bio_graphy,
             userdata.get(0).profile_picture,
-            userdata.get(0).cover_photo
+            userdata.get(0).cover_photo,
+            userdata.get(0).date_of_birth,
+            userdata.get(0).gender
         )
 
 
@@ -517,7 +555,6 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
     private fun fetchPost(offsettt: String, from: String) {
 
         try {
-
 
 
             viewmodel.fetchPostvm(URL.userId, offsettt)
@@ -592,10 +629,6 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
 
-                        var u=item.getString("user_id")
-
-
-
                         story_list.add(Story_Modal(
                             item.getString("story_id"),
                             item.getString("user_id"),
@@ -632,9 +665,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
     private fun storepostDataTOModal(resultPi: JsonObject?, from: String) {
 
 
-
-        var isMylike = false
-        var isImage = false
+        var isMylike: Boolean
+        var isImage :Boolean
         var main: JSONObject? = null
 
 
@@ -660,7 +692,8 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
 
 
-                if (resultPi != null && main.getString("code").equals("1")) {
+                if (main.has("code") && main.getString("code").equals("1"))
+                {
 
                     if (no_data_anim_post!!.visibility == View.VISIBLE)
                         visibleNoDataFound(false)
@@ -745,6 +778,16 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
 
                     }
 
+
+                }
+                else
+                {
+                    println("no_Data_foun_sallu"+home_post_list.size)
+
+                    if (home_post_list.size <= 0)
+                    visibleNoDataFound(true)
+
+                    setRefreshingfalse(false)
 
                 }
 
@@ -915,21 +958,19 @@ class Home_Post_Fragment : Fragment(), SearchView.OnQueryTextListener {
             println("total_likes" + data!!.getStringExtra("total_likes"))
             println("total_comments" + data.getStringExtra("total_comment"))
             println("postPosition" + data.getStringExtra("postPosition"))
+            println("isMylikepost" + data.getStringExtra("isMylike"))
 
 
             home_post_list.get(data.getStringExtra("postPosition").toInt()-2).total_likes=data!!.getStringExtra("total_likes")
 
-            if(!data!!.getStringExtra("total_likes").equals("0"))
-            home_post_list.get(data.getStringExtra("postPosition").toInt()-2).isMyLike=true
+            home_post_list.get(data.getStringExtra("postPosition").toInt()-2).isMyLike = data.getStringExtra("isMylike").equals("true")
 
             home_post_list.get(data.getStringExtra("postPosition").toInt()-2).total_comments=data!!.getStringExtra("total_comment")
-            homePostAdapter!!.notifyItemChanged(data.getStringExtra("postPosition").toInt())
+            homePostAdapter!!.notifyItemChanged(data.getStringExtra("postPosition").toInt(),data.getStringExtra("postPosition").toInt())
 
         }
 
     }
-
-
 
 
 

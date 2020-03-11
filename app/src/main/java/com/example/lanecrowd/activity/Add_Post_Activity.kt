@@ -2,7 +2,6 @@ package com.example.lanecrowd.activity
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -18,16 +17,15 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.lanecrowd.R
-import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.adapter.Show_Selected_File_Adapter
-import com.example.lanecrowd.retrofit.AppController
+import com.example.lanecrowd.util.AppController
 import com.example.lanecrowd.util.ImageFilePath
 import com.example.lanecrowd.util.RuntimePermissionsActivity
 import com.example.lanecrowd.util.URL
@@ -96,7 +94,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     private fun initViews() {
 
 
-        viewmodel = ViewModelProvider(this).get(AddPostVM::class.java)
+        viewmodel = ViewModelProviders.of(this).get(AddPostVM::class.java)
 
 
         appController = applicationContext as AppController

@@ -33,6 +33,7 @@ import com.example.lanecrowd.Home_Fragment.Search_Fragment
 import com.example.lanecrowd.R
 import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.util.URL
+import com.example.lanecrowd.view_modal.FetchPostVm
 import com.example.lanecrowd.view_modal.MySessionVM
 import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
 import com.google.android.material.navigation.NavigationView
@@ -41,6 +42,8 @@ import com.pranavpandey.android.dynamic.toasts.DynamicToast
 
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+
 
 
     var drawer: DrawerLayout? = null
@@ -231,6 +234,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val KEY_PHONE = user[SessionManager.KEY_PHONE]
         val KEY_PROFILE_PICTURE = user[SessionManager.KEY_PROFILE_PICTURE]
         val KEY_COVER_PHOTO = user[SessionManager.KEY_COVER_PHOTO]
+        val KEY_DOB = user[SessionManager.KEY_DOB]
+        val KEY_GENDER = user[SessionManager.KEY_GENDER]
 
         URL.userId = KEY_USERID!!
         URL.fullName = KEY_FULL_NAME!!
@@ -239,6 +244,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         URL.phone = KEY_PHONE!!
         URL.profilePic = KEY_PROFILE_PICTURE!!
         URL.coverPic = KEY_COVER_PHOTO!!
+        URL.dob = KEY_DOB!!
+        URL.gender = KEY_GENDER!!
 
 
         println("activity_password"+URL.password)

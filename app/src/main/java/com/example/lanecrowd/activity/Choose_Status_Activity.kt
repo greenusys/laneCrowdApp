@@ -79,7 +79,7 @@ class Choose_Status_Activity : AppCompatActivity() {
     @SuppressLint("WrongConstant")
     private fun initViews() {
 
-        viewmodel = ViewModelProvider(this).get(AddPostVM::class.java!!)
+        viewmodel = ViewModelProviders.of(this).get(AddPostVM::class.java!!)
 
 
 

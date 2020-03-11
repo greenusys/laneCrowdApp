@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -52,7 +53,7 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
 
         lateinit var viewmodel: FetchPostVm
 
-        viewmodel = ViewModelProvider(activity).get(FetchPostVm::class.java)
+        viewmodel = ViewModelProviders.of(activity).get(FetchPostVm::class.java)
 
 
         println("stksdjf"+story_rv)

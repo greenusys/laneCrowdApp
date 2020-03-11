@@ -20,6 +20,8 @@ object URL {
     var email=""
     var password=""
     var phone=""
+    var dob=""
+    var gender=""
 
     val themeImage = arrayOf<String>(
         "http://lanecrowd.com/assets/webimg/theme/2.jpg",

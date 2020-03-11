@@ -28,7 +28,9 @@ class SessionManager(// Context
         fullName: String?,
         biography: String?,
         profilePicture: String?,
-        coverPhoto: String?
+        coverPhoto: String?,
+        dob: String?,
+        gender: String?
     ) { // Storing login value as TRUE
         editor.putBoolean(
             IS_LOGIN,
@@ -53,6 +55,14 @@ class SessionManager(// Context
         editor.putString(
             KEY_FULL_NAME,
             fullName
+        )
+        editor.putString(
+            KEY_DOB,
+            dob
+        )
+        editor.putString(
+            KEY_GENDER,
+            gender
         )
         editor.putString(
             KEY_BIOGRAPHY,
@@ -126,6 +136,14 @@ class SessionManager(// Context
                 KEY_PHONE,
                 ""
             )
+            user[KEY_DOB] = pref.getString(
+                KEY_DOB,
+                ""
+            )
+            user[KEY_GENDER] = pref.getString(
+                KEY_GENDER,
+                ""
+            )
             user[KEY_FULL_NAME] = pref.getString(
                 KEY_FULL_NAME,
                 ""
@@ -182,6 +200,8 @@ class SessionManager(// Context
         const val KEY_PASSWORD = "password"
         const val KEY_PHONE = "phone"
         const val KEY_FULL_NAME = "full_name"
+        const val KEY_DOB = "dob"
+        const val KEY_GENDER = "gender"
         const val KEY_BIOGRAPHY = "biography"
         const val KEY_PROFILE_PICTURE = "profile_pic"
         const val KEY_COVER_PHOTO = "cover_photo"

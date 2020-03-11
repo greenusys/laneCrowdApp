@@ -424,7 +424,7 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
 
         notifyItemChanged(position, position)
 
-        context.likeDislike(mediaData.total_likes,mediaData.totalComment,mediaData.postId, URL.userId)
+        context.likeDislike(mediaData.isMyLike,mediaData.total_likes,mediaData.totalComment,mediaData.postId, URL.userId)
 
     }
 

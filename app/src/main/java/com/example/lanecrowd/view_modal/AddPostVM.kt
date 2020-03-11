@@ -4,7 +4,7 @@ package com.example.lanecrowd.view_modal
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.lanecrowd.retrofit.AppController
+import com.example.lanecrowd.util.AppController
 import com.example.lanecrowd.util.URL
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -31,13 +31,13 @@ class AddPostVM : ViewModel() {
 
          //When you want to cancel:
          //A) go through the queued calls and cancel if the tag matches:
-         for (call in appController.okHttpClient.dispatcher().queuedCalls()) {
+         for (call in appController.okHttpClient!!.dispatcher().queuedCalls()) {
              if (call.request().tag() == "requestKey")
                  call.cancel()
          }
 
          //B) go through the running calls and cancel if the tag matches:
-         for (call in appController.okHttpClient.dispatcher().runningCalls()) {
+         for (call in appController.okHttpClient!!.dispatcher().runningCalls()) {
              if (call.request().tag() == "requestKey")
                  call.cancel()
          }
@@ -138,7 +138,7 @@ class AddPostVM : ViewModel() {
 
         cancleNetworkCall()
 
-        appController.getOkHttpClient().newCall(request).enqueue(object : okhttp3.Callback {
+        appController.okHttpClient!!.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 addPostRes!!.postValue(null)
             }

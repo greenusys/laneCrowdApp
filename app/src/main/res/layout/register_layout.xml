@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/login_1">
 
 
@@ -10,14 +10,16 @@
         android:id="@+id/l1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="10dp"
         android:orientation="horizontal">
 
 
         <TextView
             style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:text="Sign Up"
@@ -39,161 +41,206 @@
 
 
     <LinearLayout
-        android:layout_marginLeft="20dp"
-        android:layout_below="@id/l1"
+        android:weightSum="2"
         android:id="@+id/welcome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/l1"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <TextView
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight=".6"
-        android:gravity="left"
-        android:text="Hello"
-        android:textColor="@color/box_9"
-        android:textSize="35dp"
-        android:textStyle="bold" />
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.3"
+            android:gravity="left"
+android:textSize="25dp"
+            android:text="Create Your Account"
+            android:textColor="@color/box_9"
+            android:textStyle="bold" />
 
 
         <com.airbnb.lottie.LottieAnimationView
-            android:visibility="invisible"
             android:id="@+id/loading_anim"
             android:layout_width="0dp"
-            android:layout_weight="1.4"
             android:layout_height="50dp"
-            app:lottie_rawRes="@raw/loading_anim"
+            android:layout_weight=".5"
+            android:visibility="invisible"
+            app:lottie_autoPlay="true"
             app:lottie_loop="true"
-            app:lottie_autoPlay="true"/>
+            app:lottie_rawRes="@raw/loading_anim" />
 
 
     </LinearLayout>
 
 
-    <TextView
-        android:id="@+id/si"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/welcome"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="5dp"
-        android:layout_weight="1"
-        android:gravity="left"
-        android:text="Create Your Account"
-        android:textColor="@color/box_9" />
-
-
     <EditText
-        android:drawableLeft="@drawable/name_icon"
         android:id="@+id/reg_name"
         style="@style/TextAppearance.AppCompat.Subhead"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_below="@id/si"
-        android:layout_marginTop="20dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/welcome"
         android:layout_marginRight="30dp"
         android:background="@drawable/button_round"
+        android:drawableLeft="@drawable/name_icon"
         android:gravity="center"
         android:hint="Name"
         android:inputType="textPersonName"
         android:lines="1"
         android:textColor="@color/white"
-        android:textColorHint="@color/white"
-        android:textSize="20dp" />
+        android:textColorHint="@color/white" />
 
     <EditText
-        android:drawableLeft="@drawable/email_mobile_icon"
         android:id="@+id/reg_email"
         style="@style/TextAppearance.AppCompat.Subhead"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:layout_below="@id/reg_name"
         android:layout_marginTop="15dp"
         android:layout_marginRight="30dp"
         android:background="@drawable/button_round"
+        android:drawableLeft="@drawable/email_mobile_icon"
         android:gravity="center"
         android:hint="E-Mail/Mobile"
         android:inputType="textPersonName"
         android:lines="1"
         android:textColor="@color/white"
-        android:textColorHint="@color/white"
-        android:textSize="20dp" />
+        android:textColorHint="@color/white" />
+
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/reg_email"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/button_round"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioMale"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:buttonTint="@color/white"
+            android:checked="false"
+            android:text="  Male"
+            android:textColor="@color/white" />
+
+        <RadioButton
+            android:id="@+id/radioFemale"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:buttonTint="@color/white"
+            android:checked="false"
+            android:text="  Female"
+            android:textColor="@color/white" />
+
+        <RadioButton
+            android:id="@+id/radioOther"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:buttonTint="@color/white"
+            android:checked="false"
+            android:text="  Other"
+            android:textColor="@color/white" />
+    </RadioGroup>
+
+
+
+    <TextView
+        android:layout_marginTop="15dp"
+        android:id="@+id/dob"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/radioGroup"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/button_round"
+        android:drawableLeft="@drawable/dob_icon"
+        android:gravity="center"
+        android:hint="Date of Birth"
+        android:lines="1"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white" />
+
 
 
     <com.google.android.material.textfield.TextInputLayout
-        android:lines="1"
-        android:drawableStart="@drawable/password_icon"
         android:id="@+id/reg_password_layout"
-        android:layout_marginTop="15dp"
-        android:layout_marginRight="30dp"
-        android:layout_below="@id/reg_email"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:layout_below="@id/dob"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="30dp"
+        android:drawableStart="@drawable/password_icon"
+        android:lines="1"
         app:endIconMode="password_toggle"
+        app:endIconTint="@color/white"
         app:hintEnabled="false"
-        app:endIconTint="@color/white">
+        app:hintTextAppearance="@style/TextAppearance.AppCompat.Small">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/reg_password"
-            android:drawableStart="@drawable/password_icon"
-            android:inputType="textPassword"
-            android:hint="Password"
-            android:textColor="@color/white"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:textColorHint="@color/white"
-            android:background="@drawable/button_round"
+            android:cursorVisible="true"
+            style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_round"
+            android:drawableStart="@drawable/password_icon"
+            android:gravity="center"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:paddingLeft="20dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-
-
-
 
 
     <com.google.android.material.textfield.TextInputLayout
-        android:lines="1"
         android:id="@+id/reg_re_password_layout"
-        android:layout_marginTop="15dp"
-        android:layout_marginRight="30dp"
-        android:drawableStart="@drawable/password_icon"
-        android:layout_below="@id/reg_password_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:layout_below="@id/reg_password_layout"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="30dp"
+        android:drawableStart="@drawable/password_icon"
+        android:lines="1"
         app:endIconMode="password_toggle"
+        app:endIconTint="@color/white"
         app:hintEnabled="false"
-        app:endIconTint="@color/white">
+        app:hintTextAppearance="@style/TextAppearance.AppCompat.Small">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:cursorVisible="true"
             android:id="@+id/reg_re_password"
-            android:drawableStart="@drawable/password_icon"
-            android:inputType="textPassword"
-            android:hint="Re-Password"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white"
-            android:background="@drawable/button_round"
+            style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_round"
+            android:drawableStart="@drawable/password_icon"
+            android:gravity="center"
+            android:hint="Re-Password"
+            android:inputType="textPassword"
+            android:paddingLeft="20dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-
 
 
     <TextView
         android:id="@+id/register_sign_up"
         style="@style/TextAppearance.AppCompat.Subhead"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_below="@id/reg_re_password_layout"
         android:layout_marginLeft="70dp"
         android:layout_marginTop="30dp"
@@ -203,22 +250,21 @@
         android:gravity="center"
         android:text="Sign Up"
         android:textColor="@color/black"
-        android:textSize="20dp"
         android:textStyle="bold" />
 
 
     <TextView
-        android:onClick="onClick_Customer"
         android:id="@+id/register_signin"
-        style="@style/TextAppearance.AppCompat.Subhead"
+        style="@style/TextAppearance.AppCompat.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:layout_weight="1"
         android:background="@drawable/button_round_3"
         android:gravity="center"
+        android:onClick="onClick_Customer"
         android:padding="20dp"
         android:text="Sign In"
         android:textColor="@color/black"

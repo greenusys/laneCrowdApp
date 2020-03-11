@@ -27,7 +27,9 @@ class MySessionVM private constructor() : ViewModel() {
         fullName: String?,
         biography: String?,
         profilePicture: String?,
-        coverPhoto: String?
+        coverPhoto: String?,
+        dob: String?,
+        gender: String?
     ): MutableLiveData<HashMap<String, String?>> {
 
         if (livedata == null) {
@@ -38,12 +40,14 @@ class MySessionVM private constructor() : ViewModel() {
 
 
         user.put(SessionManager.KEY_USERID, userId!!)
-        user.put(SessionManager.KEY_EMAIL, email!!)
-        user.put(SessionManager.KEY_PHONE, phone!!)
-        user.put(SessionManager.KEY_FULL_NAME, fullName!!)
-        user.put(SessionManager.KEY_BIOGRAPHY, biography!!)
-        user.put(SessionManager.KEY_PROFILE_PICTURE, profilePicture!!)
-        user.put(SessionManager.KEY_COVER_PHOTO, coverPhoto!!)
+        user.put(SessionManager.KEY_EMAIL, email)
+        user.put(SessionManager.KEY_PHONE, phone)
+        user.put(SessionManager.KEY_FULL_NAME, fullName)
+        user.put(SessionManager.KEY_BIOGRAPHY, biography)
+        user.put(SessionManager.KEY_PROFILE_PICTURE, profilePicture)
+        user.put(SessionManager.KEY_COVER_PHOTO, coverPhoto)
+        user.put(SessionManager.KEY_GENDER, gender)
+        user.put(SessionManager.KEY_DOB, dob)
 
         livedata!!.value = user
 
