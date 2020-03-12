@@ -1,19 +1,21 @@
-package com.example.lanecrowd.view_modal;
+package com.example.lanecrowd.view_modal.factory;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.lanecrowd.view_modal.MySessionVM;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ViewModelProvider_Custom extends ViewModelProvider.NewInstanceFactory {
+public class ViewModelProvider_Session extends ViewModelProvider.NewInstanceFactory {
     private MySessionVM myViewModel;
 
     private final Map<Class<? extends ViewModel>, ViewModel> mFactory = new HashMap<>();
 
-    public ViewModelProvider_Custom(MySessionVM myViewModel) {
+    public ViewModelProvider_Session(MySessionVM myViewModel) {
         this.myViewModel = myViewModel;
     }
 

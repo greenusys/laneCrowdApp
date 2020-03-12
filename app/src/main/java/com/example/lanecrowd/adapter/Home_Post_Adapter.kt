@@ -231,7 +231,7 @@ class Home_Post_Adapter(
         var isImage: Boolean
 
 
-        // println("ksdjksd"+position-2)
+         println("check_sayed"+list.get(position - 2).post_files.get(0))
 
 
         //1 or more images exist
@@ -253,6 +253,7 @@ class Home_Post_Adapter(
                 println("isImageeee" + list.get(position - 2).isImage)
                 println("mmmmm" + url + list.get(position - 2).post_files.get(0))
 
+                visibleOtherImageLayout(holder.media_layout)
                 goneOtherImageLayout( holder.threeImgLayout)
                 visibleOtherImageLayout(holder.iv_postImgA)
 
@@ -282,6 +283,7 @@ class Home_Post_Adapter(
                     url = URL.videoPath
                 }
 
+                visibleOtherImageLayout(holder.media_layout)
                 goneOtherImageLayout( holder.frame_postB)
                 goneOtherImageLayout( holder.frame_postC)
                 visibleOtherImageLayout(holder.iv_postImgA)
@@ -319,7 +321,7 @@ class Home_Post_Adapter(
                     url = URL.videoPath
                 }
 
-
+                visibleOtherImageLayout(holder.media_layout)
                 goneOtherImageLayout(holder.frame_postC)
                 visibleOtherImageLayout(holder.iv_postImgA)
                 visibleOtherImageLayout(holder.iv_postImgB)
@@ -363,6 +365,7 @@ class Home_Post_Adapter(
                     url = URL.videoPath
                 }
                 holder.more_text.visibility = View.GONE
+                visibleOtherImageLayout(holder.media_layout)
                 visibleOtherImageLayout(holder.threeImgLayout)
                 visibleOtherImageLayout(holder.iv_postImgA)
                 visibleOtherImageLayout(holder.iv_postImgB)
@@ -415,7 +418,7 @@ class Home_Post_Adapter(
                 }
 
 
-
+                visibleOtherImageLayout(holder.media_layout)
                 visibleOtherImageLayout(holder.threeImgLayout)
                 visibleOtherImageLayout(holder.iv_postImgA)
                 visibleOtherImageLayout(holder.iv_postImgB)

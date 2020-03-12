@@ -40,7 +40,7 @@ import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.FetchPostVm
 import com.example.lanecrowd.view_modal.LoginRegUserVM
 import com.example.lanecrowd.view_modal.MySessionVM
-import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
+import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -59,20 +59,18 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    return true
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return true
     }
 
 
 
 
-    private var session: SessionManager? = null
-
     //this factory method will create and return one object of SessionVM
-    var videomodelfactory: ViewModelProvider_Custom?=null
+    var videomodelfactory: ViewModelProvider_Session?=null
     var mySessionVM: MySessionVM?=null
 
 
@@ -121,6 +119,7 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
     //get factory depencey from outside using kodein framework
     private val factory: ViewModelFactoryC by instance()
+    private val session: SessionManager by  instance()
 
 
     private lateinit var viewmodel: FetchPostVm
@@ -167,9 +166,12 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
 
 
-        session = SessionManager(context!!)
+       // session = SessionManager(context!!)
         //this factory method will create and return one object
-        videomodelfactory = ViewModelProvider_Custom(MySessionVM.instance)
+        videomodelfactory =
+            ViewModelProvider_Session(
+                MySessionVM.instance
+            )
         mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
 
 
@@ -716,9 +718,8 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
                         //for post files
                         try {
 
-                            if (!item.getString("post_files").equals("null")) {
-                                postList =
-                                    item.getString("post_files").split(",") as ArrayList<String>
+                            if (!item.getString("post_files").equals("")) {
+                                postList = item.getString("post_files").split(",") as ArrayList<String>
 
                                 isImage =
                                     item.getString("post_files").contains(".jpg") || item.getString(
@@ -849,7 +850,7 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
             if (!firstTime) {
 
 
-                println("menu_clcked")
+                println("")
 
 
 

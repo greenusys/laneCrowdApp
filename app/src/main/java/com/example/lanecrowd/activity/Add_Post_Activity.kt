@@ -72,6 +72,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     var openCameraChooser: TextView? = null
     var openPhotoVideoChooser: TextView? = null
     var userName: TextView? = null
+    var post_title: TextView? = null
     var userImage: CircleImageView? = null
 
     var rv_addFiles: RecyclerView? = null
@@ -99,6 +100,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
         appController = applicationContext as AppController
 
+        post_title = findViewById(R.id.post_title)
         userName = findViewById(R.id.user_name)
         userImage = findViewById(R.id.user_image)
 
@@ -135,6 +137,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
         if(from.equals("story")) {
             tag_friend!!.visibility = View.GONE
+            post_title!!.setText("Add Story")
             findViewById<EditText>(R.id.status_input)!!.visibility = View.GONE
         }
 

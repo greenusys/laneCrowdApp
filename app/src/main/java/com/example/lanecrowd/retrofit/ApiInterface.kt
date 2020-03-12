@@ -58,7 +58,7 @@ interface ApiInterface {
         }
     }
 
-
+    //for Login
     @FormUrlEncoded
     @POST("/signin")
     fun loginAPI(@Field("email") email: String, @Field("password") password: String): Single<RegisterResModal>
@@ -82,6 +82,7 @@ interface ApiInterface {
     ): Single<RegisterResModal>
 
 
+    //for HomePost
     @FormUrlEncoded
     @POST("/fetchpost")
     fun fetchpost(@Field("android") android: String, @Field("user_id") user_id: String, @Field("offset") offset: String): Single<JsonObject>
@@ -106,6 +107,7 @@ interface ApiInterface {
     ): Single<JsonObject>
 
 
+    //for Comments
     @FormUrlEncoded
     @POST("/getComments")
     fun getComments(@Field("post_id") post_id: String, @Field("offset") offset: String): Single<JsonObject>
@@ -134,13 +136,14 @@ interface ApiInterface {
     ): Single<JsonObject>
 
 
+    //for change profile and cover pic
     @Multipart
     @POST("/changeprofilepic")
-    fun changeProfilePic(@Part file: MultipartBody.Part?, @Part("user_id") user_id: RequestBody?, @Part("android") android: RequestBody?): Call<RegisterResModal?>?
+    fun changeProfilePic(@Part file: MultipartBody.Part?, @Part("user_id") user_id: RequestBody?, @Part("android") android: RequestBody?): Single<RegisterResModal?>?
 
     @Multipart
     @POST("/changecoverpic")
-    fun changeCoverePic(@Part file: MultipartBody.Part?, @Part("user_id") user_id: RequestBody?, @Part("android") android: RequestBody?): Call<RegisterResModal?>?
+    fun changeCoverePic(@Part file: MultipartBody.Part?, @Part("user_id") user_id: RequestBody?, @Part("android") android: RequestBody?): Single<RegisterResModal?>?
 
 
 }

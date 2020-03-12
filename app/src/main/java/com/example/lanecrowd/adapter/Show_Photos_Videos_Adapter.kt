@@ -11,6 +11,7 @@ import com.example.lancrowd.activity.modal.Photo_Video_Modal
 import com.example.lanecrowd.R
 import com.example.lanecrowd.activity.ShowPhotoActivity
 import com.example.lanecrowd.activity.Show_Photo_Video_Album_Activity
+import com.example.lanecrowd.util.URL
 import com.mzelzoghbi.zgallery.ZGallery
 import com.mzelzoghbi.zgallery.entities.ZColor
 
@@ -47,7 +48,7 @@ class Show_Photos_Videos_Adapter(val list: ArrayList<Photo_Video_Modal>,
 
         if (!from.equals("photos"))
             holder.albummain_layout.setOnClickListener(View.OnClickListener {
-                context.startActivity(Intent(context, ShowPhotoActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+               // context.startActivity(Intent(context, ShowPhotoActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 
             })
 
@@ -59,7 +60,7 @@ class Show_Photos_Videos_Adapter(val list: ArrayList<Photo_Video_Modal>,
                        .setToolbarTitleColor(ZColor.WHITE)
                        .setGalleryBackgroundColor(ZColor.WHITE)
                        .setToolbarColorResId(R.color.colorPrimary)
-                       .setTitle("Gallery")
+                       .setTitle(URL.fullName)
                        .show("true")
            })
        }

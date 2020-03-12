@@ -49,7 +49,7 @@
                 <TextView
                     android:layout_marginLeft="30dp"
                     android:id="@+id/user_name"
-                    style="@style/TextAppearance.AppCompat.Headline"
+                    style="@style/TextAppearance.AppCompat.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
@@ -89,9 +89,7 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:clipToPadding="false"
-                    android:padding="2dp"
-                    app:cardCornerRadius="5dp">
+                    android:clipToPadding="false">
 
                     <ImageView
                         android:id="@+id/iv_cover_image_profile"
@@ -352,6 +350,20 @@
 
                 </LinearLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/light_grey" />
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <include layout="@layout/profile_detail_layout" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -413,8 +425,7 @@
                     android:id="@+id/profile_rv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
-                    tools:listitem="@layout/home_post_item" />
+                    android:layout_marginTop="10dp" />
             </LinearLayout>
 
         </RelativeLayout>

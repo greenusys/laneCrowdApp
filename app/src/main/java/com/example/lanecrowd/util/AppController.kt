@@ -5,11 +5,13 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.modal.repository.UserRepository
 import com.example.lanecrowd.retrofit.ApiInterface
 import com.example.lanecrowd.retrofit.ConnectivityReceiver
 import com.example.lanecrowd.retrofit.ConnectivityReceiver.ConnectivityReceiverListener
 import com.example.lanecrowd.retrofit.GetLastIdCallback
+import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
 import com.example.lanecrowd.view_modal.factory.ViewModelFactoryC
 import okhttp3.*
 import org.kodein.di.Kodein
@@ -31,10 +33,13 @@ class AppController : Application(), KodeinAware {
         import(androidXModule(this@AppController))
 
 
+        bind() from singleton { SessionManager(instance())}
         bind() from singleton { NetworkConnectionInterceptor(instance())}
         bind() from singleton { ApiInterface(instance()) }
         bind() from singleton { UserRepository(instance()) }
         bind() from provider { ViewModelFactoryC(instance()) }
+        bind() from provider { ViewModelProvider_Session(instance())
+        }
 
 
     }

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+
+    <TextView
+        style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/work_icon"
+        android:drawablePadding="20dp"
+        android:drawableTint="@color/bgBottomNavigation"
+        android:padding="10dp"
+        android:text="Work Status"
+        android:textSize="20dp" />
+
+    <TextView
+        android:layout_marginTop="5dp"
+        style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/education_icon"
+        android:drawablePadding="20dp"
+        android:drawableTint="@color/bgBottomNavigation"
+        android:padding="10dp"
+        android:text="Education Status"
+        android:textSize="20dp" />
+
+    <TextView
+        android:layout_marginTop="5dp"
+        style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/lives_in_icon"
+        android:drawablePadding="20dp"
+        android:drawableTint="@color/bgBottomNavigation"
+        android:padding="10dp"
+        android:text="Lives Status"
+        android:textSize="20dp" />
+
+    <TextView
+        android:layout_marginTop="5dp"
+        style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/from_icon"
+        android:drawablePadding="20dp"
+        android:drawableTint="@color/bgBottomNavigation"
+        android:padding="10dp"
+        android:text="From Status"
+        android:textSize="20dp" />
+
+    <TextView
+        android:layout_marginTop="5dp"
+        style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/relationship_icon"
+        android:drawablePadding="20dp"
+        android:drawableTint="@color/bgBottomNavigation"
+        android:padding="10dp"
+        android:text="Relationship Status"
+        android:textSize="20dp" />
+
+    <TextView
+        android:layout_marginTop="5dp"
+        style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/followed_by__icon"
+        android:drawablePadding="20dp"
+        android:drawableTint="@color/bgBottomNavigation"
+        android:padding="10dp"
+        android:text="Followed by status"
+        android:textSize="20dp" />
+
+
+
+    <TextView
+        android:onClick="goto_More_Info"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/internet_text"
+        android:id="@+id/retry"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_round"
+        android:gravity="center"
+        android:text="More Info....."
+        android:textColor="@color/white" />
+
+
+</LinearLayout>

@@ -46,7 +46,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
 
 
-
     //story progess view
     implementation 'com.github.shts:StoriesProgressView:3.0.0'
 
@@ -69,8 +68,6 @@ dependencies {
 
     //for menu
     implementation "com.github.skydoves:powermenu:2.1.2"
-
-    
 
 
     //material design
@@ -117,7 +114,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:2.1.0"
 
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0'
-
 
 
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'

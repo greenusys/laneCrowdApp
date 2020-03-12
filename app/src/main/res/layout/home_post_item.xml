@@ -100,6 +100,8 @@
             android:textSize="16sp" />
 
         <LinearLayout
+
+            android:id="@+id/lay_postMedia"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
@@ -109,7 +111,7 @@
 
 
             <LinearLayout
-                android:id="@+id/lay_postMedia"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"

@@ -1,7 +1,6 @@
 package com.example.lanecrowd.activity
 
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -33,15 +32,17 @@ import com.example.lanecrowd.Home_Fragment.Search_Fragment
 import com.example.lanecrowd.R
 import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.util.URL
-import com.example.lanecrowd.view_modal.FetchPostVm
 import com.example.lanecrowd.view_modal.MySessionVM
-import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
+import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.kodein
+import org.kodein.di.generic.instance
 
 
-class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigationItemSelectedListener {
 
 
 
@@ -49,10 +50,12 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     var drawer: DrawerLayout? = null
     var tabLayout: TabLayout? = null
     var viewPage: ViewPager? = null
-    private var session: SessionManager? = null
+
+    override val kodein by kodein()
+    private val session: SessionManager by  instance()
 
     //this factory method will create and return one object of SessionVM
-    var videomodelfactory: ViewModelProvider_Custom? = null
+    var videomodelfactory: ViewModelProvider_Session? = null
     var mySessionVM: MySessionVM? = null
 
 
@@ -94,9 +97,12 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun initViews() {
 
-        session = SessionManager(applicationContext)
+      //  session = SessionManager(applicationContext)
         //this factory method will create and return one object
-        videomodelfactory = ViewModelProvider_Custom(MySessionVM.instance)
+        videomodelfactory =
+            ViewModelProvider_Session(
+                MySessionVM.instance
+            )
         mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
 
 

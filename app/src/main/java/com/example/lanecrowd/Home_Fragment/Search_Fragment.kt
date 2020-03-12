@@ -114,10 +114,10 @@ internal  class ViewPagerAdapter(manager: FragmentManager) : FragmentPagerAdapte
 
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return true
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return true
     }
 }

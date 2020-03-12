@@ -79,8 +79,12 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
         goneLayout(holder.postProfilePic)
         goneLayout(holder.postUserName)
         goneLayout(holder.postTime)
-        goneLayout(holder.postStatus)
 
+
+        if (!mediaData.staus.equals(""))
+            holder.postStatus.text = mediaData.staus
+        else
+            goneLayout(holder.postStatus)
 
 
         if (!mediaData.total_likes.equals("0"))
@@ -104,123 +108,133 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
         goneLayout(holder.post_menu)
 
 
+        println("medi_file_size"+mediaData.files.get(0))
 
-        if (mediaData.files!!.size == 1) {
+        if(!mediaData.files.get(0).equals("empty")) {
 
-
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(0),
-                holder.loading_iconA,
-                holder.iv_postImgA,
-                holder. video_iconA
-            )
-
-            goneLayout(holder.threeImgLayout)
-        } else if (mediaData.files!!.size == 2) {
+            if (mediaData.files!!.size == 1) {
 
 
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(0),
-                holder.loading_iconA,
-                holder. iv_postImgA,
-                holder.video_iconA
-            )
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(0),
+                    holder.loading_iconA,
+                    holder.iv_postImgA,
+                    holder.video_iconA
+                )
 
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(1),
-                holder.loading_iconB,
-                holder. iv_postImgB,
-                holder.video_iconB
-            )
+                goneLayout(holder.threeImgLayout)
+            } else if (mediaData.files!!.size == 2) {
 
-            goneLayout(holder.frame_postB)
-            goneLayout(holder.frame_postC)
-        } else if (mediaData.files!!.size == 3) {
 
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(0),
-                holder. loading_iconA,
-                holder. iv_postImgA,
-                holder.video_iconA
-            )
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(0),
+                    holder.loading_iconA,
+                    holder.iv_postImgA,
+                    holder.video_iconA
+                )
 
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(1),
-                holder. loading_iconB,
-                holder. iv_postImgB,
-                holder.video_iconB
-            )
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(1),
+                    holder.loading_iconB,
+                    holder.iv_postImgB,
+                    holder.video_iconB
+                )
 
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(2),
-                holder.  loading_iconC,
-                holder. postImageC,
-                holder. video_iconC
-            )
+                goneLayout(holder.frame_postB)
+                goneLayout(holder.frame_postC)
+            } else if (mediaData.files!!.size == 3) {
 
-            goneLayout(holder.frame_postC)
-        } else if (mediaData.files!!.size == 4) {
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(0),
+                    holder.loading_iconA,
+                    holder.iv_postImgA,
+                    holder.video_iconA
+                )
 
-            holder.more_text.visibility=View.GONE
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(1),
+                    holder.loading_iconB,
+                    holder.iv_postImgB,
+                    holder.video_iconB
+                )
 
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(0),
-                holder.loading_iconA,
-                holder.iv_postImgA,
-                holder.video_iconA
-            )
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(2),
+                    holder.loading_iconC,
+                    holder.postImageC,
+                    holder.video_iconC
+                )
 
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(1),
-                holder.loading_iconB,
-                holder.iv_postImgB,
-                holder.video_iconB
-            )
+                goneLayout(holder.frame_postC)
+            } else if (mediaData.files!!.size == 4) {
 
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(2),
-                holder. loading_iconC,
-                holder.postImageC,
-                holder. video_iconC
-            )
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(3),
-                holder. loading_iconD,
-                holder. iv_postImgD,
-              holder.video_iconD
-            )
+                holder.more_text.visibility = View.GONE
 
-        } else if (mediaData.files!!.size > 4) {
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(0),
+                    holder.loading_iconA,
+                    holder.iv_postImgA,
+                    holder.video_iconA
+                )
 
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(0),
-                holder.loading_iconA,
-                holder.iv_postImgA,
-                holder.video_iconA
-            )
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(1),
+                    holder.loading_iconB,
+                    holder.iv_postImgB,
+                    holder.video_iconB
+                )
 
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(1),
-                holder. loading_iconB,
-                holder.iv_postImgB,
-                holder.video_iconB
-            )
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(2),
+                    holder.loading_iconC,
+                    holder.postImageC,
+                    holder.video_iconC
+                )
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(3),
+                    holder.loading_iconD,
+                    holder.iv_postImgD,
+                    holder.video_iconD
+                )
 
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(2),
-                holder.loading_iconC,
-                holder.postImageC,
-                holder.video_iconC
-            )
-            set_Success_Glide_Data(
-                mediaData.urlPath + mediaData.files!!.get(3),
-                holder.loading_iconD,
-                holder. iv_postImgD,
-                holder.video_iconD
-            )
+            } else if (mediaData.files!!.size > 4) {
 
-            holder.  more_text.visibility = View.VISIBLE
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(0),
+                    holder.loading_iconA,
+                    holder.iv_postImgA,
+                    holder.video_iconA
+                )
 
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(1),
+                    holder.loading_iconB,
+                    holder.iv_postImgB,
+                    holder.video_iconB
+                )
+
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(2),
+                    holder.loading_iconC,
+                    holder.postImageC,
+                    holder.video_iconC
+                )
+                set_Success_Glide_Data(
+                    mediaData.urlPath + mediaData.files!!.get(3),
+                    holder.loading_iconD,
+                    holder.iv_postImgD,
+                    holder.video_iconD
+                )
+
+                holder.more_text.visibility = View.VISIBLE
+
+
+            }
+
+        }
+        else
+        {
+            holder.media_layout.visibility = View.GONE
 
         }
 
@@ -468,6 +482,10 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
         //for media layout
 
           val main_cardView = view.findViewById<CardView>(R.id.main_cardView)
+
+        //media layout
+        val media_layout = view.findViewById<LinearLayout>(R.id.lay_postMedia)
+
 
 
 

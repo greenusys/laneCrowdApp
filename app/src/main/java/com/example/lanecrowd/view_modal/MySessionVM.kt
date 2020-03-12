@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.example.lanecrowd.Session_Package.SessionManager
 import java.util.*
 
-class MySessionVM private constructor() : ViewModel() {
+class MySessionVM() : ViewModel() {
     private fun RequestInformation() {}
     private var livedata: MutableLiveData<HashMap<String, String?>>? = null
     val user = HashMap<String, String?>()

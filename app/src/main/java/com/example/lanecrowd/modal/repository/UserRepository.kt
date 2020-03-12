@@ -4,6 +4,8 @@ import com.example.lancrowd.activity.modal.RegisterResModal
 import com.example.lanecrowd.retrofit.ApiInterface
 import com.google.gson.JsonObject
 import io.reactivex.Single
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 
 class UserRepository(private val api: ApiInterface) {
@@ -71,6 +73,18 @@ class UserRepository(private val api: ApiInterface) {
 
         return api.deleteComments(c_id)
     }
+
+    //for change profile and cover pic
+    fun changePic(from: String,files: MultipartBody.Part, userId: RequestBody, android: RequestBody): Single<RegisterResModal?>? {
+
+        if (from.equals("profile"))
+        return api.changeProfilePic(files, userId, android)
+
+        return api.changeCoverePic(files, userId, android)
+
+    }
+
+
 
 
 }

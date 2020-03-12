@@ -164,6 +164,8 @@ class Verify_OTP_Activity : AppCompatActivity(), KodeinAware {
 
                 visibleAnimation(false)
 
+                println("VerfiY_res"+resultPi)
+
                 if(resultPi!=null) {
                     if (resultPi.status.equals("1")) {
                         gotoLoginActivity()
@@ -172,7 +174,7 @@ class Verify_OTP_Activity : AppCompatActivity(), KodeinAware {
                     }
                 }
                 else
-                    showSnackBar("Please try again later")
+                    showSnackBar("OTP does not matched")
 
             })
         } catch (e: Exception) {

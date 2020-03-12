@@ -4,8 +4,13 @@ package com.example.lanecrowd.view_modal
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.lancrowd.activity.modal.RegisterResModal
+import com.example.lanecrowd.modal.repository.UserRepository
 import com.example.lanecrowd.retrofit.ApiClient
 import com.example.lanecrowd.retrofit.ApiInterface
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.observers.DisposableSingleObserver
+import io.reactivex.schedulers.Schedulers
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -13,81 +18,55 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class Profile_VM : ViewModel() {
-    var loginlist: MutableLiveData<RegisterResModal>? = null
-    var reglist: MutableLiveData<RegisterResModal>? = null
-    var verifyList: MutableLiveData<RegisterResModal>? = null
+class Profile_VM(val repo: UserRepository) : ViewModel() {
+    var changepiclist: MutableLiveData<RegisterResModal>? = null
+    private val compositeDisposable = CompositeDisposable()
 
-    lateinit var apiInterface: ApiInterface
 
-    fun changeProfileCoverPic(
-        from: String,
-        files: MultipartBody.Part,
-        userId: RequestBody,
-        android: RequestBody
-    ): MutableLiveData<RegisterResModal> {
+    fun changeProfileCoverPic(from: String, files: MultipartBody.Part, userId: RequestBody, android: RequestBody): MutableLiveData<RegisterResModal> {
 
-        apiInterface = ApiClient.getClient().create(ApiInterface::class.java)
-        loginlist = MutableLiveData()
+        changepiclist = MutableLiveData()
         callChangeProfileCoverPicAPI(from, files, userId, android)
 
-        return loginlist as MutableLiveData<RegisterResModal>
+        return changepiclist as MutableLiveData<RegisterResModal>
 
     }
 
 
-    fun callChangeProfileCoverPicAPI(
-        from: String,
-        files: MultipartBody.Part,
-        userId: RequestBody,
-        android: RequestBody
-    ) {
-        var call: retrofit2.Call<RegisterResModal?>? = null
+    fun callChangeProfileCoverPicAPI(from: String, files: MultipartBody.Part, userId: RequestBody, android: RequestBody) {
 
-        if (from.equals("profile"))
-            call = apiInterface.changeProfilePic(files, userId, android)
-        else
-            call = apiInterface.changeCoverePic(files, userId, android)
+        compositeDisposable.add(
+            repo.changePic(from,files, userId, android)!!
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : DisposableSingleObserver<RegisterResModal?>() {
+                    override fun onSuccess(response: RegisterResModal) {
 
 
-        call!!.enqueue(object : Callback<RegisterResModal?> {
-            override fun onResponse(
-                call: Call<RegisterResModal?>,
-                response: Response<RegisterResModal?>
-            ) {
-
-                try {
-                    var a: RegisterResModal? = response.body()
-
-                    println("callChangeProfilePicAPIres" + a!!.msg)
+                        println("callChangeProfilePicAPIres" + response)
 
 
-                    if (response.isSuccessful) {
+                        if (response.status.equals("1")) {
+                            changepiclist!!.value = response
+                        } else {
+                            changepiclist!!.value = null
+                        }
+
+                    }
+
+                    override fun onError(e: Throwable) {
+                        changepiclist?.value = null
+                    }
+                })
+        )
 
 
-                        loginlist!!.value = response.body()
-
-                    } else
-                        loginlist?.value = null
+    }
 
 
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-
-
-            }
-
-            override fun onFailure(call: Call<RegisterResModal?>, t: Throwable) {
-                println("Failed" + t.message)
-                loginlist?.value = null
-                call.cancel()
-
-            }
-
-
-        })
-
-
+    override fun onCleared() {
+        super.onCleared()
+        println("cleared")
+        compositeDisposable.clear()
     }
 }

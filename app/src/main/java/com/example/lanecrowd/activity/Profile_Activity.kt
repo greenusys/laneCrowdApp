@@ -31,18 +31,24 @@ import com.example.lanecrowd.util.RuntimePermissionsActivity
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.MySessionVM
 import com.example.lanecrowd.view_modal.Profile_VM
-import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
+import com.example.lanecrowd.view_modal.factory.ViewModelFactoryC
+import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jakewharton.rxbinding2.view.RxView
+import com.mzelzoghbi.zgallery.ZGallery
+import com.mzelzoghbi.zgallery.entities.ZColor
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.kodein
+import org.kodein.di.generic.instance
 import java.io.File
 
 
-class Profile_Activity : RuntimePermissionsActivity() {
+class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
     var myCoverPhoto: File? = null
     var coverUri: Uri? = null
     var myProfilePhoto: File? = null
@@ -51,7 +57,7 @@ class Profile_Activity : RuntimePermissionsActivity() {
     var timeline: TextView? = null
     var photos: TextView? = null
     var videos: TextView? = null
-    private var session: SessionManager? = null
+    private val session: SessionManager by  instance()
 
 
     private val REQ_PER_GALLERY_PROFILE = 1
@@ -75,18 +81,18 @@ class Profile_Activity : RuntimePermissionsActivity() {
     lateinit var viewmodel: Profile_VM
 
     //this factory method will create and return one object of SessionVM
-    var videomodelfactory: ViewModelProvider_Custom? = null
+    var videomodelfactory: ViewModelProvider_Session? = null
     var mySessionVM: MySessionVM? = null
+
+
+    override val kodein by kodein()
+    //get factory depencey from outside using kodein framework
+    private val factory: ViewModelFactoryC by instance()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
-
-
-        //this factory method will create and return one object
-        videomodelfactory = ViewModelProvider_Custom(MySessionVM.instance)
-        mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
 
 
 
@@ -98,9 +104,13 @@ class Profile_Activity : RuntimePermissionsActivity() {
 
     private fun initViews() {
 
-        session = SessionManager(applicationContext)
 
-        viewmodel = ViewModelProviders.of(this).get(Profile_VM::class.java)
+        //this factory method will create and return one object
+        videomodelfactory = ViewModelProvider_Session(MySessionVM.instance)
+        mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
+
+
+        viewmodel = ViewModelProviders.of(this,factory).get(Profile_VM::class.java)
 
         upload_loading_animLogin = findViewById(R.id.upload_loading_animLogin)
         timeline = findViewById(R.id.timeline)
@@ -138,8 +148,12 @@ class Profile_Activity : RuntimePermissionsActivity() {
         val observable7 = RxView.clicks(videos!!).map<Any> { o: Any? -> videos }
 
 
+        val observable8 = RxView.clicks(iv_profile_image_profile!!).map<Any> { o: Any? -> iv_profile_image_profile }
+        val observable9 = RxView.clicks(iv_cover_image_profile!!).map<Any> { o: Any? -> iv_cover_image_profile }
 
-        setClickListener(observable1, observable2, observable3, observable4)
+
+
+        setClickListener(observable1, observable2, observable3, observable4,observable8,observable9)
 
         setClickListeneToSlider(observable5, observable6, observable7)
 
@@ -195,8 +209,7 @@ class Profile_Activity : RuntimePermissionsActivity() {
 
         user_name!!.text = URL.fullName
 
-        Glide.with(baseContext)
-            .load(URL.profilePicPath + result.get(SessionManager.KEY_PROFILE_PICTURE))
+        Glide.with(baseContext).load(URL.profilePicPath + result.get(SessionManager.KEY_PROFILE_PICTURE))
             .apply(RequestOptions().placeholder(R.drawable.placeholder_profile))
             .thumbnail(0.01f).into(iv_profile_image_profile!!)
 
@@ -257,11 +270,13 @@ class Profile_Activity : RuntimePermissionsActivity() {
         observable1: Observable<Any>,
         observable2: Observable<Any>,
         observable3: Observable<Any>,
-        observable4: Observable<Any>
+        observable4: Observable<Any>,
+        observable8: Observable<Any>,
+        observable9: Observable<Any>
     ) {
 
         //set click listener
-        val disposable = Observable.merge(observable1, observable2, observable3, observable4)
+        val disposable = Observable.mergeArray(observable1, observable2, observable3, observable4,observable8,observable9)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { o ->
 
@@ -281,8 +296,31 @@ class Profile_Activity : RuntimePermissionsActivity() {
                     }
                 }
 
+                else if (o == iv_profile_image_profile) {
+
+
+                    openPic(arrayListOf(URL.profilePicPath +URL.profilePic))
+
+                } else if (o == iv_cover_image_profile) {
+
+                    openPic(arrayListOf(URL.coverPicPath +URL.coverPic))
+
+                }
+
             }
 
+
+    }
+
+    private fun openPic(url: ArrayList<String>) {
+
+        //open single image
+        ZGallery.with(this, url)
+            .setToolbarTitleColor(ZColor.WHITE)
+            .setGalleryBackgroundColor(ZColor.WHITE)
+            .setToolbarColorResId(R.color.colorPrimary)
+            .setTitle(URL.fullName)
+            .show("true")
 
     }
 
@@ -532,5 +570,11 @@ class Profile_Activity : RuntimePermissionsActivity() {
 
     fun Back(view: View) {
         onBackPressed()
+    }
+
+    fun goto_More_Info(view: View) {
+
+
+
     }
 }

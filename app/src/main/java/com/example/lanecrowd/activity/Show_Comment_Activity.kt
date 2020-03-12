@@ -34,7 +34,7 @@ import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.CommentVM
 import com.example.lanecrowd.view_modal.FetchPostVm
 import com.example.lanecrowd.view_modal.MySessionVM
-import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
+import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
 import com.example.lanecrowd.view_modal.factory.ViewModelFactoryC
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -75,7 +75,6 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
     var files: ArrayList<String>? = null
     var post_id: String? = null
     var user_name: String? = null
-    var isMyLike: Boolean = false
     var isImage: String? = null
     var time: String? = null
     var staus: String? = null
@@ -92,9 +91,6 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
     internal var comment_id: String = ""
     internal var postposition: Int = -1
     var layoutManager: LinearLayoutManager? = null
-
-
-
 
 
 
@@ -116,10 +112,10 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
     lateinit var viewmodel: CommentVM
 
 
-    private var session: SessionManager? = null
+    private val session: SessionManager by  instance()
 
     //this factory method will create and return one object of SessionVM
-    var videomodelfactory: ViewModelProvider_Custom? = null
+    var videomodelfactory: ViewModelProvider_Session? = null
     var mySessionVM: MySessionVM? = null
 
 
@@ -152,7 +148,7 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
 
 
         if (mYLIke.equals("true")) {
-            isMyLike = true
+            isMylikepost=true
 
         }
 
@@ -172,9 +168,11 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
     @SuppressLint("WrongConstant")
     private fun initViesForVM() {
 
-        session = SessionManager(applicationContext)
         //this factory method will create and return one object
-        videomodelfactory = ViewModelProvider_Custom(MySessionVM.instance)
+        videomodelfactory =
+            ViewModelProvider_Session(
+                MySessionVM.instance
+            )
         mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
 
 
@@ -200,7 +198,7 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
         mediaData = CommentMediaModal(
             post_id!!,
             user_name!!,
-            isMyLike,
+            isMylikepost,
             files!!,
             url,
             staus!!,
@@ -788,8 +786,11 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
 
     private fun getCurrentTime():String {
 
-       var formatter =  SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+       var formatter =  SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     var date =  Date();
+
+
+        println("current_time"+formatter.format(date))
 
         return  formatter.format(date)
     }

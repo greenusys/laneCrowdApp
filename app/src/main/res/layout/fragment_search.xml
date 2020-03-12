@@ -1,22 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimaryDark"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/search_tabs"
+        android:layout_marginTop="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabBackground="@color/light_grey"
+        app:tabGravity="fill"
+        app:tabTextColor="@color/black"
+        app:tabIconTint="@color/black"
+        app:tabIndicatorColor="@color/colorPrimary"
+        app:tabMode="fixed"
+        app:tabTextAppearance="@style/TextAppearance.AppCompat.Small" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:layout_marginTop="45dp"
+        android:clipToPadding="false"
+        android:id="@+id/search_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+
+
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+
+<!--
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context=".activity.HomeActivity">
+    android:orientation="vertical"
+android:layout_height="match_parent">
 
 
 
-
-
-    <RelativeLayout
-        android:layout_marginTop="50dp"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
 
         <com.google.android.material.tabs.TabLayout
@@ -40,10 +83,4 @@ tools:context=".activity.HomeActivity">
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
-    </RelativeLayout>
-
-
-
-
-
-</LinearLayout>
+</LinearLayout>-->

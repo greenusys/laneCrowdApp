@@ -20,7 +20,7 @@ import com.example.lanecrowd.R
 import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.MySessionVM
-import com.example.lanecrowd.view_modal.ViewModelProvider_Custom
+import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import de.hdodenhof.circleimageview.CircleImageView
@@ -28,10 +28,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import jp.shts.android.storiesprogressview.StoriesProgressView
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.kodein
+import org.kodein.di.generic.instance
 import java.util.concurrent.TimeUnit
 
 
-class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesListener {
+class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView.StoriesListener {
 
     private var storiesProgressView: StoriesProgressView? = null
     private var image: ImageView? = null
@@ -61,10 +64,12 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
     var name: String? = null
     var imageva: String? = null
-    private var session: SessionManager? = null
+    override val kodein by kodein()
+
+    private val session: SessionManager by  instance()
 
     //this factory method will create and return one object of SessionVM
-    var videomodelfactory: ViewModelProvider_Custom? = null
+    var videomodelfactory: ViewModelProvider_Session? = null
     var mySessionVM: MySessionVM? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,13 +96,12 @@ class View_Story_Activity : AppCompatActivity(), StoriesProgressView.StoriesList
 
     private fun initViews() {
 
-        session = SessionManager(applicationContext)
         //this factory method will create and return one object
-        videomodelfactory = ViewModelProvider_Custom(MySessionVM.instance)
+        videomodelfactory =
+            ViewModelProvider_Session(
+                MySessionVM.instance
+            )
         mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
-
-
-
 
 
         send_reply_Button = findViewById<ImageView>(R.id.send_reply_Button)

@@ -143,7 +143,8 @@ class LoginRegUserVM(val repo:UserRepository) : ViewModel() {
                     override fun onSuccess(response: RegisterResModal) {
 
 
-                        println("fetch_Story_res" + response)
+                        println("fetch_Story_res" + response.msg)
+                        println("fetch_Story_res_code" + response.status)
 
 
                         if (response.status.equals("1")) {
