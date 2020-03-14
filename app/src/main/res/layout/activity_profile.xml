@@ -121,11 +121,9 @@
                         android:layout_height="24dp"
                         android:layout_gravity="right"
                         android:layout_margin="5dp"
-                        android:background="@drawable/circle_bg"
-                        android:drawableRight="@drawable/ic_more_vert"
+                        android:drawableRight="@drawable/camera_icon_2"
                         android:paddingLeft="5dp"
                         android:paddingTop="2dp"
-                        android:paddingRight="5dp"
                         android:paddingBottom="2dp"
                         android:textAllCaps="true"
                         android:textColor="#fff"
@@ -156,12 +154,10 @@
                         android:layout_marginLeft="2dp"
                         android:layout_marginRight="2dp"
                         android:layout_marginBottom="2dp"
-                        android:background="@drawable/circle_bg"
-                        android:drawableRight="@drawable/ic_more_vert"
+                        android:drawableRight="@drawable/camera_icon_2"
                         android:gravity="center"
                         android:paddingLeft="5dp"
                         android:paddingTop="2dp"
-                        android:paddingRight="5dp"
                         android:paddingBottom="2dp"
                         android:textAllCaps="true"
                         android:textColor="#fff"
@@ -190,13 +186,6 @@
                 </FrameLayout>
 
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@color/light_grey" />
-
-
                 <com.airbnb.lottie.LottieAnimationView
                     android:visibility="gone"
                     android:id="@+id/upload_loading_animLogin"
@@ -209,143 +198,59 @@
 
 
                 <LinearLayout
+                    android:id="@+id/addFollowLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="70dp"
                     android:orientation="horizontal">
 
 
                     <TextView
-                        style="@style/TextAppearance.AppCompat.Title"
+                        android:id="@+id/follow_friend"
+                        android:drawableLeft="@drawable/followed_by__icon"
+                        android:layout_margin="10dp"
+                        style="@style/TextAppearance.AppCompat.Subhead"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="top"
-                        android:layout_marginTop="5dp"
                         android:layout_weight="1"
-                        android:background="#ffffff"
-                        android:drawableTop="@drawable/friend_icon_2"
-                        android:drawableTint="@color/colorPrimary"
+                        android:background="@drawable/button_round"
                         android:gravity="center"
-                        android:text="Friends"
+                        android:text="Follow"
                         android:textAllCaps="true"
-                        android:textColor="#000" />
+                        android:textColor="@color/white" />
 
                     <TextView
-                        style="@style/TextAppearance.AppCompat.Title"
+                        android:id="@+id/add_friend"
+                        android:visibility="visible"
+                        android:drawableLeft="@drawable/friend_icon_2"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/button_round"
+                        style="@style/TextAppearance.AppCompat.Subhead"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="top"
-                        android:layout_marginTop="5dp"
                         android:layout_weight="1"
-                        android:background="#ffffff"
-                        android:drawableTop="@drawable/message_icon"
-                        android:drawableTint="@color/colorPrimary"
                         android:gravity="center"
-                        android:text="Message"
+                        android:text="Add Friend"
                         android:textAllCaps="true"
-                        android:textColor="#000" />
+                        android:textColor="@color/white" />
 
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@color/light_grey" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            style="@style/TextAppearance.AppCompat.Headline"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_gravity="top"
-                            android:layout_marginTop="5dp"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="Post"
-                            android:textAllCaps="true"
-                            android:textColor="#000" />
-
-                        <TextView
-                            style="@style/TextAppearance.AppCompat.Subhead"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_gravity="top"
-                            android:layout_marginTop="10dp"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="120"
-                            android:textAllCaps="true"
-                            android:textColor="#000" />
+                    <!--//menu textview-->
+                    <TextView
+                        android:id="@+id/menu_friend"
+                        android:visibility="gone"
+                        android:drawableLeft="@drawable/friend_icon_2"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/button_round"
+                        style="@style/TextAppearance.AppCompat.Subhead"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:gravity="center"
+                        android:textAllCaps="true"
+                        android:textColor="@color/white" />
 
 
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            style="@style/TextAppearance.AppCompat.Headline"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_gravity="top"
-                            android:layout_marginTop="5dp"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="Friends"
-                            android:textAllCaps="true"
-                            android:textColor="#000" />
-
-                        <TextView
-                            style="@style/TextAppearance.AppCompat.Subhead"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_gravity="top"
-                            android:layout_marginTop="10dp"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="420"
-                            android:textAllCaps="true"
-                            android:textColor="#000" />
-
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_margin="5dp"
-                            android:background="@drawable/box"
-                            style="@style/TextAppearance.AppCompat.Headline"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_gravity="top"
-                            android:layout_marginTop="10dp"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="About"
-                            android:textAllCaps="true"
-                            android:textColor="#000" />
-
-
-                    </LinearLayout>
 
 
                 </LinearLayout>

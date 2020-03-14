@@ -30,6 +30,7 @@ import com.example.lanecrowd.adapter.CommentAdapter
 import com.example.lanecrowd.modal.CommentMediaModal
 import com.example.lanecrowd.modal.CommentModel
 import com.example.lanecrowd.modal.PowerMenuUtils
+import com.example.lanecrowd.retrofit.TimeShow
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.CommentVM
 import com.example.lanecrowd.view_modal.FetchPostVm
@@ -224,7 +225,6 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
 
         user_name_comment.text = user_name
         post_time_comment.text = time
-        user_name_comment.isAllCaps = true
 
         println("user_pic" + URL.profilePicPath + user_pic)
 
@@ -331,7 +331,7 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
             viewmodel.editCommentVM(URL.userId, edt_comment!!.text.toString(), comment_id)
 
             comment_list.get(postposition-1).comment=edt_comment!!.text.toString()
-            comment_list.get(postposition-1).commented_on=getCurrentTime()
+            comment_list.get(postposition-1).commented_on=TimeShow.getTime(getCurrentTime())
 
             adapter!!.notifyItemChanged(postposition,postposition)
 
@@ -407,7 +407,7 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
                         post_id!!,
                         URL.userId,
                         edt_comment!!.text.toString(),
-                        getCurrentTime(),
+                        TimeShow.getTime(getCurrentTime()),
                         URL.userId,
                         user_name!!,
                         user_pic!!))
@@ -747,8 +747,16 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
 
                 visibleLoadingMoreAnim(false)
                 comment_list.removeAt(postposition-1)
-                viewmodel.deleteCommentVM(comment_id)
+                mediaData!!.totalComment=comment_list.size.toString()
+                total_comment=comment_list.size.toString()
+                adapter!!.notifyItemChanged(0,0)
                 adapter!!.notifyItemRemoved(postposition)
+                viewmodel.deleteCommentVM(comment_id)
+
+
+
+
+
 
                 if(comment_list.size<=0)
                     visibleNoComment(true)

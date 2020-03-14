@@ -12,11 +12,27 @@
 
 
 
+
 <RelativeLayout
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/scrolltoup"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:src="@drawable/up_arrow"
+        android:layout_gravity="bottom|end"
+        app:elevation="6dp"
+        app:backgroundTint="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="40dp"
+        app:pressedTranslationZ="12dp"/>
 
 
 <LinearLayout

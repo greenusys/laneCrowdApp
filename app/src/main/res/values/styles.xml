@@ -11,6 +11,8 @@
     </style>
 
 
+
+
     <!-- Theme.AppCompat.Light is not a dialog theme -->
     <style name="DialogTheme"  parent="Theme.MaterialComponents.Light.Dialog">
         <item name="colorAccent">@color/colorPrimary</item>

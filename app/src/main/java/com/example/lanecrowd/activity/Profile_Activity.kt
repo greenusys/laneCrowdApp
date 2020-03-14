@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -33,10 +34,12 @@ import com.example.lanecrowd.view_modal.MySessionVM
 import com.example.lanecrowd.view_modal.Profile_VM
 import com.example.lanecrowd.view_modal.factory.ViewModelFactoryC
 import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jakewharton.rxbinding2.view.RxView
 import com.mzelzoghbi.zgallery.ZGallery
 import com.mzelzoghbi.zgallery.entities.ZColor
+import com.xw.repo.VectorCompatTextView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import okhttp3.MediaType
@@ -57,7 +60,7 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
     var timeline: TextView? = null
     var photos: TextView? = null
     var videos: TextView? = null
-    private val session: SessionManager by  instance()
+    private val session: SessionManager by instance()
 
 
     private val REQ_PER_GALLERY_PROFILE = 1
@@ -69,6 +72,12 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
     var home_post_list = ArrayList<Home_Post_Modal>()
 
     var photos_video_list = ArrayList<Photo_Video_Modal>()
+
+    var addFollowLayout: LinearLayout? = null
+    var follow_friend: TextView? = null
+    var add_friend: TextView? = null
+    var menu_friend: TextView? = null
+
 
     var user_name: TextView? = null
     var txt_changeCover: TextView? = null
@@ -90,15 +99,53 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
     private val factory: ViewModelFactoryC by instance()
 
 
+    var postUserId: String? = null
+    var postUserName: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
 
 
+        postUserId = intent.getStringExtra("postUserId")
+        postUserName = intent.getStringExtra("postUserName")
+
         initViews()
+        checkWHoseProfile()
+
 
         set_Time_Post_Adapter()
+    }
+
+    private fun checkWHoseProfile() {
+
+
+        //self profile
+        if (postUserId.equals(URL.userId)) {
+            goneLayout(addFollowLayout)
+
+            user_name!!.text = URL.fullName.capitalize()
+
+        }
+        //friend profile
+        else {
+            goneLayout(txt_changeCover)
+            goneLayout(txt_changeProfile)
+            visibleLayout(addFollowLayout)
+            user_name!!.text = postUserName!!.capitalize()
+        }
+
+
+    }
+
+    private fun goneLayout(view: View?) {
+        view!!.visibility = View.GONE
+
+    }
+
+    private fun visibleLayout(view: View?) {
+        view!!.visibility = View.VISIBLE
+
     }
 
 
@@ -110,7 +157,7 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
 
 
-        viewmodel = ViewModelProviders.of(this,factory).get(Profile_VM::class.java)
+        viewmodel = ViewModelProviders.of(this, factory).get(Profile_VM::class.java)
 
         upload_loading_animLogin = findViewById(R.id.upload_loading_animLogin)
         timeline = findViewById(R.id.timeline)
@@ -118,6 +165,12 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         videos = findViewById(R.id.videos)
 
         profile_rv = findViewById(R.id.profile_rv)
+
+
+        addFollowLayout = findViewById(R.id.addFollowLayout)
+        follow_friend = findViewById(R.id.follow_friend)
+        add_friend = findViewById(R.id.add_friend)
+        menu_friend = findViewById(R.id.menu_friend)
 
 
         user_name = findViewById<TextView>(R.id.user_name)
@@ -148,12 +201,21 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         val observable7 = RxView.clicks(videos!!).map<Any> { o: Any? -> videos }
 
 
-        val observable8 = RxView.clicks(iv_profile_image_profile!!).map<Any> { o: Any? -> iv_profile_image_profile }
-        val observable9 = RxView.clicks(iv_cover_image_profile!!).map<Any> { o: Any? -> iv_cover_image_profile }
+        val observable8 = RxView.clicks(iv_profile_image_profile!!)
+            .map<Any> { o: Any? -> iv_profile_image_profile }
+        val observable9 =
+            RxView.clicks(iv_cover_image_profile!!).map<Any> { o: Any? -> iv_cover_image_profile }
 
 
 
-        setClickListener(observable1, observable2, observable3, observable4,observable8,observable9)
+        setClickListener(
+            observable1,
+            observable2,
+            observable3,
+            observable4,
+            observable8,
+            observable9
+        )
 
         setClickListeneToSlider(observable5, observable6, observable7)
 
@@ -176,12 +238,10 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
     }
 
 
-
-
     private fun setUserDataWithImages() {
 
 
-        val user: HashMap<String, String?> = session!!.userDetails
+        val user: HashMap<String, String?> = session.userDetails
         setUseDataTOVIew(user)
 
 
@@ -195,21 +255,15 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         })
 
 
-
-
     }
-
-
-
-
 
 
     private fun setUseDataTOVIew(result: HashMap<String, String?>) {
 
 
-        user_name!!.text = URL.fullName
 
-        Glide.with(baseContext).load(URL.profilePicPath + result.get(SessionManager.KEY_PROFILE_PICTURE))
+        Glide.with(baseContext)
+            .load(URL.profilePicPath + result.get(SessionManager.KEY_PROFILE_PICTURE))
             .apply(RequestOptions().placeholder(R.drawable.placeholder_profile))
             .thumbnail(0.01f).into(iv_profile_image_profile!!)
 
@@ -276,14 +330,34 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
     ) {
 
         //set click listener
-        val disposable = Observable.mergeArray(observable1, observable2, observable3, observable4,observable8,observable9)
+        val disposable = Observable.mergeArray(
+            observable1,
+            observable2,
+            observable3,
+            observable4,
+            observable8,
+            observable9
+        )
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { o ->
 
-                if (o == txt_changeProfile) {
-                    askToUserChangeProfilePic("profile")
-                } else if (o == txt_changeCover) {
-                    askToUserChangeProfilePic("cover")
+                if (o == txt_changeProfile || o == iv_profile_image_profile) {
+
+                    if (postUserId.equals(URL.userId))
+                        showProfileBottomSheet("profile")
+                    else
+                        openPic(arrayListOf(URL.profilePicPath + URL.profilePic))
+
+
+                } else if (o == txt_changeCover || o == iv_cover_image_profile) {
+                    //  askToUserChangeProfilePic("cover")
+
+                    if (postUserId.equals(URL.userId))
+                        showProfileBottomSheet("cover")
+                    else
+                        openPic(arrayListOf(URL.coverPicPath + URL.coverPic))
+
+
                 } else if (o == txt_doneChangeProfile) {
 
                     if (profileUri != null) {
@@ -296,19 +370,61 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
                     }
                 }
 
-                else if (o == iv_profile_image_profile) {
+
+            }
 
 
-                    openPic(arrayListOf(URL.profilePicPath +URL.profilePic))
+    }
 
-                } else if (o == iv_cover_image_profile) {
+    private fun showProfileBottomSheet(from: String) {
+        var sheetDialog = BottomSheetDialog(this@Profile_Activity)
+        val sheetView =
+            LayoutInflater.from(this@Profile_Activity).inflate(R.layout.profilebottomsheet, null)
+        sheetDialog.setContentView(sheetView)
 
-                    openPic(arrayListOf(URL.coverPicPath +URL.coverPic))
+        var viewProfile = sheetView.findViewById<VectorCompatTextView>(R.id.viewProfile)
+        var changeProfile = sheetView.findViewById<VectorCompatTextView>(R.id.changeProfile)
+
+        if (from.equals("cover")) {
+            viewProfile.text = "View Cover Pic"
+            changeProfile.text = "Change Cover Pic"
+        }
+
+
+        val observable1 = RxView.clicks(viewProfile!!).map<Any> { o: Any? -> viewProfile }
+        val observable2 = RxView.clicks(changeProfile!!).map<Any> { o: Any? -> changeProfile }
+
+
+        val disposable = Observable.merge(observable1, observable2)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { o ->
+
+                sheetDialog.dismiss()
+
+                if (o == viewProfile) {
+
+                    if (from.equals("cover"))
+                        openPic(arrayListOf(URL.coverPicPath + URL.coverPic))
+                    else
+                        openPic(arrayListOf(URL.profilePicPath + URL.profilePic))
+
+
+                }
+                else if(o==changeProfile)
+                {
+                    if (from.equals("cover"))
+                    checkPermissions("cover")
+                    else
+                        checkPermissions("profile")
+
 
                 }
 
             }
 
+
+
+        sheetDialog.show()
 
     }
 
@@ -325,40 +441,10 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
     }
 
 
-    private fun askToUserChangeProfilePic(from: String) {
-
-        var msg: String = ""
-
-        if (from.equals("profile"))
-            msg = "Want to change your profile pic?"
-        else
-            msg = "Want to change your  cover pic?"
-
-        MaterialAlertDialogBuilder(this@Profile_Activity, R.style.AlertDialogTheme)
-            .setTitle("LaneCrowd")
-            .setMessage(msg)
-            .setNegativeButton("No") { dialogInterface, i -> }
-            .setPositiveButton("yes") { dialogInterface, i ->
-
-
-                checkPermissions(from)
-
-            }
-            .show()
-
-
-    }
 
     private fun checkPermissions(from: String) {
 
         println("check_called")
-
-        var req: Int
-        if (from.equals("profile"))
-            req = REQ_PER_GALLERY_PROFILE
-        else
-            req = REQ_PER_GALLERY_COVER
-
 
         if (ContextCompat.checkSelfPermission(
                 this@Profile_Activity,
@@ -484,7 +570,7 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         if (resultPi!!.msg.equals("profile pic uploaded Successfully")) {
 
             //update session value of profile
-            session!!.updateProfilePic(resultPi.pic)
+            session.updateProfilePic(resultPi.pic)
             URL.profilePic = resultPi.pic
             updateSessionVM()
 
@@ -492,7 +578,7 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         } else if (resultPi.msg.equals("Cover pic uploaded Successfully")) {
 
             //update session value of profile
-            session!!.updateCoverPic(resultPi.pic)
+            session.updateCoverPic(resultPi.pic)
             URL.coverPic = resultPi.pic
             updateSessionVM()
         }
@@ -503,7 +589,6 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         //set session data to MysessionVM
         mySessionVM!!.StoreValueTOLiveData(
             URL.userId,
-            URL.email,
             URL.phone,
             URL.fullName,
             "",
@@ -573,7 +658,6 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
     }
 
     fun goto_More_Info(view: View) {
-
 
 
     }

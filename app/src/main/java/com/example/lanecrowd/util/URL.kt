@@ -17,7 +17,7 @@ object URL {
     var fullName=""
     var profilePic=""
     var coverPic=""
-    var email=""
+    var emailphone=""
     var password=""
     var phone=""
     var dob=""

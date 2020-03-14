@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+
+    <com.xw.repo.VectorCompatTextView
+        android:padding="10dp"
+        android:id="@+id/uploadPhoto"
+        android:drawablePadding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Upload Photo"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        app:drawableWidth="40dp"
+        app:drawableHeight="40dp"
+        android:gravity="center_vertical"
+        android:drawableTint="@color/colorPrimary"
+        app:drawableLeftCompat="@drawable/photo_icon"/>
+
+
+ <com.xw.repo.VectorCompatTextView
+     android:id="@+id/uploadVideo"
+     android:layout_marginTop="10dp"
+        android:padding="10dp"
+        android:drawablePadding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Upload Video"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        app:drawableWidth="40dp"
+        app:drawableHeight="40dp"
+        android:gravity="center_vertical"
+        android:drawableTint="@color/colorPrimary"
+        app:drawableLeftCompat="@drawable/video_icon"/>
+
+
+
+
+
+</LinearLayout>

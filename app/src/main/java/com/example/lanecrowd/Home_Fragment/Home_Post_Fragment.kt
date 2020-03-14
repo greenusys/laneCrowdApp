@@ -43,6 +43,7 @@ import com.example.lanecrowd.view_modal.MySessionVM
 import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.JsonObject
 import com.skydoves.powermenu.OnMenuItemClickListener
@@ -94,6 +95,8 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
     private var main_layout: RelativeLayout? = null
     private var swipe: SwipeRefreshLayout? = null
     var loading_more_anim: SpinKitView? = null
+
+    var scrolltoup: FloatingActionButton? = null
 
     private var no_data_anim_post: LottieAnimationView? = null
     private var add_post: TextView? = null
@@ -166,8 +169,7 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
 
 
-       // session = SessionManager(context!!)
-        //this factory method will create and return one object
+        //this factory method will create and return single object
         videomodelfactory =
             ViewModelProvider_Session(
                 MySessionVM.instance
@@ -177,6 +179,8 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
 
         vibe = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+        scrolltoup = view.findViewById(R.id.scrolltoup) as FloatingActionButton
 
         swipe = view.findViewById(R.id.swipe) as SwipeRefreshLayout
         loading_more_anim = view.findViewById(R.id.loading_more_anim) as SpinKitView
@@ -305,7 +309,9 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
                 Intent(
                     context,
                     Add_Post_Activity::class.java
-                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+                    .putExtra("from","post")
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
 
         })
@@ -353,12 +359,24 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
                 println("scrollOutItems"+scrollOutItems)
                 println("home_post_list"+home_post_list.size)
 
+
+                if(scrollOutItems>=5)
+               visibleFloatingButton(true)
+                else if(scrollOutItems<=3)
+                    visibleFloatingButton(false)
+
+
+
                 if (isScrolling && home_post_list.size>8 && (currentItems + scrollOutItems == totalItems)) {
                     visibleLoadingMoreAnim(true)
 
                     println("load_more_called")
                     isScrolling = false
                     postCounting++
+
+
+
+
                     if (!isNetworkAvailable(context!!)) {
                         visible_no_internet_layout(true)
                     } else
@@ -367,7 +385,7 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
                             fetchPost(postCounting.toString(), "more")
 
-                        }, 2000)
+                        }, 1200)
 
 
 
@@ -377,6 +395,22 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
             }
         })
 
+
+    }
+
+    private fun visibleFloatingButton(value: Boolean) {
+
+        if (value)
+            scrolltoup!!.visibility = View.VISIBLE
+        else
+            scrolltoup!!.visibility = View.GONE
+
+
+        scrolltoup!!.setOnClickListener(View.OnClickListener {
+
+            home_post_rv!!.smoothScrollToPosition(0)
+            visibleFloatingButton(false)
+        })
 
     }
 
@@ -437,7 +471,11 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
     private fun fetchUpdateUserDetails() {
 
         try {
-            loginVM.loginUser(URL.email,URL.password).observe(viewLifecycleOwner, Observer { resultPi ->
+
+
+
+
+            loginVM.loginUser(URL.emailphone,URL.password).observe(viewLifecycleOwner, Observer { resultPi ->
 
 
 
@@ -466,16 +504,16 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
     private fun createUserSession(userdata: ArrayList<RegisterResModal.UserData>) {
 
-        var phone: String = ""
-        var email: String = ""
 
-        if (userdata.get(0).phone == null)
-        else
-            phone = userdata.get(0).phone
 
-        if (userdata.get(0).email == null)
+
+
+        var emailphone=""
+
+        if(userdata.get(0).phone.equals(""))
+            emailphone=  userdata.get(0).email
         else
-            email = userdata.get(0).email
+            emailphone= userdata.get(0).phone
 
 
         println("new_profile_pic"+userdata.get(0).profile_picture)
@@ -484,9 +522,8 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
         //creating user's session
         session!!.createLoginSession(
             userdata.get(0).user_id,
-            email,
+            emailphone,
             URL.password,
-            phone,
             userdata.get(0).full_name,
             userdata.get(0).bio_graphy,
             userdata.get(0).profile_picture,
@@ -499,8 +536,7 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
         //set session data to MysessionVM
         mySessionVM!!.StoreValueTOLiveData(
             userdata.get(0).user_id,
-            email,
-            phone,
+            emailphone,
             userdata.get(0).full_name,
             userdata.get(0).bio_graphy,
             userdata.get(0).profile_picture,
@@ -882,9 +918,14 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
             .setPositiveButton("Yes") { dialogInterface, i ->
                 println("show_psoitio_2" + postposition)
 
-
-                viewmodel.deletePosetAPI(postId)
+                home_post_list.removeAt(postposition-2)
                 homePostAdapter!!.notifyItemRemoved(postposition)
+                viewmodel.deletePosetAPI(postId)
+
+
+                if(home_post_list.size<=0)
+                    visibleNoDataFound(true)
+
 
             }
             .show()

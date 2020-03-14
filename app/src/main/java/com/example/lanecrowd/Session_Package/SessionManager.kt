@@ -22,9 +22,8 @@ class SessionManager(// Context
      */
     fun createLoginSession(
         userId: String?,
-        email: String?,
+        emailphone: String?,
         password: String?,
-        phone: String?,
         fullName: String?,
         biography: String?,
         profilePicture: String?,
@@ -41,17 +40,14 @@ class SessionManager(// Context
             userId
         )
         editor.putString(
-            KEY_EMAIL,
-            email
+            KEY_EMAILPHONE,
+            emailphone
         )
         editor.putString(
             KEY_PASSWORD,
             password
         )
-        editor.putString(
-            KEY_PHONE,
-            phone
-        )
+
         editor.putString(
             KEY_FULL_NAME,
             fullName
@@ -124,18 +120,15 @@ class SessionManager(// Context
                 KEY_USERID,
                 ""
             )
-            user[KEY_EMAIL] = pref.getString(
-                KEY_EMAIL,
+            user[KEY_EMAILPHONE] = pref.getString(
+                KEY_EMAILPHONE,
                 ""
             )
             user[KEY_PASSWORD] = pref.getString(
                 KEY_PASSWORD,
                 ""
             )
-            user[KEY_PHONE] = pref.getString(
-                KEY_PHONE,
-                ""
-            )
+
             user[KEY_DOB] = pref.getString(
                 KEY_DOB,
                 ""
@@ -196,9 +189,8 @@ class SessionManager(// Context
         // All Shared Preferences Keys
         private const val IS_LOGIN = "IsLoggedIn"
         const val KEY_USERID = "id"
-        const val KEY_EMAIL = "email"
+        const val KEY_EMAILPHONE = "email"
         const val KEY_PASSWORD = "password"
-        const val KEY_PHONE = "phone"
         const val KEY_FULL_NAME = "full_name"
         const val KEY_DOB = "dob"
         const val KEY_GENDER = "gender"

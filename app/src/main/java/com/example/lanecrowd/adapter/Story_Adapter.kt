@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -248,7 +249,7 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
                     Intent(context, View_Story_Activity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         .putStringArrayListExtra("story_files", list.get(position-1).story_files)
-                        .putExtra("name",list.get(position-1).posted_by)
+                        .putExtra("name",list.get(position-1).posted_by.capitalize())
                         .putExtra("imageva",list.get(position-1).profile_pic)
 
 
@@ -256,7 +257,7 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
             })
 
 
-            holder.story_userName.setText(list.get(position-1).posted_by)
+            holder.story_userName.setText(list.get(position-1).posted_by.capitalize())
 
             setStoryImage(position, list.get(position-1).story_files.get(0), holder.story_image)
 
@@ -318,10 +319,10 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        val main_layout=view.findViewById<LinearLayout>(R.id.main_layout)
+        val main_layout=view.findViewById<RelativeLayout>(R.id.main_layout)
         val story_image=view.findViewById<CircleImageView>(R.id.story_image)
         val story_userName=view.findViewById<TextView>(R.id.story_userName)
-        val add_to_StoryLayout=view.findViewById<LinearLayout>(R.id.add_to_StoryLayout)
+        val add_to_StoryLayout=view.findViewById<RelativeLayout>(R.id.add_to_StoryLayout)
         val user_image=view.findViewById<CircleImageView>(R.id.user_image)
 
     }

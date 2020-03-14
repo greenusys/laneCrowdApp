@@ -38,6 +38,9 @@ dependencies {
     implementation "org.kodein.di:kodein-di-framework-android-x:6.2.1"
 
 
+    implementation 'com.github.woxingxiao:VectorCompatTextView:2.7-androidx'
+
+
     //retrofit
     implementation 'com.squareup.okhttp:okhttp:2.3.0'
     implementation 'com.google.code.gson:gson:2.8.5'

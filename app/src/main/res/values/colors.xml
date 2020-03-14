@@ -6,6 +6,8 @@
     <color name="typing">#5921B0</color>
     <color name="purple">#8C5ED9</color>
     <color name="white">#ffffff</color>
+    <color name="red">#C10A0A</color>
+
     <color name="black">#000000</color>
     <color name="bgBottomNavigation">#fe485a</color>
 
@@ -17,7 +19,6 @@
     <color name="dark_grey2">#827C7C</color>
     <color name="light_yellow">#B4C621</color>
     <color name="green">#10B310</color>
-    <color name="red">#C10A0A</color>
 
     <color name="box_1">#0691cc</color>
     <color name="box_2">#E50431</color>

@@ -9,10 +9,18 @@ import java.util.concurrent.TimeUnit;
 
 public class TimeShow
 {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
 
 
-        System.out.println("time"+getTime("2020-03-12 00:35:44"));
+
+
+
+        //System.out.println("time"+getTime("2020-03-12 23:39:07"));
+        System.out.println("time"+getTime("2020-03-14 12:57:45"));
+
+
+
+
     }
 
 
@@ -23,34 +31,40 @@ public class TimeShow
 
         try
         {
-
-
-
-            //convert 24hrs to 12 hrs format
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            DateFormat outputformat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            Date date = null;
-            String output = null;
-            try{
-                date= df.parse(time);
-                output = outputformat.format(date);
-            }catch(ParseException pe){
-                pe.printStackTrace();
-            }
-            //
-
-
-
 
 
 
             //add 5.30 hrs to orinal date to get correct date
             Calendar calendar = Calendar.getInstance();
             Calendar calenda2 = Calendar.getInstance();
-            calendar.setTime(df.parse(output));
+            calendar.setTime(df.parse(time));
             calendar.add(Calendar.HOUR_OF_DAY, 5);
             calendar.add(Calendar.MINUTE, 30);
             Date past2=calendar.getTime();
+
+
+
+/*
+            //convert 24hrs to 12 hrs format
+            Date date = null;
+            String output = null;
+            try{
+                date= df.parse(time);
+                output = df.format(date);
+            }catch(ParseException pe){
+                pe.printStackTrace();
+            }
+            //*/
+
+            System.out.println("inputTime"+time);
+            System.out.println("after_5_30"+past2);
+           // System.out.println("after_24_12"+output);
+
+
+
+
+
 
 
             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -63,10 +77,12 @@ public class TimeShow
 
             Date now = new Date();
 
-            System.out.println("original_time"+time);
+          /*  System.out.println("original_time"+time);
             System.out.println("inActiveDate"+inActiveDate);
+            System.out.println("past2"+ calendar.getTime());
             System.out.println("past3"+past3);
-            System.out.println("now_kaif"+now);
+            System.out.println("now_kaif"+now);*/
+          //  System.out.println("after_24_12"+output);
 
 
 
@@ -74,10 +90,10 @@ public class TimeShow
 
 
 
-            long seconds= TimeUnit.MILLISECONDS.toSeconds(now.getTime() - past3.getTime());
-            long minutes=TimeUnit.MILLISECONDS.toMinutes(now.getTime() - past3.getTime());
-            long hours=TimeUnit.MILLISECONDS.toHours(now.getTime() - past3.getTime());
-            long days=TimeUnit.MILLISECONDS.toDays(now.getTime() - past3.getTime());
+            long seconds= TimeUnit.MILLISECONDS.toSeconds(now.getTime() - past2.getTime());
+            long minutes=TimeUnit.MILLISECONDS.toMinutes(now.getTime() - past2.getTime());
+            long hours=TimeUnit.MILLISECONDS.toHours(now.getTime() - past2.getTime());
+            long days=TimeUnit.MILLISECONDS.toDays(now.getTime() - past2.getTime());
 
 
             if(seconds<60)

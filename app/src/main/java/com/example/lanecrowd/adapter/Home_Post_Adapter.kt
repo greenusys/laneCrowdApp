@@ -3,11 +3,13 @@ package com.example.lanecrowd.adapter
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +26,7 @@ import com.example.lancrowd.activity.modal.Story_Modal
 import com.example.lanecrowd.Home_Fragment.Home_Post_Fragment
 import com.example.lanecrowd.R
 import com.example.lanecrowd.activity.Add_Post_Activity
+import com.example.lanecrowd.activity.Profile_Activity
 import com.example.lanecrowd.activity.ShowPhotoActivity
 import com.example.lanecrowd.activity.Show_Comment_Activity
 import com.example.lanecrowd.util.URL
@@ -105,9 +108,6 @@ class Home_Post_Adapter(
 
         if (position == 0) {
 
-
-            fetchStory()
-
             val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             layoutManager.initialPrefetchItemCount = 8
             holder.story_rv.layoutManager = layoutManager
@@ -142,22 +142,24 @@ class Home_Post_Adapter(
 
     }
 
-    private fun fetchStory() {
 
-
-
-       /* viewmodel.fetchStoryVM(URL.userId, "0")
-            .observe(viewPool!!, Observer { story_result ->
-
-            })
-*/
-
-    }
 
     private fun setPhotoVideoViewListener(position: Int, holder: ViewHolder) {
 
 
+        holder.postProfilePic.setOnClickListener(View.OnClickListener {
+            println("checkImageee" + checkIsImage(position - 2))
+            context.startActivity(
+                Intent(context, Profile_Activity::class.java)
+                    .putExtra("postUserId", list.get(position-2).user_id)
+                    .putExtra("postUserName", list.get(position-2).posted_by.capitalize())
 
+
+            )
+
+
+
+        })
 
         holder.iv_postImgA.setOnClickListener(View.OnClickListener {
             println("checkImageee" + checkIsImage(position - 2))
@@ -165,7 +167,7 @@ class Home_Post_Adapter(
                 Intent(context, ShowPhotoActivity::class.java)
                     .putExtra("isImage", checkIsImage(position - 2).toString())
                     .putExtra("position", "0")
-                    .putExtra("name", list.get(position-2).posted_by)
+                    .putExtra("name", list.get(position-2).posted_by.capitalize())
                     .putStringArrayListExtra("files", list.get(position - 2).post_files)
             )
 
@@ -177,7 +179,7 @@ class Home_Post_Adapter(
                 Intent(context, ShowPhotoActivity::class.java)
                     .putExtra("isImage", checkIsImage(position - 2).toString())
                     .putExtra("position", "1")
-                    .putExtra("name", list.get(position-2).posted_by)
+                    .putExtra("name", list.get(position-2).posted_by.capitalize())
                     .putStringArrayListExtra("files", list.get(position - 2).post_files)
             )
 
@@ -188,7 +190,7 @@ class Home_Post_Adapter(
                 Intent(context, ShowPhotoActivity::class.java)
                     .putExtra("isImage", checkIsImage(position - 2).toString())
                     .putExtra("position", "2")
-                    .putExtra("name", list.get(position-2).posted_by)
+                    .putExtra("name", list.get(position-2).posted_by.capitalize())
                     .putStringArrayListExtra("files", list.get(position - 2).post_files)
             )
 
@@ -200,7 +202,7 @@ class Home_Post_Adapter(
                 Intent(context, ShowPhotoActivity::class.java)
                     .putExtra("isImage", checkIsImage(position - 2).toString())
                     .putExtra("position", "3")
-                    .putExtra("name", list.get(position-2).posted_by)
+                    .putExtra("name", list.get(position-2).posted_by.capitalize())
                     .putStringArrayListExtra("files", list.get(position - 2).post_files)
             )
 
@@ -554,20 +556,23 @@ class Home_Post_Adapter(
         Glide.with(context)
             .load(
                 URL.profilePicPath + list.get(position - 2)
-                    .profile_pic
-            ).apply(
+                    .profile_pic).apply(
                 RequestOptions().placeholder(R.drawable.placeholder_profile)
             )
             .thumbnail(0.01f).into(holder.postProfilePic!!)
 
 
+
         //for change profile or cover pic
-        if(!list.get(position - 2).post_head.equals(""))
-        holder.postUserName.text = list.get(position - 2).posted_by+" "+
-                list.get(position-2).post_head
+        if(!list.get(position - 2).post_head.equals("")) {
+            var postHead ="<b>"+ list.get(position - 2).posted_by.capitalize()+"</b> "+  list.get(position - 2).post_head
+
+            holder.postUserName.text = HtmlCompat.fromHtml(postHead, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        }
+
         //print only name
         else
-            holder.postUserName.text = list.get(position - 2).posted_by
+            holder.postUserName.text = list.get(position - 2).posted_by.capitalize()
 
 
         holder.postTime.text = list.get(position - 2).posted_on
@@ -609,9 +614,7 @@ class Home_Post_Adapter(
 
     }
 
-    private fun showMenuListener(
-        holder: ViewHolder, position: Int
-    ) {
+    private fun showMenuListener(holder: ViewHolder, position: Int) {
 
         holder.post_menu.setOnClickListener(View.OnClickListener {
 
@@ -636,7 +639,7 @@ class Home_Post_Adapter(
                 Intent(context, Show_Comment_Activity::class.java)
                     .putExtra("isImage", checkIsImage(position - 2).toString())
                     .putExtra("post_id", list.get(position - 2).post_id)
-                    .putExtra("user_name", list.get(position - 2).posted_by)
+                    .putExtra("user_name", list.get(position - 2).posted_by.capitalize())
                     .putExtra("user_pic", list.get(position - 2).profile_pic)
                     .putExtra("time", list.get(position - 2).posted_on)
                     .putExtra("total_likes", list.get(position - 2).total_likes)
@@ -713,6 +716,9 @@ class Home_Post_Adapter(
                     target: Target<Drawable?>,
                     isFirstResource: Boolean
                 ): Boolean {
+
+
+
                     loading_icon_gone.visibility = View.GONE
                     videoIcona.visibility = View.GONE
                     return false

@@ -23,7 +23,6 @@ class MySessionVM() : ViewModel() {
     fun StoreValueTOLiveData(
         userId: String?,
         email: String?,
-        phone: String?,
         fullName: String?,
         biography: String?,
         profilePicture: String?,
@@ -40,8 +39,7 @@ class MySessionVM() : ViewModel() {
 
 
         user.put(SessionManager.KEY_USERID, userId!!)
-        user.put(SessionManager.KEY_EMAIL, email)
-        user.put(SessionManager.KEY_PHONE, phone)
+        user.put(SessionManager.KEY_EMAILPHONE, email)
         user.put(SessionManager.KEY_FULL_NAME, fullName)
         user.put(SessionManager.KEY_BIOGRAPHY, biography)
         user.put(SessionManager.KEY_PROFILE_PICTURE, profilePicture)

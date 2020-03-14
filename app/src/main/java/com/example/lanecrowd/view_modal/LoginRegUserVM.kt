@@ -65,16 +65,10 @@ class LoginRegUserVM(val repo:UserRepository) : ViewModel() {
                     override fun onSuccess(response: RegisterResModal) {
 
 
-                        println("fetch_Story_res" + response)
+                        println("callLoginUserAPI" + response.msg+""+response.status)
 
-
-                        if (response.status.equals("1")) {
-                            println("if_kaif")
                             loginlist!!.value = response
-                        } else {
-                            println("ifelse_kaif")
-                            loginlist!!.value = null
-                        }
+
 
                     }
 

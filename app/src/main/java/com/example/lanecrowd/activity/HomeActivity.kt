@@ -150,7 +150,10 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
                 Intent(
                     applicationContext,
                     Profile_Activity::class.java
-                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+                    .putExtra("postUserId", URL.userId)
+
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
 
         })
@@ -203,10 +206,9 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
 
         txtName.text = resultPi[SessionManager.KEY_FULL_NAME]
 
-        if (URL.phone.equals(""))
-            txtMail.text = resultPi[SessionManager.KEY_EMAIL]
-        else
-            txtMail.text = resultPi[SessionManager.KEY_PHONE]
+
+            txtMail.text = resultPi[SessionManager.KEY_EMAILPHONE]
+
 
 
         Glide.with(baseContext)
@@ -235,9 +237,8 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
 
         val KEY_USERID = user[SessionManager.KEY_USERID]
         val KEY_FULL_NAME = user[SessionManager.KEY_FULL_NAME]
-        val KEY_EMAIL = user[SessionManager.KEY_EMAIL]
+        val KEY_EMAILPHONE = user[SessionManager.KEY_EMAILPHONE]
         val KEY_PASSWORD = user[SessionManager.KEY_PASSWORD]
-        val KEY_PHONE = user[SessionManager.KEY_PHONE]
         val KEY_PROFILE_PICTURE = user[SessionManager.KEY_PROFILE_PICTURE]
         val KEY_COVER_PHOTO = user[SessionManager.KEY_COVER_PHOTO]
         val KEY_DOB = user[SessionManager.KEY_DOB]
@@ -245,16 +246,15 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
 
         URL.userId = KEY_USERID!!
         URL.fullName = KEY_FULL_NAME!!
-        URL.email = KEY_EMAIL!!
+        URL.emailphone = KEY_EMAILPHONE!!
         URL.password = KEY_PASSWORD!!
-        URL.phone = KEY_PHONE!!
         URL.profilePic = KEY_PROFILE_PICTURE!!
         URL.coverPic = KEY_COVER_PHOTO!!
         URL.dob = KEY_DOB!!
         URL.gender = KEY_GENDER!!
 
 
-        println("activity_password"+URL.password)
+        println("activity_password"+URL.emailphone+" "+URL.password)
 
 
     }

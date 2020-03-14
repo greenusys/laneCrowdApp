@@ -11,10 +11,13 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.StrictMode
 import android.provider.MediaStore
+import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -30,9 +33,14 @@ import com.example.lanecrowd.util.ImageFilePath
 import com.example.lanecrowd.util.RuntimePermissionsActivity
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.AddPostVM
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.jakewharton.rxbinding2.view.RxView
+import com.xw.repo.VectorCompatTextView
 import de.hdodenhof.circleimageview.CircleImageView
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -84,8 +92,9 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         setContentView(R.layout.activity_add__post_)
 
 
-        println("add_post_activity_oncreate")
-       from= intent.getStringExtra("from")
+
+        from = intent.getStringExtra("from")
+        println("add_post_activity_oncreate" + from)
 
         initViews()
     }
@@ -121,23 +130,20 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
             LinearLayoutManager(applicationContext, LinearLayout.HORIZONTAL, false)
 
 
-        openPhotoVideoChooser!!.setOnClickListener(View.OnClickListener {
-
-            openPhotoVideoChooser()
-
-        })
-
-        openCameraChooser!!.setOnClickListener(View.OnClickListener {
-
-            openCameraChooser()
-
-        })
+        val observable1 =
+            RxView.clicks(openPhotoVideoChooser!!).map<Any> { o: Any -> openPhotoVideoChooser }
+        val observable2 =
+            RxView.clicks(openCameraChooser!!).map<Any> { o: Any -> openCameraChooser }
 
 
 
-        if(from.equals("story")) {
+
+        setPhotoVideoListener(observable1, observable2)
+
+
+        if (from.equals("story")) {
             tag_friend!!.visibility = View.GONE
-            post_title!!.setText("Add Story")
+            post_title!!.text = "Add Story"
             findViewById<EditText>(R.id.status_input)!!.visibility = View.GONE
         }
 
@@ -145,11 +151,75 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     }
 
 
+    private fun setPhotoVideoListener(
+        observable1: Observable<Any>,
+        observable2: Observable<Any>
+    ) {
 
+        //set click listener
+        val disposable = Observable.mergeArray(observable1, observable2)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { o ->
+
+                if (o == openPhotoVideoChooser)
+                    showPhotoVideoBottomSheet("photo")
+                else if (o == openCameraChooser)
+                    showPhotoVideoBottomSheet("camera")
+
+
+            }
+
+
+    }
+
+
+    private fun showPhotoVideoBottomSheet(from: String) {
+        var sheetDialog = BottomSheetDialog(this@Add_Post_Activity)
+        val sheetView =
+            LayoutInflater.from(this@Add_Post_Activity)
+                .inflate(R.layout.photovideobottomsheet, null)
+        sheetDialog.setContentView(sheetView)
+
+        var uploadPhoto = sheetView.findViewById<VectorCompatTextView>(R.id.uploadPhoto)
+        var uploadVideo = sheetView.findViewById<VectorCompatTextView>(R.id.uploadVideo)
+
+
+        val observable1 = RxView.clicks(uploadPhoto!!).map<Any> { o: Any? -> uploadPhoto }
+        val observable2 = RxView.clicks(uploadVideo!!).map<Any> { o: Any? -> uploadVideo }
+
+
+        val disposable = Observable.merge(observable1, observable2)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { o ->
+
+                sheetDialog.dismiss()
+
+                if (o == uploadPhoto) {
+
+
+                    if (!format_path.equals("") && format_path.contains("video"))
+                        showSnackBar("You can't select photo and video at the same time")
+                    else
+                        choosePhoto()
+
+                } else if (o == uploadVideo) {
+                    if (!format_path.equals("") && format_path.contains("image"))
+                        showSnackBar("You can't select photo and video at the same time")
+                    else
+                        openGalleryVideo()
+                }
+
+            }
+
+
+
+        sheetDialog.show()
+
+    }
 
     private fun setNameandImage() {
 
-        userName!!.setText(URL.fullName)
+        userName!!.text = URL.fullName
 
         Glide.with(baseContext)
             .load(URL.profilePicPath + URL.profilePic)
@@ -160,12 +230,13 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     fun choose_Status(view: View) {
 
-        startActivity(Intent(
-            applicationContext,
+        startActivity(
+            Intent(
+                applicationContext,
                 Choose_Status_Activity::class.java
-            )
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            .putExtra("from",from)
+            ).putExtra("from", from)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
         )
 
     }
@@ -284,46 +355,50 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     fun openGallery() {
 
-        if (ContextCompat.checkSelfPermission(this@Add_Post_Activity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this@Add_Post_Activity,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             super@Add_Post_Activity.requestAppPermissions(
                 arrayOf(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ), R.string.runtimepermission_txt, REQ_PER_GALLERY_VIDEO
             )
-        }
-
-        else
-        startActivityForResult(
-            Intent.createChooser(
-                Intent().setType("image/*").putExtra(
-                    Intent.EXTRA_ALLOW_MULTIPLE,
-                    true
-                ).setAction(Intent.ACTION_GET_CONTENT), "Select Images"
-            ), 1
-        )
+        } else
+            startActivityForResult(
+                Intent.createChooser(
+                    Intent().setType("image/*").putExtra(
+                        Intent.EXTRA_ALLOW_MULTIPLE,
+                        true
+                    ).setAction(Intent.ACTION_GET_CONTENT), "Select Images"
+                ), 1
+            )
     }
 
 
     fun openGalleryVideo() {
-        if (ContextCompat.checkSelfPermission(this@Add_Post_Activity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this@Add_Post_Activity,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             super@Add_Post_Activity.requestAppPermissions(
                 arrayOf(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ), R.string.runtimepermission_txt, REQ_PER_GALLERY_VIDEO
             )
-        }
-
-        else
-        startActivityForResult(
-            Intent.createChooser(
-                Intent().setType("video/*").putExtra(
-                    Intent.EXTRA_ALLOW_MULTIPLE,
-                    true
-                ).setAction(Intent.ACTION_GET_CONTENT), "Select Video"
-            ), 2
-        )
+        } else
+            startActivityForResult(
+                Intent.createChooser(
+                    Intent().setType("video/*").putExtra(
+                        Intent.EXTRA_ALLOW_MULTIPLE,
+                        true
+                    ).setAction(Intent.ACTION_GET_CONTENT), "Select Video"
+                ), 2
+            )
     }
 
 
@@ -485,8 +560,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     private fun notifyAdapter() {
 
-        if(rv_video_list.size>0)
-        visibleRVlayout(true)
+        if (rv_video_list.size > 0)
+            visibleRVlayout(true)
         else
             visibleRVlayout(false)
 
@@ -498,10 +573,10 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     private fun visibleRVlayout(value: Boolean) {
 
-        if(value)
-            selected_layout!!.visibility=View.VISIBLE
+        if (value)
+            selected_layout!!.visibility = View.VISIBLE
         else
-            selected_layout!!.visibility=View.GONE
+            selected_layout!!.visibility = View.GONE
     }
 
 
@@ -602,7 +677,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
         if (this@Add_Post_Activity != null) {
             this@Add_Post_Activity.runOnUiThread(Runnable {
-                val dialog = Dialog(this@Add_Post_Activity, R.style.AlertDialogTheme)
+                val dialog = Dialog(this@Add_Post_Activity, R.style.RoundShapeTheme)
                 dialog.setCancelable(true)
                 val inflater = layoutInflater
                 val dialogLayout: View = inflater.inflate(R.layout.photo_video_aler, null)
@@ -618,7 +693,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
                     if (!format_path.equals("") && format_path.contains("video"))
-                        showSnackBar("You can't select photo video at the same time")
+                        showSnackBar("You can't select photo and video at the same time")
                     else
                         choosePhoto()
 
@@ -630,7 +705,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
                     if (!format_path.equals("") && format_path.contains("image"))
-                        showSnackBar("You can't select photo video at the same time")
+                        showSnackBar("You can't select photo and video at the same time")
                     else
                         openGalleryVideo()
 
@@ -641,11 +716,11 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
                 dialog.show()
-                val window = dialog.window
+                /*val window = dialog.window
                 window!!.setLayout(
                     WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.WRAP_CONTENT
-                )
+                )*/
             })
 
         }
@@ -702,7 +777,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
                     if (!format_path.equals("") && format_path.contains("video") || checkVideoFormat())
-                        showSnackBar("You can't select photo video at the same time")
+                        showSnackBar("You can't select photo and video at the same time")
                     else
                         openCameraImages()
 
@@ -712,7 +787,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                 video.setOnClickListener(View.OnClickListener {
 
                     if (!format_path.equals("") && format_path.contains("image") || checkImageFormat())
-                        showSnackBar("You can't select photo video at the same time")
+                        showSnackBar("You can't select photo and video at the same time")
                     else
                         openCameraVideo()
 
@@ -721,14 +796,14 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
                 })
 
-
-
+                dialog.show()
+/*
                 dialog.show()
                 val window = dialog.window
                 window!!.setLayout(
                     WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.WRAP_CONTENT
-                )
+                )*/
             })
 
         }
@@ -773,7 +848,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         }
 
         rv_video_list.removeAt(position)
-       notifyAdapter()
+        notifyAdapter()
 
 
     }
@@ -794,30 +869,27 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
                 visibleLoadingAnimation(true)
 
-                    //add post
-                    viewmodel.addPostvm(from!!,
-                        "",
-                        findViewById<EditText>(R.id.status_input).text.toString(),
-                        files,
-                        isImage,
-                        applicationContext
-                    ).observe(this, Observer { resultPi ->
+                //add post
+                viewmodel.addPostvm(
+                    from!!,
+                    "",
+                    findViewById<EditText>(R.id.status_input).text.toString(),
+                    files,
+                    isImage,
+                    applicationContext
+                ).observe(this, Observer { resultPi ->
 
-                        println("add_post" + resultPi)
+                    println("add_post" + resultPi)
 
-                        if (resultPi != null && resultPi.getString("status").equals("1")) {
-                            visibleLoadingAnimation(false)
-                            finish()
-                        } else {
-                            visibleLoadingAnimation(false)
-                        }
-
-
-                    })
+                    if (resultPi != null && resultPi.getString("status").equals("1")) {
+                        visibleLoadingAnimation(false)
+                        finish()
+                    } else {
+                        visibleLoadingAnimation(false)
+                    }
 
 
-
-
+                })
 
 
             } catch (e: java.lang.Exception) {
@@ -848,7 +920,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     private fun askTOExit() {
 
 
-        MaterialAlertDialogBuilder(this@Add_Post_Activity, R.style.RoundShapeTheme)
+        MaterialAlertDialogBuilder(this@Add_Post_Activity, R.style.AlertDialogTheme)
             .setTitle("LaneCrowd")
             .setMessage("Are you sure want to exit?")
             .setNegativeButton("No") { dialogInterface, i ->
@@ -895,7 +967,6 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
         }
     }
-
 
 
 }
