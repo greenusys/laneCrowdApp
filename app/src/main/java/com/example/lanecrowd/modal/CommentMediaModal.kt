@@ -9,7 +9,7 @@ class CommentMediaModal(
     val staus: String,
     var total_likes: String,
     val isImage: String,
-    val total_shared: String,
+    var total_shared: String,
     var totalComment: String)
 
 

@@ -82,6 +82,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     var userName: TextView? = null
     var post_title: TextView? = null
     var userImage: CircleImageView? = null
+    var addPostBtn: TextView? = null
 
     var rv_addFiles: RecyclerView? = null
     var adapter: Show_Selected_File_Adapter? = null
@@ -112,6 +113,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         post_title = findViewById(R.id.post_title)
         userName = findViewById(R.id.user_name)
         userImage = findViewById(R.id.user_image)
+        addPostBtn = findViewById(R.id.addPostBtn)
 
         setNameandImage()
 
@@ -134,11 +136,12 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
             RxView.clicks(openPhotoVideoChooser!!).map<Any> { o: Any -> openPhotoVideoChooser }
         val observable2 =
             RxView.clicks(openCameraChooser!!).map<Any> { o: Any -> openCameraChooser }
+        val observable3 = RxView.clicks(addPostBtn!!).map<Any> { o: Any -> addPostBtn }
 
 
 
 
-        setPhotoVideoListener(observable1, observable2)
+        setPhotoVideoListener(observable1, observable2, observable3)
 
 
         if (from.equals("story")) {
@@ -153,11 +156,12 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     private fun setPhotoVideoListener(
         observable1: Observable<Any>,
-        observable2: Observable<Any>
+        observable2: Observable<Any>,
+        observable3: Observable<Any>
     ) {
 
         //set click listener
-        val disposable = Observable.mergeArray(observable1, observable2)
+        val disposable = Observable.mergeArray(observable1, observable2, observable3)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { o ->
 
@@ -165,11 +169,17 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                     showPhotoVideoBottomSheet("photo")
                 else if (o == openCameraChooser)
                     showPhotoVideoBottomSheet("camera")
+                else if (o == addPostBtn)
+                    upload_Post()
 
 
             }
 
 
+    }
+
+    private fun enableDisableButton(value: Boolean) {
+        addPostBtn!!.isEnabled = value
     }
 
 
@@ -219,7 +229,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     private fun setNameandImage() {
 
-        userName!!.text = URL.fullName
+        userName!!.text = URL.fullName.capitalize()
 
         Glide.with(baseContext)
             .load(URL.profilePicPath + URL.profilePic)
@@ -854,7 +864,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     }
 
 
-    fun upload_Post(view: View) {
+    fun upload_Post() {
 
 
         hideSoftKeyBoard()
@@ -865,6 +875,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
             try {
+
+                enableDisableButton(true)
 
 
                 visibleLoadingAnimation(true)
@@ -880,6 +892,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                 ).observe(this, Observer { resultPi ->
 
                     println("add_post" + resultPi)
+
+                    enableDisableButton(false)
 
                     if (resultPi != null && resultPi.getString("status").equals("1")) {
                         visibleLoadingAnimation(false)

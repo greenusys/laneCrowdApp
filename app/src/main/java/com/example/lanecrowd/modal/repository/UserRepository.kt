@@ -1,5 +1,6 @@
 package com.example.lanecrowd.modal.repository
 
+import com.example.lancrowd.activity.modal.Profile_Detail_Modal
 import com.example.lancrowd.activity.modal.RegisterResModal
 import com.example.lanecrowd.retrofit.ApiInterface
 import com.google.gson.JsonObject
@@ -46,6 +47,11 @@ class UserRepository(private val api: ApiInterface) {
         return api.deletePost(post_id)
     }
 
+    fun sharePostRepo(post_id:String,userId:String): Single<JsonObject> {
+
+        return api.sharePost("",post_id,userId)
+    }
+
     fun likeDislikePostRepo(post_id:String,userId:String): Single<JsonObject> {
 
         return api.likeDislikePost("",post_id,userId)
@@ -84,6 +90,13 @@ class UserRepository(private val api: ApiInterface) {
 
     }
 
+
+    //for Profile Section
+
+    fun fetchProfileRepo(myId: String,userId:String): Single<Profile_Detail_Modal> {
+
+        return api.fetchProfile(myId,userId)
+    }
 
 
 

@@ -45,8 +45,8 @@ class LoginRegUserVM(val repo:UserRepository) : ViewModel() {
 
  fun verifyOTPUSER(otp_input: String, otp: String, email_phone: String, password: String, name: String,dob: String, gender: String): MutableLiveData<RegisterResModal> {
 
-     verifyList = MutableLiveData()
-     callVerifyOTPAPI(otp_input, otp, email_phone, password, name,dob,gender)
+          verifyList = MutableLiveData()
+       callVerifyOTPAPI(otp_input, otp, email_phone, password, name,dob,gender)
 
         return verifyList as MutableLiveData<RegisterResModal>
 

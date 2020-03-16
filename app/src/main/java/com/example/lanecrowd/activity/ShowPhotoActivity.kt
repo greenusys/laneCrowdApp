@@ -51,7 +51,7 @@ class ShowPhotoActivity : AppCompatActivity() {
             .setToolbarTitleColor(ZColor.WHITE)
             .setGalleryBackgroundColor(ZColor.WHITE)
             .setToolbarColorResId(R.color.colorPrimary)
-            .setTitle(name)
+            .setTitle(name!!.capitalize())
             .setSelectedImgPosition(position!!.toInt())
             .show(isImage)
 

@@ -8,15 +8,20 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class TimeShow
+
 {
+
+    private static final int SECOND_MILLIS = 1000;
+    private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
+    private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
+    private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
+
     public static void main(String[] args) throws ParseException {
 
 
 
-
-
         //System.out.println("time"+getTime("2020-03-12 23:39:07"));
-        System.out.println("time"+getTime("2020-03-14 12:57:45"));
+        System.out.println("time"+getTime("2020-03-15 22:07:31"));
 
 
 
@@ -26,40 +31,37 @@ public class TimeShow
 
 
 
-   public static String getTime(String time)
-    {
-
-        try
-        {
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+   public static String getTime(String input)throws ParseException {
 
 
 
-            //add 5.30 hrs to orinal date to get correct date
-            Calendar calendar = Calendar.getInstance();
-            Calendar calenda2 = Calendar.getInstance();
-            calendar.setTime(df.parse(time));
-            calendar.add(Calendar.HOUR_OF_DAY, 5);
-            calendar.add(Calendar.MINUTE, 30);
-            Date past2=calendar.getTime();
+       DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
 
 
-/*
-            //convert 24hrs to 12 hrs format
-            Date date = null;
-            String output = null;
-            try{
-                date= df.parse(time);
-                output = df.format(date);
-            }catch(ParseException pe){
-                pe.printStackTrace();
-            }
-            //*/
 
-            System.out.println("inputTime"+time);
-            System.out.println("after_5_30"+past2);
-           // System.out.println("after_24_12"+output);
+
+       //add 5.30 hrs to orinal date to get correct date
+       Calendar calendar = Calendar.getInstance();
+       Calendar calenda2 = Calendar.getInstance();
+       calendar.setTime(df.parse(input));
+       calendar.add(Calendar.HOUR_OF_DAY, 5);
+       calendar.add(Calendar.MINUTE, 30);
+       Date past2=calendar.getTime();
+
+
+
+
+
+       //convert 24hrs to 12 hrs format
+       Date date = null;
+       String output = null;
+       try{
+           date= df.parse(input);
+           output = df.format(past2);
+       }catch(ParseException pe){
+           pe.printStackTrace();
+       }
 
 
 
@@ -67,60 +69,44 @@ public class TimeShow
 
 
 
-            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+       System.out.println("input"+input);
+       System.out.println("after_add"+past2);
+       System.out.println("24_H_12"+output);
 
-            String inActiveDate = format1.format(past2);
-            Date originDate=format1.parse(inActiveDate);
-            calenda2.setTime(originDate);
-            Date past3=calenda2.getTime();
+       long time=past2.getTime();
 
+       if (time < 1000000000000L) {
+           time *= 1000;
+       }
 
-            Date now = new Date();
-
-          /*  System.out.println("original_time"+time);
-            System.out.println("inActiveDate"+inActiveDate);
-            System.out.println("past2"+ calendar.getTime());
-            System.out.println("past3"+past3);
-            System.out.println("now_kaif"+now);*/
-          //  System.out.println("after_24_12"+output);
+       long now = System.currentTimeMillis();
+       if (time > now || time <= 0) {
+           return null;
+       }
 
 
+       final long diff = now - time;
+       if (diff < MINUTE_MILLIS) {
+           return "just now";
+       } else if (diff < 2 * MINUTE_MILLIS) {
+           return "a minute ago";
+       } else if (diff < 50 * MINUTE_MILLIS) {
+           return diff / MINUTE_MILLIS + " minutes ago";
+       } else if (diff < 90 * MINUTE_MILLIS) {
+           return "an hour ago";
+       } else if (diff < 24 * HOUR_MILLIS) {
+           return diff / HOUR_MILLIS + " hours ago";
+       } else if (diff < 48 * HOUR_MILLIS) {
+           return "yesterday";
+       } else {
+           return diff / DAY_MILLIS + " days ago";
+       }
 
 
 
 
 
-            long seconds= TimeUnit.MILLISECONDS.toSeconds(now.getTime() - past2.getTime());
-            long minutes=TimeUnit.MILLISECONDS.toMinutes(now.getTime() - past2.getTime());
-            long hours=TimeUnit.MILLISECONDS.toHours(now.getTime() - past2.getTime());
-            long days=TimeUnit.MILLISECONDS.toDays(now.getTime() - past2.getTime());
 
+   }
 
-            if(seconds<60)
-            {
-                System.out.println(seconds+" seconds ago");
-
-                return seconds+" seconds ago";
-            }
-            else if(minutes<60)
-            {
-                System.out.println(minutes+" minutes ago");
-                return minutes+" minutes ago";
-            }
-            else if(hours<24)
-            {
-                System.out.println(hours+" hours ago");
-                return hours+" hours ago";
-            }
-            else
-            {
-                System.out.println(days+" days ago");
-                return days+" days ago";
-            }
-        }
-        catch (Exception j){
-            j.printStackTrace();
-            return "empty";
-        }
-    }
 }

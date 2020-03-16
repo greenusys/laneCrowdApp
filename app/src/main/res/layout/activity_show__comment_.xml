@@ -43,7 +43,12 @@
             android:src="@drawable/back_arrow"
             android:tint="@color/white"/>
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <LinearLayout
+            android:id="@+id/userLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+             <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_profile_comment"
             android:layout_width="30dp"
             android:layout_height="match_parent"
@@ -92,6 +97,10 @@
                     android:visibility="gone" />
 
             </LinearLayout>
+
+
+        </LinearLayout>
+
 
         </LinearLayout>
 

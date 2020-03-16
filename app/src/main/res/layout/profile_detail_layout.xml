@@ -7,6 +7,7 @@
 
 
     <TextView
+        android:id="@+id/work_status"
         style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,10 +15,11 @@
         android:drawablePadding="20dp"
         android:drawableTint="@color/bgBottomNavigation"
         android:padding="10dp"
-        android:text="Work Status"
+        android:text="Work"
         android:textSize="20dp" />
 
     <TextView
+        android:id="@+id/college_status"
         android:layout_marginTop="5dp"
         style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
         android:layout_width="match_parent"
@@ -26,10 +28,24 @@
         android:drawablePadding="20dp"
         android:drawableTint="@color/bgBottomNavigation"
         android:padding="10dp"
-        android:text="Education Status"
+        android:text="College Status"
+        android:textSize="20dp" />
+    <TextView
+        android:id="@+id/school_status"
+        android:layout_marginTop="5dp"
+        style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/education_icon"
+        android:drawablePadding="20dp"
+        android:drawableTint="@color/bgBottomNavigation"
+        android:padding="10dp"
+        android:text="School Status"
         android:textSize="20dp" />
 
     <TextView
+        android:visibility="gone"
+        android:id="@+id/lives_status"
         android:layout_marginTop="5dp"
         style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
         android:layout_width="match_parent"
@@ -42,6 +58,8 @@
         android:textSize="20dp" />
 
     <TextView
+        android:visibility="gone"
+        android:id="@+id/from_status"
         android:layout_marginTop="5dp"
         style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
         android:layout_width="match_parent"
@@ -54,6 +72,7 @@
         android:textSize="20dp" />
 
     <TextView
+        android:id="@+id/relatino_status"
         android:layout_marginTop="5dp"
         style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
         android:layout_width="match_parent"
@@ -66,6 +85,8 @@
         android:textSize="20dp" />
 
     <TextView
+        android:visibility="gone"
+        android:id="@+id/follow_count_status"
         android:layout_marginTop="5dp"
         style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Large"
         android:layout_width="match_parent"

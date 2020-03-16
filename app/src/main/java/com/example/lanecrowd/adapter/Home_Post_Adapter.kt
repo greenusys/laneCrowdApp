@@ -133,6 +133,9 @@ class Home_Post_Adapter(
             //set Like Button Listener
             setLikeListener(holder, position)
 
+            //set Share Post Listener
+            setSharePostListener(holder, position)
+
             setPostMediaData(holder, position)
 
 
@@ -142,6 +145,21 @@ class Home_Post_Adapter(
 
     }
 
+    private fun setSharePostListener(holder: Home_Post_Adapter.ViewHolder, position: Int) {
+
+
+
+        holder.shareIcon.setOnClickListener(View.OnClickListener {
+
+
+            list[position - 2].total_share = (Integer.parseInt(list[position - 2].total_share) + 1).toString() + ""
+
+            notifyItemChanged(position,position)
+
+            activity.sharePost(list.get(position - 2).post_id, URL.userId)
+
+        })
+    }
 
 
     private fun setPhotoVideoViewListener(position: Int, holder: ViewHolder) {
@@ -608,8 +626,6 @@ class Home_Post_Adapter(
             holder.commentText.text = ""
 
 
-        // holder.likeIcon.setImageResource(if (list.get(position).isMyLike) R.drawable.ic_like_fill else R.drawable.ic_like)
-
         holder.likeIcon.isLiked = list.get(position - 2).isMyLike
 
     }
@@ -639,6 +655,7 @@ class Home_Post_Adapter(
                 Intent(context, Show_Comment_Activity::class.java)
                     .putExtra("isImage", checkIsImage(position - 2).toString())
                     .putExtra("post_id", list.get(position - 2).post_id)
+                    .putExtra("user_id", list.get(position - 2).user_id)
                     .putExtra("user_name", list.get(position - 2).posted_by.capitalize())
                     .putExtra("user_pic", list.get(position - 2).profile_pic)
                     .putExtra("time", list.get(position - 2).posted_on)
@@ -786,6 +803,9 @@ class Home_Post_Adapter(
         val likesText = view.findViewById<TextView>(R.id.likes)
         val commentText = view.findViewById<TextView>(R.id.comment)
         val shareText = view.findViewById<TextView>(R.id.share)
+
+        //share icon
+        val shareIcon = view.findViewById<ImageView>(R.id.iv_postShare)
 
 
         //loading icons

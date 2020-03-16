@@ -10,10 +10,7 @@ import android.os.Vibrator
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.AbsListView
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -43,10 +40,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import com.jakewharton.rxbinding2.view.RxView
 import com.skydoves.powermenu.OnMenuItemClickListener
 import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
 import de.hdodenhof.circleimageview.CircleImageView
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import org.json.JSONArray
 import org.json.JSONObject
 import org.kodein.di.KodeinAware
@@ -64,6 +64,7 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
     private var vibe: Vibrator? = null
 
 
+
     var edit = false
     var isScrolling = false
     var currentItems: Int = 0
@@ -75,6 +76,7 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
     var adapter: CommentAdapter? = null
     var files: ArrayList<String>? = null
     var post_id: String? = null
+    var user_id: String? = null
     var user_name: String? = null
     var isImage: String? = null
     var time: String? = null
@@ -95,6 +97,7 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
 
 
 
+    private var userLayout: LinearLayout? = null
     private var no_comment: TextView? = null
     private var edt_comment: EditText? = null
     private var iv_sendComment: ImageView? = null
@@ -131,6 +134,7 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
 
         files = intent.extras!!.getStringArrayList("files")
         post_id = intent.extras!!.getString("post_id")
+        user_id = intent.extras!!.getString("user_id")
         post_position = intent.extras!!.getString("post_position")
         isImage = intent.extras!!.getString("isImage")
         user_name = intent.extras!!.getString("user_name")
@@ -208,6 +212,7 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
             total_shared!!,
             total_comment!!
         )
+        userLayout = findViewById<LinearLayout>(R.id.userLayout)
         no_comment = findViewById<TextView>(R.id.no_comment)
         swipe = findViewById<SwipeRefreshLayout>(R.id.comment_swipe)
         loading_more_anim = findViewById<SpinKitView>(R.id.loading_more_anim)
@@ -251,11 +256,45 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
         }
 
 
-        //send button listener
-        iv_sendComment!!.setOnClickListener(View.OnClickListener {
 
-           CallAPI()
-        })
+
+        val observable1 = RxView.clicks(iv_sendComment!!).map<Any> { o: Any -> iv_sendComment }
+        val observable2 = RxView.clicks(userLayout!!).map<Any> { o: Any -> userLayout }
+
+
+        //set Send and Goto User Profile Listener
+        setListener(observable1, observable2)
+
+
+    }
+
+
+    private fun setListener(observable1: Observable<Any>, observable2: Observable<Any>) {
+
+        //set click listener
+        val disposable = Observable.mergeArray(observable1, observable2)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { o ->
+
+                if(o==iv_sendComment)
+                    CallAPI()
+                else if(o==userLayout)
+                    gotoUserProfile()
+
+
+            }
+
+
+    }
+
+    private fun gotoUserProfile() {
+        startActivity(
+            Intent(applicationContext, Profile_Activity::class.java)
+                .putExtra("postUserId", user_id)
+                .putExtra("postUserName", user_name))
+
+
+
 
     }
 
@@ -397,6 +436,7 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
 
 
                 println("newskd"+edt_comment!!.text.toString())
+                println("sizeofList"+comment_list.size)
 
                 if (resultPi != null && main!!.getString("code").equals("1")) {
 
@@ -407,7 +447,7 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
                         post_id!!,
                         URL.userId,
                         edt_comment!!.text.toString(),
-                        TimeShow.getTime(getCurrentTime()),
+                        getCurrentTime(),
                         URL.userId,
                         user_name!!,
                         user_pic!!))
@@ -792,10 +832,20 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
 
     }
 
+    fun sharePost(totalShare:String,postId: String, userId: String) {
+        showVibration()
+
+        this.total_shared=totalShare
+
+        viewmodellike.sharePost(postId, userId)
+
+    }
+
+
     private fun getCurrentTime():String {
 
        var formatter =  SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    var date =  Date();
+        var date =  Date();
 
 
         println("current_time"+formatter.format(date))
@@ -813,6 +863,7 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
         val intent = Intent()
         intent.putExtra("total_likes",total_likes)
         intent.putExtra("total_comment", total_comment)
+        intent.putExtra("total_shared", total_shared)
         intent.putExtra("postPosition", post_position)
         intent.putExtra("isMylike", isMylikepost.toString())
         setResult(Activity.RESULT_OK, intent)

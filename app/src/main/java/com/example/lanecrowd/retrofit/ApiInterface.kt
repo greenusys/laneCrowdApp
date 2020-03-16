@@ -1,6 +1,7 @@
 package com.example.lanecrowd.retrofit
 
 
+import com.example.lancrowd.activity.modal.Profile_Detail_Modal
 import com.example.lancrowd.activity.modal.RegisterResModal
 import com.example.lanecrowd.util.NetworkConnectionInterceptor
 import com.google.gson.JsonObject
@@ -94,6 +95,10 @@ interface ApiInterface {
 
 
     @FormUrlEncoded
+    @POST("/sharePost")
+    fun sharePost(@Field("android") android: String, @Field("post_id") post_id: String, @Field("user_id") user_id: String): Single<JsonObject>
+
+    @FormUrlEncoded
     @POST("/deletePost")
     fun deletePost(@Field("post_id") post_id: String): Single<JsonObject>
 
@@ -144,6 +149,14 @@ interface ApiInterface {
     @Multipart
     @POST("/changecoverpic")
     fun changeCoverePic(@Part file: MultipartBody.Part?, @Part("user_id") user_id: RequestBody?, @Part("android") android: RequestBody?): Single<RegisterResModal?>?
+
+
+
+    //for Profile Section
+    @FormUrlEncoded
+    @POST("/fetchProfile")
+    fun fetchProfile(@Field("myId") myId: String,@Field("userId") userId: String): Single<Profile_Detail_Modal>
+
 
 
 }

@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -22,6 +23,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.lancrowd.activity.modal.Home_Post_Modal
 import com.example.lancrowd.activity.modal.Photo_Video_Modal
+import com.example.lancrowd.activity.modal.Profile_Detail_Modal
 import com.example.lancrowd.activity.modal.RegisterResModal
 import com.example.lanecrowd.R
 import com.example.lanecrowd.Session_Package.SessionManager
@@ -42,6 +44,9 @@ import com.mzelzoghbi.zgallery.entities.ZColor
 import com.xw.repo.VectorCompatTextView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.android.synthetic.main.activity_profile.*
+import kotlinx.android.synthetic.main.profile_detail_layout.*
+import kotlinx.android.synthetic.main.profile_detail_layout.view.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -79,6 +84,10 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
     var menu_friend: TextView? = null
 
 
+    var frndProfileurl: String=""
+    var frndCoverurl: String=""
+
+
     var user_name: TextView? = null
     var txt_changeCover: TextView? = null
     var txt_changeProfile: TextView? = null
@@ -110,11 +119,97 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         postUserId = intent.getStringExtra("postUserId")
         postUserName = intent.getStringExtra("postUserName")
 
+        println("Profile_Activity")
+        println("postUserId"+postUserId)
+        println("postUserName"+postUserName)
+
         initViews()
         checkWHoseProfile()
 
 
+        //set Profile Details
+        callFetchProfileAPI()
+
+
         set_Time_Post_Adapter()
+    }
+
+    private fun callFetchProfileAPI() {
+
+
+        try {
+            viewmodel.fetchProfileVM(URL.userId,postUserId!!)
+                .observe(this, Observer { resultPi ->
+
+                    setProfileData(resultPi)
+
+
+
+
+                })
+        } catch (e: Exception) {
+            e.printStackTrace()
+            visibleLoadingAnimation(false)
+
+        }
+
+    }
+
+    private fun setProfileData(result: Profile_Detail_Modal?) {
+
+
+
+
+        var status=""
+
+        frndProfileurl=result!!.basic_info.get(0).profile_picture
+        frndCoverurl=result!!.basic_info.get(0).cover_photo
+
+
+        //work status
+       if(result.work_details.size>0)
+           work_status.text =HtmlCompat.fromHtml(result!!.work_details.get(0).position.capitalize()+" at "+"<b>"+ result!!.work_details.get(0).company_name.capitalize()+"</b> ", HtmlCompat.FROM_HTML_MODE_LEGACY)
+       else
+           goneView(work_status!!,false)
+
+
+        //college status
+        if(result.user_university_details.size>0)
+        {
+            status = if(result.user_university_details.get(0).graduated.equals("1"))
+                "Studied "
+            else
+                "Study "
+
+            college_status.text =HtmlCompat.fromHtml(status+ result!!.user_university_details.get(0).course.capitalize()+" at "+"<b>"+result.user_university_details.get(0).university.capitalize()+"</b>", HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+        }
+        else
+            goneView(college_status!!,false)
+
+
+        //school staus
+       if(result.school_details.size>0)
+           school_status.text =HtmlCompat.fromHtml("Went to "+"<b>"+ result!!.school_details.get(0).school.capitalize()+"</b> ", HtmlCompat.FROM_HTML_MODE_LEGACY)
+        else
+            goneView(school_status!!,false)
+
+
+        //relationship status
+        if(result.relationship_status.size>0)
+            relatino_status.text = result!!.relationship_status.get(0).relationship_status.capitalize()
+        else
+            goneView(relatino_status!!,false)
+
+
+
+        visibleLayout(userInfoLayout)
+
+        setImagetoGLide(URL.profilePicPath + result!!.basic_info.get(0).profile_picture,iv_profile_image_profile!!,R.drawable.placeholder_profile)
+        setImagetoGLide(URL.coverPicPath + result!!.basic_info.get(0).cover_photo,iv_cover_image_profile!!,R.drawable.placeholder)
+
+
+
     }
 
     private fun checkWHoseProfile() {
@@ -126,6 +221,9 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
 
             user_name!!.text = URL.fullName.capitalize()
 
+            //set User's pics from session
+            setUserDataWithImages()
+
         }
         //friend profile
         else {
@@ -134,6 +232,9 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
             visibleLayout(addFollowLayout)
             user_name!!.text = postUserName!!.capitalize()
         }
+
+
+
 
 
     }
@@ -152,6 +253,8 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
     private fun initViews() {
 
 
+        goneLayout(userInfoLayout)
+
         //this factory method will create and return one object
         videomodelfactory = ViewModelProvider_Session(MySessionVM.instance)
         mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
@@ -167,10 +270,14 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         profile_rv = findViewById(R.id.profile_rv)
 
 
+
+
+        //add follow layout
         addFollowLayout = findViewById(R.id.addFollowLayout)
         follow_friend = findViewById(R.id.follow_friend)
         add_friend = findViewById(R.id.add_friend)
         menu_friend = findViewById(R.id.menu_friend)
+
 
 
         user_name = findViewById<TextView>(R.id.user_name)
@@ -185,11 +292,10 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         iv_profile_image_profile = findViewById<ImageView>(R.id.iv_profile_image_profile)
 
 
-        setUserDataWithImages()
 
 
-        val observable1 =
-            RxView.clicks(txt_changeProfile!!).map<Any> { o: Any? -> txt_changeProfile }
+
+        val observable1 = RxView.clicks(txt_changeProfile!!).map<Any> { o: Any? -> txt_changeProfile }
         val observable2 = RxView.clicks(txt_changeCover!!).map<Any> { o: Any? -> txt_changeCover }
         val observable3 =
             RxView.clicks(txt_doneChangeProfile!!).map<Any> { o: Any? -> txt_doneChangeProfile }
@@ -261,16 +367,21 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
     private fun setUseDataTOVIew(result: HashMap<String, String?>) {
 
 
+        setImagetoGLide(URL.profilePicPath + URL.profilePic,iv_profile_image_profile!!,R.drawable.placeholder_profile)
+        setImagetoGLide(URL.coverPicPath + URL.coverPic,iv_cover_image_profile!!,R.drawable.placeholder)
+
+
+
+    }
+
+    private fun setImagetoGLide(url: String, view:ImageView, placeholder: Int) {
+
+
 
         Glide.with(baseContext)
-            .load(URL.profilePicPath + result.get(SessionManager.KEY_PROFILE_PICTURE))
-            .apply(RequestOptions().placeholder(R.drawable.placeholder_profile))
-            .thumbnail(0.01f).into(iv_profile_image_profile!!)
-
-        Glide.with(baseContext)
-            .load(URL.coverPicPath + result.get(SessionManager.KEY_COVER_PHOTO)).apply(
-                RequestOptions().placeholder(R.drawable.placeholder)
-            ).thumbnail(0.01f).into(iv_cover_image_profile!!)
+            .load(url)
+            .apply(RequestOptions().placeholder(placeholder))
+            .thumbnail(0.01f).into(view!!)
 
     }
 
@@ -343,19 +454,39 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
 
                 if (o == txt_changeProfile || o == iv_profile_image_profile) {
 
+                    //for self
                     if (postUserId.equals(URL.userId))
                         showProfileBottomSheet("profile")
-                    else
+                    //for friend
+                    else {
+
+
+
+
+                        if(frndProfileurl.equals(""))
                         openPic(arrayListOf(URL.profilePicPath + URL.profilePic))
+                        else
+                            openPic(arrayListOf(URL.profilePicPath +frndProfileurl))
+
+                    }
 
 
                 } else if (o == txt_changeCover || o == iv_cover_image_profile) {
                     //  askToUserChangeProfilePic("cover")
 
+                    //for self
+
                     if (postUserId.equals(URL.userId))
                         showProfileBottomSheet("cover")
-                    else
-                        openPic(arrayListOf(URL.coverPicPath + URL.coverPic))
+
+                    //for friend
+                    else {
+                        if(frndCoverurl.equals(""))
+                            openPic(arrayListOf(URL.coverPicPath + URL.coverPic))
+                        else
+                            openPic(arrayListOf(URL.coverPicPath +frndCoverurl))
+
+                    }
 
 
                 } else if (o == txt_doneChangeProfile) {
@@ -435,7 +566,7 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
             .setToolbarTitleColor(ZColor.WHITE)
             .setGalleryBackgroundColor(ZColor.WHITE)
             .setToolbarColorResId(R.color.colorPrimary)
-            .setTitle(URL.fullName)
+            .setTitle(user_name!!.text.toString())
             .show("true")
 
     }

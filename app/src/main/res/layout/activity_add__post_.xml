@@ -59,7 +59,7 @@
                 android:text="Add Post" />
 
             <TextView
-                android:onClick="upload_Post"
+                android:id="@+id/addPostBtn"
                 android:gravity="right"
                 android:layout_gravity="right"
                 style="@style/TextAppearance.AppCompat.Headline"
@@ -189,6 +189,8 @@
 
 
             <TextView
+
+                android:drawableTint="@color/bgBottomNavigation"
                     android:onClick="choose_Status"
                 style="@style/TextAppearance.MaterialComponents.Headline6"
                 android:layout_width="wrap_content"
@@ -200,7 +202,15 @@
                 android:padding="10dp"
                 android:text="Status" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/light_grey2"/>
+
+
+
             <TextView
+                android:drawableTint="@color/box_6"
                 android:id="@+id/openPhotoVideoChooser"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
@@ -212,7 +222,14 @@
             android:padding="10dp"
             android:text="Photo/Video" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/light_grey2"/>
+
+
             <TextView
+                android:drawableTint="@color/box_9"
                 android:id="@+id/openCameraChooser"
                 style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
@@ -223,8 +240,16 @@
             android:fontFamily="sans-serif-light"
             android:padding="10dp"
             android:text="Camera" />
-   <TextView
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/light_grey2"/>
+
+
+            <TextView
        android:id="@+id/tag_friend"
+       android:drawableTint="@color/box_10"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

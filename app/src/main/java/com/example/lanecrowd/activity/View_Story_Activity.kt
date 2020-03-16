@@ -1,5 +1,6 @@
 package com.example.lanecrowd.activity
 
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.MotionEvent
@@ -24,6 +25,7 @@ import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import de.hdodenhof.circleimageview.CircleImageView
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
@@ -62,6 +64,7 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
     var image_by: CircleImageView? = null
     var user_image: CircleImageView? = null
 
+    var postUserId: String? = null
     var name: String? = null
     var imageva: String? = null
     override val kodein by kodein()
@@ -79,6 +82,7 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
 
 
         files = intent.extras!!.getStringArrayList("story_files")
+        postUserId = intent.extras!!.getString("postUserId")
         name = intent.extras!!.getString("name")
         imageva = intent.extras!!.getString("imageva")
 
@@ -161,16 +165,49 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
             })
 
 
-        RxView.clicks(findViewById(R.id.send_reply_Button)).throttleFirst(2, TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
 
-                //call reply story api
+        val observable1 = RxView.clicks(send_reply_Button!!).map<Any> { o: Any? -> send_reply_Button }
+        val observable2 = RxView.clicks(image_by!!).map<Any> { o: Any? -> image_by }
+
+
+
+
+        setClickListener(observable1, observable2)
+
+
+
+
+    }
+
+
+    private fun setClickListener(observable1: Observable<Any>, observable2: Observable<Any>) {
+
+        //set click listener
+        val disposable = Observable.mergeArray(observable1, observable2)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { o ->
+
+              if(o==image_by)
+                  gotoUserProfile()
+
+
             }
 
 
+    }
 
 
+
+    private fun gotoUserProfile() {
+        startActivity(
+            Intent(applicationContext, Profile_Activity::class.java)
+                .putExtra("postUserId", postUserId)
+                .putExtra("postUserName", name)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+        )
 
 
 

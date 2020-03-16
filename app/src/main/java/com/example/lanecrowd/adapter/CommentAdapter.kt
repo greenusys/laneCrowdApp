@@ -16,6 +16,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.example.lanecrowd.R
+import com.example.lanecrowd.activity.Profile_Activity
 import com.example.lanecrowd.activity.ShowPhotoActivity
 import com.example.lanecrowd.activity.Show_Comment_Activity
 import com.example.lanecrowd.modal.CommentMediaModal
@@ -74,6 +75,12 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
 
         //set Like Button Listener
         setLikeListener(holder, position)
+
+
+        //set Share Post Listener
+        setSharePostListener(holder, position)
+
+
 
 
         goneLayout(holder.postProfilePic)
@@ -259,6 +266,10 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
         })
 
 
+
+        //goto User Profile
+        gotoUserProfile(holder,position-1)
+
         setProfileImage(URL.profilePicPath + list.get(position-1).profile_picture,holder.comment_profile_pic)
 
 
@@ -274,6 +285,26 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
 
     }
 
+    private fun gotoUserProfile(
+        holder: MyViewHolder,
+        position: Int
+    ) {
+
+        holder.comment_profile_pic.setOnClickListener(View.OnClickListener {
+
+            context.startActivity(
+                Intent(context, Profile_Activity::class.java)
+                    .putExtra("postUserId", list.get(position).user_id)
+                    .putExtra("postUserName", list.get(position).full_name)
+
+
+            )
+
+
+
+        })
+
+    }
 
 
     private fun set_Success_Glide_Data(
@@ -389,6 +420,24 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
 
     }
 
+    private fun setSharePostListener(holder: MyViewHolder, position: Int) {
+
+
+
+        holder.shareIcon.setOnClickListener(View.OnClickListener {
+
+
+            mediaData.total_shared = (Integer.parseInt(mediaData.total_shared) + 1).toString() + ""
+
+            notifyItemChanged(position,position)
+
+            context.sharePost(mediaData.total_shared,mediaData.postId, URL.userId)
+
+
+        })
+    }
+
+
 
     private fun setLikeListener(holder: MyViewHolder, position: Int) {
 
@@ -501,6 +550,10 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
         val loading_iconB = view.findViewById<ProgressBar>(R.id.loading_iconB)
         val loading_iconC = view.findViewById<ProgressBar>(R.id.loading_iconC)
         val loading_iconD =view. findViewById<ProgressBar>(R.id.loading_iconD)
+
+
+        //share icon
+        val shareIcon = view.findViewById<ImageView>(R.id.iv_postShare)
 
 
         //no. of likes,comment and shares

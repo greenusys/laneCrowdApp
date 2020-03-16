@@ -251,6 +251,7 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
                         .putStringArrayListExtra("story_files", list.get(position-1).story_files)
                         .putExtra("name",list.get(position-1).posted_by.capitalize())
                         .putExtra("imageva",list.get(position-1).profile_pic)
+                        .putExtra("postUserId",list.get(position-1).user_id)
 
 
                 )

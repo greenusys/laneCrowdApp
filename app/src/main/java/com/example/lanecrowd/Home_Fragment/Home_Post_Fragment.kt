@@ -991,6 +991,13 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
     }
 
+    fun sharePost(postId: String, userId: String) {
+        showVibration()
+
+        viewmodel.sharePost(postId, userId)
+
+    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -999,11 +1006,13 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
             println("total_likes" + data!!.getStringExtra("total_likes"))
             println("total_comments" + data.getStringExtra("total_comment"))
+            println("total_shared" + data.getStringExtra("total_shared"))
             println("postPosition" + data.getStringExtra("postPosition"))
             println("isMylikepost" + data.getStringExtra("isMylike"))
 
 
             home_post_list.get(data.getStringExtra("postPosition").toInt()-2).total_likes=data!!.getStringExtra("total_likes")
+            home_post_list.get(data.getStringExtra("postPosition").toInt()-2).total_share=data!!.getStringExtra("total_shared")
 
             home_post_list.get(data.getStringExtra("postPosition").toInt()-2).isMyLike = data.getStringExtra("isMylike").equals("true")
 
