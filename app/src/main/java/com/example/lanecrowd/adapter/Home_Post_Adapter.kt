@@ -3,14 +3,12 @@ package com.example.lanecrowd.adapter
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.core.text.HtmlCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +31,7 @@ import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.FetchPostVm
 import com.like.LikeButton
 import com.like.OnLikeListener
+import com.mzelzoghbi.zgallery.activities.VideoPlayActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
 
@@ -180,7 +179,14 @@ class Home_Post_Adapter(
         })
 
         holder.iv_postImgA.setOnClickListener(View.OnClickListener {
-            println("checkImageee" + checkIsImage(position - 2))
+
+            if(!checkIsImage(position - 2) && list.get(position-2).post_files.size==1)
+                activity.startActivity(Intent(context, VideoPlayActivity::class.java)
+                    .putExtra("url", URL.videoPath+list.get(position - 2).post_files.get(0))
+                    .putExtra("name",  list.get(position-2).posted_by.capitalize())
+                )
+
+            else
             context.startActivity(
                 Intent(context, ShowPhotoActivity::class.java)
                     .putExtra("isImage", checkIsImage(position - 2).toString())
@@ -687,43 +693,6 @@ class Home_Post_Adapter(
 
 
 
-
-      /*  Glide.with(context).load(url)
-            .listener(object : RequestListener<Drawable?> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    isFirstResource: Boolean
-                ): Boolean {
-
-                    loading_icon_gone.visibility = View.GONE
-                    videoIcona.visibility = View.GONE
-
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any,
-                    target: Target<Drawable?>,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    loading_icon_gone.visibility = View.GONE
-
-                    if (isImage)
-                        videoIcona.visibility = View.GONE
-                    else
-                        videoIcona.visibility = View.VISIBLE
-
-                    return false
-                }
-            })
-            .apply(RequestOptions().placeholder(R.drawable.placeholder))
-            .thumbnail(0.01f).into(post_img).waitForLayout()
-
-*/
 
         Glide.with(context).load(url).apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.AUTOMATIC))
             .listener(object : RequestListener<Drawable?> {

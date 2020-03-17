@@ -182,7 +182,7 @@
                         <ImageView
                             android:id="@+id/iv_postImgB"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:adjustViewBounds="true"
                             android:background="@drawable/img_background"
                             android:scaleType="centerCrop" />

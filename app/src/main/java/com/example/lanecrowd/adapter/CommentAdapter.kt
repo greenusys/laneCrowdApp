@@ -259,6 +259,11 @@ class CommentAdapter(var context: Show_Comment_Activity, var list: ArrayList<Com
 
         holder.comment_menu.setOnClickListener(View.OnClickListener {
 
+
+            println("kaifPosti"+position)
+
+
+
             //self post
             if (list.get(position-1).commented_by_.equals(URL.userId))
                 context.showMenu(holder.comment_menu,list.get(position-1).id,position)

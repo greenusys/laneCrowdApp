@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -45,6 +46,7 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class Add_Post_Activity : RuntimePermissionsActivity() {
@@ -444,7 +446,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
             //println("ClipData" + cd!!)
 
 
-            format_path = data.toString()
+
 
 
             //for gallery image
@@ -464,6 +466,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                         println("bbb2" + Uri.parse(rv_video_list[i]))
 
 
+                        format_path = data.toString()
+
                         files.add(
                             File(
                                 ImageFilePath.getPath(
@@ -475,6 +479,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                         println("bbb3" + files.get(0))
                     }
                 } else {
+
+                    format_path = data.toString()
                     if (data.data != null) {
                         rv_video_list.add("" + data.data!!)
                         files.add(
@@ -498,6 +504,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
             //for camera images
             else if (requestCode == 3 && resultCode == RESULT_OK) {
 
+
+                format_path = data.toString()
                 isImage = true
                 //disable Photo/Video TextView
                 disableCameraTextView(false, false)
@@ -517,37 +525,143 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
                 isImage = false
                 val cd = data.clipData
+
+
+                //for multiple videos
+
                 if (cd != null) {
-                    for (i in 0 until cd.itemCount) {
-                        rv_video_list.add("" + cd.getItemAt(i).uri)
+
+                    //for from add story
+                    if(from.equals("story"))
+                    {
+                        var flag=false
+
+
+                        for (i in 0 until cd.itemCount) {
+
+                            if(getVideoDuration(Uri.parse(""+cd.getItemAt(i).uri))>30) {
+                               flag=true
+                                break
+                            }
+
+                        }
+                        if(flag)
+                            showSnackBar("You can only upload 30 second story video")
+
+                        else
+                        {
+
+                            format_path = data.toString()
+                            for (i in 0 until cd.itemCount) {
+                                rv_video_list.add("" + cd.getItemAt(i).uri)
+                                files.add(
+                                    File(
+                                        ImageFilePath.getPath(
+                                            applicationContext,
+                                            Uri.parse(rv_video_list[i])
+                                        )
+                                    )
+                                )
+
+                            }
+
+                            //disable Camera TextView
+                            disableCameraTextView(true, false)
+                        }
+
+
+
+                    }
+
+                    //for from add post
+
+                    else
+                    {
+
+                        format_path = data.toString()
+                        for (i in 0 until cd.itemCount) {
+                            rv_video_list.add("" + cd.getItemAt(i).uri)
+                            files.add(
+                                File(
+                                    ImageFilePath.getPath(
+                                        applicationContext,
+                                        Uri.parse(rv_video_list[i])
+                                    )
+                                )
+                            )
+
+                        }
+
+                        //disable Camera TextView
+                        disableCameraTextView(true, false)
+
+
+                    }
+                }
+
+                //for single video
+                else {
+
+
+                    //for from add story
+                    if(from.equals("story"))
+                    {
+
+                        //check if video duration is greater than 30
+                       if(getVideoDuration(Uri.parse(""+data.data))>30)
+                       {
+                           showSnackBar("You can only upload 30 second story video")
+
+                       }
+                        else
+                       {
+                           format_path = data.toString()
+                           rv_video_list.add("" + data.data!!)
+                           files.add(
+                               File(
+                                   ImageFilePath.getPath(
+                                       applicationContext,
+                                       Uri.parse(rv_video_list[0])
+                                   )
+                               )
+                           )
+
+                           //disable Camera TextView
+                           disableCameraTextView(true, false)
+
+                       }
+
+                    }
+                    //for from add post
+                    else
+                    {
+                        format_path = data.toString()
+                        rv_video_list.add("" + data.data!!)
                         files.add(
                             File(
                                 ImageFilePath.getPath(
                                     applicationContext,
-                                    Uri.parse(rv_video_list[i])
+                                    Uri.parse(rv_video_list[0])
                                 )
                             )
                         )
+
+                        //disable Camera TextView
+                        disableCameraTextView(true, false)
                     }
-                } else {
-                    rv_video_list.add("" + data.data!!)
-                    files.add(
-                        File(
-                            ImageFilePath.getPath(
-                                applicationContext,
-                                Uri.parse(rv_video_list[0])
-                            )
-                        )
-                    )
+
+
+
+
                 }
 
-                //disable Camera TextView
-                disableCameraTextView(true, false)
+
                 notifyAdapter()
             }
             //for camera video
             else if (requestCode == 4) {
 
+                format_path = data.toString()
                 isImage = false
                 //disable Photo/Video TextView
                 disableCameraTextView(false, false)
@@ -565,6 +679,20 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+
+    }
+
+    private fun getVideoDuration(parse: Uri): Long {
+
+        var mp = MediaPlayer.create(this, parse)
+        var duration = mp.duration
+
+        println("duratinOfvid"+TimeUnit.MILLISECONDS.toSeconds(duration.toLong()))
+
+
+        return TimeUnit.MILLISECONDS.toSeconds(duration.toLong())
+
 
     }
 
@@ -665,13 +793,9 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     private fun showSnackBar(msg: String) {
 
-        val snackbar = Snackbar.make(findViewById(R.id.add_root), msg, Snackbar.LENGTH_SHORT)
-        snackbar.setBackgroundTint(
-            ContextCompat.getColor(applicationContext, R.color.red)
-        )
-        snackbar.setTextColor(
-            ContextCompat.getColor(applicationContext, R.color.white)
-        )
+        val snackbar = Snackbar.make(findViewById(R.id.add_root), msg, Snackbar.LENGTH_LONG)
+        snackbar.setBackgroundTint(ContextCompat.getColor(applicationContext, R.color.red))
+        snackbar.setTextColor(ContextCompat.getColor(applicationContext, R.color.white))
         snackbar.show()
 
     }
@@ -849,6 +973,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     fun removeItem(position: Int) {
 
+
         if (rv_video_list.size == 1) {
             format_path = ""
             gallery = false
@@ -858,6 +983,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         }
 
         rv_video_list.removeAt(position)
+        files.removeAt(position)
         notifyAdapter()
 
 
@@ -876,7 +1002,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
             try {
 
-                enableDisableButton(true)
+                enableDisableButton(false)
 
 
                 visibleLoadingAnimation(true)
@@ -893,7 +1019,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
                     println("add_post" + resultPi)
 
-                    enableDisableButton(false)
+                    enableDisableButton(true)
 
                     if (resultPi != null && resultPi.getString("status").equals("1")) {
                         visibleLoadingAnimation(false)

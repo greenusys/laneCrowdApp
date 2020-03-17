@@ -436,7 +436,6 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
 
 
                 println("newskd"+edt_comment!!.text.toString())
-                println("sizeofList"+comment_list.size)
 
                 if (resultPi != null && main!!.getString("code").equals("1")) {
 
@@ -452,10 +451,13 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
                         user_name!!,
                         user_pic!!))
 
-                    adapter!!.notifyItemChanged(postposition)
+                    adapter!!.notifyItemInserted(comment_list.size)
                     comment_rv!!.scrollToPosition(comment_list.size)
 
                     clearEditText()
+
+                    println("sizeofList"+comment_list.size)
+
 
 
                 }
@@ -789,10 +791,14 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
                 comment_list.removeAt(postposition-1)
                 mediaData!!.totalComment=comment_list.size.toString()
                 total_comment=comment_list.size.toString()
-                adapter!!.notifyItemChanged(0,0)
                 adapter!!.notifyItemRemoved(postposition)
+                adapter!!.notifyItemChanged(0,0)
+
                 viewmodel.deleteCommentVM(comment_id)
 
+
+
+                println("list_size"+comment_list.size)
 
 
 

@@ -23,6 +23,7 @@ import retrofit2.Response
 class Profile_VM(val repo: UserRepository) : ViewModel() {
     var changepiclist: MutableLiveData<RegisterResModal>? = null
     var fetchProfileLIst: MutableLiveData<Profile_Detail_Modal>? = null
+    var fetchTimelineLIst: MutableLiveData<JsonObject>? = null
     private val compositeDisposable = CompositeDisposable()
 
 
@@ -35,12 +36,60 @@ class Profile_VM(val repo: UserRepository) : ViewModel() {
 
     }
 
+    fun fetchPostTimelinetvm(userId: String, offset: String): MutableLiveData<JsonObject> {
+
+
+        fetchTimelineLIst = MutableLiveData()
+
+        fetchTimelineAPI(userId, offset)
+
+
+        return fetchTimelineLIst as MutableLiveData<JsonObject>
+
+    }
+
+
     fun changeProfileCoverPic(from: String, files: MultipartBody.Part, userId: RequestBody, android: RequestBody): MutableLiveData<RegisterResModal> {
 
         changepiclist = MutableLiveData()
         callChangeProfileCoverPicAPI(from, files, userId, android)
 
         return changepiclist as MutableLiveData<RegisterResModal>
+
+    }
+
+
+    fun fetchTimelineAPI(userId: String, offset: String) {
+
+        println("fetchTimelineAPI" + offset + " " + userId)
+
+
+        compositeDisposable.add(
+            repo.fetchTimelineRepo("", userId, offset)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : DisposableSingleObserver<JsonObject?>() {
+                    override fun onSuccess(response: JsonObject) {
+
+
+                        println("fetchTimelineAPI" + response)
+
+
+                        if (response.has("code") && response.get("code").toString().equals("1")) {
+                            fetchTimelineLIst!!.value = response
+                        } else {
+                            fetchTimelineLIst!!.value = response
+                        }
+
+                    }
+
+                    override fun onError(e: Throwable) {
+                        println("Errorrrr" + e.message)
+                        fetchTimelineLIst?.value = null
+                    }
+                })
+        )
+
 
     }
 

@@ -1,14 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:id="@+id/app_video_box"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <tcking.github.com.giraffeplayer2.VideoView
-        android:id="@+id/video_view"
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:layout_collapseMode="pin"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary">
+
+
+
+        <!--title layout-->
+        <LinearLayout
+            android:id="@+id/profileLayout"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:onClick="back_activity"
+                android:src="@drawable/ic_arrow_back_black"
+                android:tint="@color/white" />
+
+
+            <TextView
+                android:textColor="@color/white"
+                android:id="@+id/userName"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:text="Md. Kiaf"
+                />
+
+
+
+        </LinearLayout>
+        <!--title layout-->
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+
+
+    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true"
+        android:id="@+id/exo_player_view">
+
+        <ProgressBar
+            android:visibility="gone"
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateTint="#fff"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            />
+
+
+
+    </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
 
 
 </RelativeLayout>

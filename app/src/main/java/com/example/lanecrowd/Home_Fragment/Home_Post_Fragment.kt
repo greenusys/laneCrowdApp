@@ -46,6 +46,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.JsonObject
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import com.skydoves.powermenu.OnMenuItemClickListener
 import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
@@ -894,14 +895,6 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
                     askToDeleteSelfPost(postId)
 
 
-/*
-
-                    if (item.title.equals(getString(R.string.rate_me)))
-                        rateMe()
-                    else if (item.title.equals(getString(R.string.share)))
-                        share()
-                    else if (item.title.equals(getString(R.string.about)))
-                        gotoABoutActivity()*/
             }
 
 
@@ -919,7 +912,10 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
                 println("show_psoitio_2" + postposition)
 
                 home_post_list.removeAt(postposition-2)
+
                 homePostAdapter!!.notifyItemRemoved(postposition)
+                homePostAdapter!!.notifyItemChanged(postposition,postposition)
+
                 viewmodel.deletePosetAPI(postId)
 
 
@@ -993,6 +989,8 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
     fun sharePost(postId: String, userId: String) {
         showVibration()
+
+        DynamicToast.make(context!!, "You have shared this post").show()
 
         viewmodel.sharePost(postId, userId)
 

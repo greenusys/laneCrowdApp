@@ -130,8 +130,27 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         //set Profile Details
         callFetchProfileAPI()
 
+        //call Timeline
+        callFetchTimelinAPI()
+
 
         set_Time_Post_Adapter()
+    }
+
+    private fun callFetchTimelinAPI() {
+        try {
+            viewmodel.fetchPostTimelinetvm(postUserId!!,"0")
+                .observe(this, Observer { resultPi ->
+
+
+                })
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+        }
+
+
+
     }
 
     private fun callFetchProfileAPI() {
@@ -748,14 +767,9 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
 
         profile_rv!!.recycledViewPool.clear()
 
-        photos_video_list.clear()
-
-        photos_video_list.add(Photo_Video_Modal())
-        photos_video_list.add(Photo_Video_Modal())
-        photos_video_list.add(Photo_Video_Modal())
 
 
-        photosVideoAdapter = Photos_Video_Adapter(from, photos_video_list, applicationContext)
+        photosVideoAdapter = Photos_Video_Adapter(from, applicationContext)
         profile_rv!!.layoutManager =
             LinearLayoutManager(applicationContext, LinearLayout.VERTICAL, false)
         profile_rv!!.adapter = photosVideoAdapter

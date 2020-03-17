@@ -95,6 +95,7 @@ public class ZGallery {
     public void show(String isImage) {
         Intent gridActivity = new Intent(mActivity, ZGalleryActivity.class);
         gridActivity.putExtra("isImage", isImage);
+        gridActivity.putExtra("title", title);
         gridActivity.putExtra(Constants.IntentPassingParams.IMAGES, imagesURLs);
         gridActivity.putExtra(Constants.IntentPassingParams.TITLE, title);
         gridActivity.putExtra(Constants.IntentPassingParams.TOOLBAR_COLOR_ID, toolbarColor);

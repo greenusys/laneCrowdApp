@@ -23,6 +23,7 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.mzelzoghbi.zgallery.Constants;
 import com.mzelzoghbi.zgallery.R;
 import com.mzelzoghbi.zgallery.activities.VideoPlayActivity;
 
@@ -42,14 +43,16 @@ public class ViewPagerAdapter extends PagerAdapter {
     private boolean isShowing = true;
     private Toolbar toolbar;
     private String isImage;
+    private String title;
     private RecyclerView imagesHorizontalList;
 
-    public ViewPagerAdapter(String isImage,Activity activity, ArrayList<String> images, Toolbar toolbar, RecyclerView imagesHorizontalList) {
+    public ViewPagerAdapter(String title, String isImage, Activity activity, ArrayList<String> images, Toolbar toolbar, RecyclerView imagesHorizontalList) {
         this.activity = activity;
         mLayoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.images = images;
         this.toolbar = toolbar;
         this.isImage = isImage;
+        this.title = title;
         this.imagesHorizontalList = imagesHorizontalList;
     }
 
@@ -82,7 +85,10 @@ public class ViewPagerAdapter extends PagerAdapter {
          @Override
          public void onClick(View v) {
 
-             activity.startActivity(new Intent(activity, VideoPlayActivity.class).putExtra("url",images.get(position)));
+             activity.startActivity(new Intent(activity, VideoPlayActivity.class)
+                     .putExtra("url",images.get(position))
+                     .putExtra("name", title)
+             );
          }
      });
 
@@ -103,7 +109,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
 
 
-                mPhotoViewAttacher.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+                /*mPhotoViewAttacher.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
                     @Override
                     public void onPhotoTap(View view, float x, float y) {
                         if (isShowing) {
@@ -121,7 +127,7 @@ public class ViewPagerAdapter extends PagerAdapter {
                     public void onOutsidePhotoTap() {
 
                     }
-                });
+                });*/
 
 
                 return false;

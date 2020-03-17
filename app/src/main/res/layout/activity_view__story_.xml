@@ -12,13 +12,37 @@
         android:layout_weight="1">
 
         <ImageView
-            android:background="@color/box_2"
+            android:background="@color/colorPrimary"
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@null"
             android:scaleType="centerCrop"
             />
+
+
+        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:id="@+id/exo_player_view">
+
+            <ProgressBar
+                android:visibility="gone"
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:indeterminateTint="#fff"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                />
+
+
+
+        </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
 
 
 
@@ -122,6 +146,7 @@
             android:layout_height="match_parent" />
 
         <EditText
+            android:inputType="none"
             android:id="@+id/reply_comment"
             android:layout_width="0dp"
             android:layout_height="match_parent"

@@ -29,6 +29,7 @@ public class ImageFilePath
     
    // ExternalStorageProvider
    if (isExternalStorageDocument(uri)) {
+    System.out.println("sallu_first");
     final String docId = DocumentsContract.getDocumentId(uri);
     final String[] split = docId.split(":");
     final String type = split[0];
@@ -39,15 +40,22 @@ public class ImageFilePath
    }
    // DownloadsProvider
    else if (isDownloadsDocument(uri)) {
- 
+
+    System.out.println("sallu_second"+uri);
+
+
     final String id = DocumentsContract.getDocumentId(uri);
     final Uri contentUri = ContentUris.withAppendedId(
       Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
- 
-    return getDataColumn(context, contentUri, null, null);
+
+    System.out.println("contenturi"+contentUri);
+    return getDataColumn("first",context, contentUri, null, null);
    }
    // MediaProvider
    else if (isMediaDocument(uri)) {
+
+    System.out.println("sallu_third");
+
     final String docId = DocumentsContract.getDocumentId(uri);
     final String[] split = docId.split(":");
     final String type = split[0];
@@ -72,20 +80,27 @@ public class ImageFilePath
       split[1]
     };
  
-    return getDataColumn(context, contentUri, selection, selectionArgs);
+    return getDataColumn("second",context, contentUri, selection, selectionArgs);
    }
   }
   // MediaStore (and general)
   else if ("content".equalsIgnoreCase(uri.getScheme())) {
- 
+
+
+   System.out.println("sallu_fourth");
+
+
    // Return the remote address
    if (isGooglePhotosUri(uri))
     return uri.getLastPathSegment();
  
-   return getDataColumn(context, uri, null, null);
+   return getDataColumn("third",context, uri, null, null);
   }
   // File
   else if ("file".equalsIgnoreCase(uri.getScheme())) {
+
+   System.out.println("sallu_fifth"+" "+uri.getScheme());
+
    return uri.getPath();
   }
  
@@ -102,9 +117,10 @@ public class ImageFilePath
   * @param selectionArgs (Optional) Selection arguments used in the query.
   * @return The value of the _data column, which is typically a file path.
   */
- public static String getDataColumn(Context context, Uri uri, String selection,
+ public static String getDataColumn(String from,Context context, Uri uri, String selection,
                                     String[] selectionArgs) {
- 
+
+  System.out.println("fromkaif"+from);
   Cursor cursor = null;
   final String column = "_data";
   final String[] projection = {column};

@@ -98,6 +98,12 @@ class UserRepository(private val api: ApiInterface) {
         return api.fetchProfile(myId,userId)
     }
 
+    fun fetchTimelineRepo(android: String, userId: String, offset: String): Single<JsonObject> {
+
+        return api.fetchtimelinepost(android, userId, offset)
+    }
+
+
 
 
 }

@@ -2,11 +2,13 @@ package com.example.lanecrowd.activity
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -22,21 +24,38 @@ import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.MySessionVM
 import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
+import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.extractor.ExtractorsFactory
+import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray
+import com.google.android.exoplayer2.trackselection.TrackSelector
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView
+import com.google.android.exoplayer2.upstream.BandwidthMeter
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.jakewharton.rxbinding2.view.RxView
-import com.jakewharton.rxbinding2.widget.RxTextView
 import de.hdodenhof.circleimageview.CircleImageView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
 import jp.shts.android.storiesprogressview.StoriesProgressView
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
-import java.util.concurrent.TimeUnit
 
 
 class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView.StoriesListener {
+
+
+    var exoPlayerView: SimpleExoPlayerView? = null
+    var progressBar: ProgressBar? = null
+    var exoPlayer: SimpleExoPlayer? = null
+    var bandwidthMeter:BandwidthMeter?=null
+    var trackSelector:TrackSelector?=null
 
     private var storiesProgressView: StoriesProgressView? = null
     private var image: ImageView? = null
@@ -59,7 +78,6 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
 
     var send_reply_Button: ImageView? = null
     var reply_comment: EditText? = null
-    var staus_video_icon: ImageView? = null
     var name_by: TextView? = null
     var image_by: CircleImageView? = null
     var user_image: CircleImageView? = null
@@ -94,11 +112,31 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
 
 
 
+
+    }
+
+    private fun initVideosViews() {
+
+
+
+         bandwidthMeter = DefaultBandwidthMeter()
+        trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector)
+
+
     }
 
 
-
     private fun initViews() {
+
+
+
+
+        //for video
+        progressBar = findViewById(com.mzelzoghbi.zgallery.R.id.progressBar)
+        exoPlayerView = findViewById(com.mzelzoghbi.zgallery.R.id.exo_player_view)
+
+        initVideosViews()
 
         //this factory method will create and return one object
         videomodelfactory =
@@ -127,14 +165,18 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
         //storiesProgressView.startStories();
         counter = 0
 
-        storiesProgressView!!.startStories(counter)
+
         image = findViewById<View>(R.id.image) as ImageView
 
 
-        pauseStoryProgressView(true,"start")
+
+
 
 
         setStoryImage(counter,files!!.get(counter),image)
+
+        pauseStoryProgressView(true,"start")
+        storiesProgressView!!.startStories(counter)
 
         // bind reverse view
         val reverse = findViewById<View>(R.id.reverse)
@@ -147,23 +189,26 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
 
 
 
-        //on text listener
+       /* //on text listener
         val d2: Disposable = RxTextView.textChanges(findViewById(R.id.reply_comment))
             .subscribe(object : Consumer<CharSequence?> {
                 @Throws(Exception::class)
                 override fun accept(charSequence: CharSequence?) { //Add your logic to work on the Charsequence
 
+
+
+                    println("ontextchange")
                     //pause story view
                     if(charSequence.toString().length>0)
                         pauseStoryProgressView(true,"text")
-                    else
-                        pauseStoryProgressView(false,"text")
+                  //  else
+                       // pauseStoryProgressView(false,"text")
 
 
 
                 }
             })
-
+*/
 
 
         val observable1 = RxView.clicks(send_reply_Button!!).map<Any> { o: Any? -> send_reply_Button }
@@ -277,21 +322,19 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
         //visible video view and gone image layout
         visiBleExoPLayerGOneImage(true)
 
-        //pause the storyprogrss view
-        pauseStoryProgressView(true,"")
 
-        //play url when ready
-        //andExoPlayerView!!.setSource("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4")
 
+        playVideoURL(url)
 
     }
+
+
 
     private fun visiBleExoPLayerGOneImage(value: Boolean) {
 
             if(value)
             {
-                image!!.setBackgroundResource(R.color.dark_grey2)
-               // andExoPlayerView!!.visibility=View.VISIBLE
+                exoPlayerView!!.visibility=View.VISIBLE
 
             }else
             {
@@ -304,37 +347,53 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
     private fun setStoryImage(position: Int,path: String, layott: ImageView?) {
 
 
-        var url:String=""
+        var url =""
 
-        if(checkIsImage(position)) {
-            url = URL.storyImagePath
-        }
-        else {
+        //if video
+        if(!checkIsImage(position)) {
+            pauseStoryProgressView(true,"playvideo")
             url = URL.storyVideoPath
-           // playVideo(url+path)
+            playVideo(url+path)
+        }
+        //if image
+        else {
+            visiBleExoPLayerGOneImage(false)
+
+            url = URL.storyImagePath
+
+
+
+            Glide.with(applicationContext).load(url + path)
+                .listener(object : RequestListener<Drawable?> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any,
+                        target: Target<Drawable?>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+
+                        pauseStoryProgressView(false, "failed")
+
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any,
+                        target: Target<Drawable?>,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        pauseStoryProgressView(false, "success")
+
+                        return false
+                    }
+                })
+                .apply(RequestOptions().placeholder(R.drawable.placeholder))
+
+                .thumbnail(0.01f).into(layott!!).waitForLayout()
 
         }
-
-
-        Glide.with(applicationContext).load(url+path)
-            .listener(object : RequestListener<Drawable?> {
-                override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
-
-                    pauseStoryProgressView(false,"failed")
-
-                    return false
-                }
-
-                override fun onResourceReady(resource: Drawable?, model: Any, target: Target<Drawable?>, dataSource: DataSource, isFirstResource: Boolean): Boolean {
-                    pauseStoryProgressView(false,"success")
-
-                    return false
-                }
-            })
-            .apply(RequestOptions().placeholder(R.drawable.placeholder))
-
-            .thumbnail(0.01f).into(layott!!).waitForLayout()
-
 
 
     }
@@ -344,14 +403,14 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
     private fun pauseStoryProgressView(value: Boolean,from:String)
     {
 
-        println("pauseStoryProgressView "+from)
+        println("pauseStoryProgressView "+from+" "+value)
 
-
-        if (value)
+        if (value) {
             storiesProgressView!!.pause()
-        else
+        }
+        else {
             storiesProgressView!!.resume()
-
+        }
 
     }
 
@@ -360,12 +419,13 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 pressTime = System.currentTimeMillis()
-                storiesProgressView!!.pause()
+               pauseStoryProgressView(true,"down")
                 return@OnTouchListener false
             }
             MotionEvent.ACTION_UP -> {
                 val now = System.currentTimeMillis()
-                storiesProgressView!!.resume()
+                pauseStoryProgressView(false,"up")
+
                 return@OnTouchListener limit < now - pressTime
             }
         }
@@ -377,11 +437,13 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
 
     override fun onNext() {
 
+try {
+    setStoryImage(++counter,files!!.get(counter),image)
 
-
-// image!!.setImageResource(resources[++counter])
-
-        setStoryImage(++counter,files!!.get(counter),image)
+}catch (e:Exception)
+{
+    e.printStackTrace()
+}
 
     }
 
@@ -390,12 +452,14 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
         if (counter - 1 < 0) return
 
 
-       // setStoryImage(--counter,files!!.get(counter),image)
+       setStoryImage(--counter,files!!.get(counter),image)
 
-        image!!.setImageResource(resources[--counter])
     }
 
     override fun onComplete() {
+        println("onCOmpleteStory")
+        exoPlayer!!.stop()
+        exoPlayer!!.playWhenReady = true
         onBackPressed()
     }
     override fun onDestroy() { // Very important !
@@ -403,7 +467,60 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
         super.onDestroy()
     }
 
+    private fun playVideoURL(url: String) {
 
+        try {
+             val videoURI = Uri.parse(url)
+            val dataSourceFactory =
+                DefaultHttpDataSourceFactory("exoplayer_video")
+            val extractorsFactory: ExtractorsFactory = DefaultExtractorsFactory()
+            val mediaSource: MediaSource =
+                ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null)
+            exoPlayerView!!.player = exoPlayer
+            exoPlayer!!.prepare(mediaSource)
+            exoPlayer!!.setPlayWhenReady(true)
+            exoPlayer!!.addListener(object : ExoPlayer.EventListener {
+                override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {}
+                override fun onTracksChanged(
+                    trackGroups: TrackGroupArray,
+                    trackSelections: TrackSelectionArray
+                ) {
+                }
+
+                override fun onLoadingChanged(isLoading: Boolean) {}
+                override fun onPlayerStateChanged(
+                    playWhenReady: Boolean,
+                    playbackState: Int) {
+                    if (playWhenReady == true && playbackState == SimpleExoPlayer.STATE_ENDED) {
+                        pauseStoryProgressView(false,"end")
+
+                        println("kaif_complete")
+                    }
+
+                    //resume
+                    if (playWhenReady == true && playbackState == SimpleExoPlayer.STATE_READY) {
+                        println("kaif_resume")
+                        progressBar!!.visibility = View.GONE
+                    }
+
+                    if (playbackState == SimpleExoPlayer.STATE_BUFFERING)
+                        progressBar!!.visibility = View.VISIBLE
+                }
+
+                override fun onPositionDiscontinuity() {}
+                override fun onPlayerError(error: ExoPlaybackException) { //Log.v(TAG, "Listener-onPlayerError...");
+                    exoPlayer!!.stop()
+                    // exoPlayer.prepare(loopingSource);
+                    exoPlayer!!.setPlayWhenReady(true)
+                }
+
+                override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {}
+            })
+        } catch (e: java.lang.Exception) {
+        }
+
+
+    }
 
 
     fun back(view: View) {

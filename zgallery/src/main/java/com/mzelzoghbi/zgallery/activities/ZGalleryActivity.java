@@ -31,6 +31,7 @@ public class ZGalleryActivity extends BaseActivity {
     private int currentPos;
     private ZColor bgColor;
     private String isImage="";
+    private String title="";
 
 
     @Override
@@ -46,6 +47,7 @@ public class ZGalleryActivity extends BaseActivity {
         imagesHorizontalList = findViewById(R.id.imagesHorizontalList);
 
         isImage = getIntent().getStringExtra("isImage");
+        title = getIntent().getStringExtra("title");
 
 
         // get intent data
@@ -58,7 +60,7 @@ public class ZGalleryActivity extends BaseActivity {
 
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         // pager adapter
-        adapter = new ViewPagerAdapter(isImage,this, imageURLs, mToolbar, imagesHorizontalList);
+        adapter = new ViewPagerAdapter(title,isImage,this, imageURLs, mToolbar, imagesHorizontalList);
         mViewPager.setAdapter(adapter);
 
 

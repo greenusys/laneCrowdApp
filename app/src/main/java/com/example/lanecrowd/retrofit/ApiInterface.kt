@@ -157,6 +157,11 @@ interface ApiInterface {
     @POST("/fetchProfile")
     fun fetchProfile(@Field("myId") myId: String,@Field("userId") userId: String): Single<Profile_Detail_Modal>
 
+    @FormUrlEncoded
+    @POST("/fetchtimelinepost")
+    fun fetchtimelinepost(@Field("android") android: String, @Field("user_id") user_id: String, @Field("offset") offset: String): Single<JsonObject>
+
+
 
 
 }
