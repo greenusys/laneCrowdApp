@@ -9,33 +9,31 @@
 
     <com.xw.repo.VectorCompatTextView
         android:padding="10dp"
-        android:id="@+id/uploadPhoto"
+        android:id="@+id/sharePost"
         android:drawablePadding="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Upload Photo"
+        android:text="Share Post"
         style="@style/TextAppearance.AppCompat.Subhead"
         app:drawableWidth="40dp"
         app:drawableHeight="40dp"
         android:gravity="center_vertical"
-        android:drawableTint="@color/box_6"
-        app:drawableLeftCompat="@drawable/photo_icon"/>
+        app:drawableLeftCompat="@drawable/share2icon"/>
 
 
  <com.xw.repo.VectorCompatTextView
-     android:id="@+id/uploadVideo"
+     android:id="@+id/shareFriends"
      android:layout_marginTop="10dp"
         android:padding="10dp"
         android:drawablePadding="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Upload Video"
+        android:text="Share to friends"
         style="@style/TextAppearance.AppCompat.Subhead"
         app:drawableWidth="40dp"
         app:drawableHeight="40dp"
         android:gravity="center_vertical"
-        android:drawableTint="@color/box_3"
-        app:drawableLeftCompat="@drawable/video_icon"/>
+        app:drawableLeftCompat="@drawable/friend_icon_3"/>
 
 
 

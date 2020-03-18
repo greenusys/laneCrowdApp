@@ -18,7 +18,7 @@
         app:drawableWidth="40dp"
         app:drawableHeight="40dp"
         android:gravity="center_vertical"
-        android:drawableTint="@color/colorPrimary"
+        android:drawableTint="@color/box_6"
         app:drawableLeftCompat="@drawable/camera_icon_2"/>
 
 
@@ -34,7 +34,7 @@
         app:drawableWidth="40dp"
         app:drawableHeight="40dp"
         android:gravity="center_vertical"
-        android:drawableTint="@color/colorPrimary"
+        android:drawableTint="@color/box_3"
         app:drawableLeftCompat="@drawable/photo_icon"/>
 
 

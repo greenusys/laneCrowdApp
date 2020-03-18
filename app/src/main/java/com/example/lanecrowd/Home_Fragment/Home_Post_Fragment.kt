@@ -42,14 +42,19 @@ import com.example.lanecrowd.view_modal.LoginRegUserVM
 import com.example.lanecrowd.view_modal.MySessionVM
 import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
 import com.github.ybq.android.spinkit.SpinKitView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.JsonObject
+import com.jakewharton.rxbinding2.view.RxView
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import com.skydoves.powermenu.OnMenuItemClickListener
 import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
+import com.xw.repo.VectorCompatTextView
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import org.json.JSONArray
 import org.json.JSONObject
 import org.kodein.di.KodeinAware
@@ -436,7 +441,7 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
         swipe!!.setOnRefreshListener(OnRefreshListener {
             try {
 
-                postCounting = 0
+
                 if (!isNetworkAvailable(context!!))
                 {
                     setRefreshingfalse(false)
@@ -449,6 +454,8 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
                 }
                 else {
+
+                    postCounting = 0
 
                     homePostAdapter = Home_Post_Adapter(story_list, home_post_list, context!!, this@Home_Post_Fragment)
                     home_post_rv!!.adapter=homePostAdapter
@@ -560,8 +567,12 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
         println("ClearForRefreshData_called")
         home_post_list.clear()
+
         home_post_rv!!.recycledViewPool.clear()
         notifiyAdapter()
+
+        println("rvsize"+layoutManager!!.itemCount)
+
 
 
     }
@@ -873,7 +884,7 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
     private fun notifiyAdapter() {
 
 
-        println("check_value" + home_post_list.size)
+        println("checkPostsize" + home_post_list.size)
         homePostAdapter!!.notifyDataSetChanged()
 
     }
@@ -990,7 +1001,7 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
     fun sharePost(postId: String, userId: String) {
         showVibration()
 
-        DynamicToast.make(context!!, "You have shared this post").show()
+        DynamicToast.make(context!!, "You have shared this post",2).show()
 
         viewmodel.sharePost(postId, userId)
 
@@ -1021,6 +1032,53 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
     }
 
+    fun showShareBottomSheet(position:Int,postId: String, userId: String) {
+
+        var sheetDialog = BottomSheetDialog(context!!)
+        val sheetView = LayoutInflater.from(context!!).inflate(R.layout.sharebottomsheet, null)
+        sheetDialog.setContentView(sheetView)
+
+        var sharePost = sheetView.findViewById<VectorCompatTextView>(R.id.sharePost)
+        var shareFriends = sheetView.findViewById<VectorCompatTextView>(R.id.shareFriends)
+
+
+        val observable1 = RxView.clicks(sharePost!!).map<Any> { o: Any? -> sharePost }
+        val observable2 = RxView.clicks(shareFriends!!).map<Any> { o: Any? -> shareFriends }
+
+
+        val disposable = Observable.merge(observable1, observable2)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { o ->
+
+                sheetDialog.dismiss()
+
+
+
+                if(o==sharePost)
+                {
+
+                    home_post_list[position-2].total_share = (Integer.parseInt(home_post_list[position-2].total_share) + 1).toString() + ""
+
+                    homePostAdapter!!.notifyItemChanged(position, position)
+
+                   sharePost(postId,userId)
+
+
+                    
+                }else if(o==shareFriends)
+                {
+                    
+                }
+
+            }
+
+
+
+        sheetDialog.show()
+
+
+
+    }
 
 
 }

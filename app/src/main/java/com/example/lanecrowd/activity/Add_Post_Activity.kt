@@ -2,7 +2,6 @@ package com.example.lanecrowd.activity
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,8 +14,6 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -25,6 +22,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
+import com.autofit.et.lib.AutoFitEditText
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.lanecrowd.R
@@ -47,6 +45,8 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.seconds
 
 
 class Add_Post_Activity : RuntimePermissionsActivity() {
@@ -90,9 +90,11 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     var adapter: Show_Selected_File_Adapter? = null
     var from: String? = null
 
+    @ExperimentalTime
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add__post_)
+
 
 
 
@@ -134,10 +136,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
             LinearLayoutManager(applicationContext, LinearLayout.HORIZONTAL, false)
 
 
-        val observable1 =
-            RxView.clicks(openPhotoVideoChooser!!).map<Any> { o: Any -> openPhotoVideoChooser }
-        val observable2 =
-            RxView.clicks(openCameraChooser!!).map<Any> { o: Any -> openCameraChooser }
+        val observable1 = RxView.clicks(openPhotoVideoChooser!!).map<Any> { o: Any -> openPhotoVideoChooser }
+        val observable2 = RxView.clicks(openCameraChooser!!).map<Any> { o: Any -> openCameraChooser }
         val observable3 = RxView.clicks(addPostBtn!!).map<Any> { o: Any -> addPostBtn }
 
 
@@ -149,7 +149,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         if (from.equals("story")) {
             tag_friend!!.visibility = View.GONE
             post_title!!.text = "Add Story"
-            findViewById<EditText>(R.id.status_input)!!.visibility = View.GONE
+            findViewById<AutoFitEditText>(R.id.status_input)!!.visibility = View.GONE
         }
 
 
@@ -206,19 +206,46 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
                 sheetDialog.dismiss()
 
-                if (o == uploadPhoto) {
 
 
-                    if (!format_path.equals("") && format_path.contains("video"))
-                        showSnackBar("You can't select photo and video at the same time")
-                    else
-                        choosePhoto()
 
-                } else if (o == uploadVideo) {
-                    if (!format_path.equals("") && format_path.contains("image"))
-                        showSnackBar("You can't select photo and video at the same time")
-                    else
-                        openGalleryVideo()
+                if(from.equals("photo")) {
+                    if (o == uploadPhoto) {
+
+
+                        if (!format_path.equals("") && format_path.contains("video"))
+                            showSnackBar("You can't select photo and video at the same time")
+                        else
+                            choosePhoto()
+
+                    } else if (o == uploadVideo) {
+                        if (!format_path.equals("") && format_path.contains("image"))
+                            showSnackBar("You can't select photo and video at the same time")
+                        else
+                            openGalleryVideo()
+                    }
+                }
+                else{
+
+                    if (o == uploadPhoto) {
+
+
+                        if (!format_path.equals("") && format_path.contains("video") || checkVideoFormat())
+                            showSnackBar("You can't select photo and video at the same time")
+                        else
+                            openCameraImages()
+
+
+                    } else if (o == uploadVideo) {
+
+                        if (!format_path.equals("") && format_path.contains("image") || checkImageFormat())
+                            showSnackBar("You can't select photo and video at the same time")
+                        else
+                            openCameraVideo()
+
+                    }
+
+
                 }
 
             }
@@ -293,48 +320,6 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     }
 
 
-    fun open_video_gallery() {
-        if (ContextCompat.checkSelfPermission(
-                this@Add_Post_Activity,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            super@Add_Post_Activity.requestAppPermissions(
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ), R.string.runtimepermission_txt, REQ_PER_GALLERY_VIDEO
-            )
-        } else {
-            openGalleryVideo()
-            isImage = false
-        }
-    }
-
-
-    //for camera video
-    //1
-    fun open_video_camera() {
-        if (ContextCompat.checkSelfPermission(
-                this@Add_Post_Activity,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-                this@Add_Post_Activity,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            super@Add_Post_Activity.requestAppPermissions(
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.CAMERA
-                ), R.string.runtimepermission_txt, REQ_PER_CAMERA_VIDEO
-            )
-        } else {
-            openCameraVideo()
-            isImage = false
-        }
-    }
 
     //2
     private fun openCameraVideo() {
@@ -741,30 +726,6 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     }
 
 
-    //for camera image
-    //1
-    fun open_image_camera() {
-        if (ContextCompat.checkSelfPermission(
-                this@Add_Post_Activity,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-                this@Add_Post_Activity,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            super@Add_Post_Activity.requestAppPermissions(
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.CAMERA
-                ), R.string.runtimepermission_txt, REQ_PER_CAMERA
-            )
-        } else {
-            openCameraImages()
-            isImage = true
-        }
-
-    }
 
     //2
     private fun openCameraImages() {
@@ -800,66 +761,6 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     }
 
-    fun openPhotoVideoChooser() {
-
-
-        gallery = true
-
-
-
-
-
-        if (this@Add_Post_Activity != null) {
-            this@Add_Post_Activity.runOnUiThread(Runnable {
-                val dialog = Dialog(this@Add_Post_Activity, R.style.RoundShapeTheme)
-                dialog.setCancelable(true)
-                val inflater = layoutInflater
-                val dialogLayout: View = inflater.inflate(R.layout.photo_video_aler, null)
-                dialog.setContentView(dialogLayout)
-                val close_box: TextView = dialogLayout.findViewById(R.id.close_box)
-                val photo: Button = dialogLayout.findViewById(R.id.photo)
-                val video: Button = dialogLayout.findViewById(R.id.video)
-
-
-                close_box.setOnClickListener(View.OnClickListener { dialog.dismiss() })
-
-                photo.setOnClickListener(View.OnClickListener {
-
-
-                    if (!format_path.equals("") && format_path.contains("video"))
-                        showSnackBar("You can't select photo and video at the same time")
-                    else
-                        choosePhoto()
-
-                    dialog.dismiss()
-
-                })
-
-                video.setOnClickListener(View.OnClickListener {
-
-
-                    if (!format_path.equals("") && format_path.contains("image"))
-                        showSnackBar("You can't select photo and video at the same time")
-                    else
-                        openGalleryVideo()
-
-                    dialog.dismiss()
-
-                })
-
-
-
-                dialog.show()
-                /*val window = dialog.window
-                window!!.setLayout(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT
-                )*/
-            })
-
-        }
-
-    }
 
     private fun disableCameraTextView(value: Boolean, visibleBoth: Boolean) {
 
@@ -884,65 +785,6 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     }
 
-    fun openCameraChooser() {
-
-        camera = true
-
-
-
-
-        if (this@Add_Post_Activity != null) {
-            this@Add_Post_Activity.runOnUiThread(Runnable {
-                val dialog = Dialog(this@Add_Post_Activity, R.style.RoundShapeTheme)
-                dialog.setCancelable(true)
-                val inflater = layoutInflater
-                val dialogLayout: View = inflater.inflate(R.layout.photo_video_aler, null)
-                dialog.setContentView(dialogLayout)
-                val close_box: TextView = dialogLayout.findViewById(R.id.close_box)
-                val photo: Button = dialogLayout.findViewById(R.id.photo)
-                val video: Button = dialogLayout.findViewById(R.id.video)
-
-
-                close_box.setOnClickListener(View.OnClickListener { dialog.dismiss() })
-
-
-                println("sallu" + format_path)
-                photo.setOnClickListener(View.OnClickListener {
-
-
-                    if (!format_path.equals("") && format_path.contains("video") || checkVideoFormat())
-                        showSnackBar("You can't select photo and video at the same time")
-                    else
-                        openCameraImages()
-
-                    dialog.dismiss()
-                })
-
-                video.setOnClickListener(View.OnClickListener {
-
-                    if (!format_path.equals("") && format_path.contains("image") || checkImageFormat())
-                        showSnackBar("You can't select photo and video at the same time")
-                    else
-                        openCameraVideo()
-
-
-                    dialog.dismiss()
-
-                })
-
-                dialog.show()
-/*
-                dialog.show()
-                val window = dialog.window
-                window!!.setLayout(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT
-                )*/
-            })
-
-        }
-
-    }
 
     private fun checkImageFormat(): Boolean {
         if (format_path.contains(".jpg") ||
@@ -995,7 +837,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
         hideSoftKeyBoard()
 
-        if (rv_video_list.size <= 0 && findViewById<EditText>(R.id.status_input).text.toString().length <= 0) {
+        if (rv_video_list.size <= 0 && findViewById<AutoFitEditText>(R.id.status_input).text.toString().length <= 0) {
 
         } else {
 
@@ -1011,7 +853,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                 viewmodel.addPostvm(
                     from!!,
                     "",
-                    findViewById<EditText>(R.id.status_input).text.toString(),
+                    findViewById<AutoFitEditText>(R.id.status_input).text.toString(),
                     files,
                     isImage,
                     applicationContext

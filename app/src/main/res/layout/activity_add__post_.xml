@@ -148,7 +148,7 @@
         <!--second layout-->
 
 
-        <EditText
+     <!--   <EditText
             android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -159,7 +159,26 @@
             android:padding="15dp"
             android:minHeight="90dp"
             android:hint="Write something..."
-            android:gravity="start"/>
+            android:gravity="start"/>-->
+
+
+        <com.autofit.et.lib.AutoFitEditText
+            android:id="@+id/status_input"
+            android:layout_height="90dp"
+            android:layout_width="match_parent"
+            android:background="@color/white"
+            android:focusable="true"
+            android:maxHeight="300dp"
+            android:focusableInTouchMode="true"
+            android:gravity="left"
+            android:hint="Write something..."
+            android:isScrollContainer="false"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:maxLength="240"
+            android:textColor="@color/black"
+            android:textColorHint="@color/dark_grey2"
+            android:textSize="35sp" />
+
 
 
         <!--show selected images or videos-->

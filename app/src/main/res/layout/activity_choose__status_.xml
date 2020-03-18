@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_layout"
-    android:layout_height="match_parent">
-
-
-
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.Choose_Status_Activity">
 
 
     <LinearLayout
@@ -17,110 +15,122 @@
         android:orientation="vertical">
 
 
-        <!--title layout-->
-        <LinearLayout
-
-            android:id="@+id/profileLayout"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:orientation="horizontal">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimaryDark"
 
-            <ImageView
-                android:layout_gravity="bottom"
-                android:id="@+id/back"
-                android:layout_width="50dp"
-                android:layout_height="30dp"
-                android:onClick="back_activity"
-                android:src="@drawable/back_arrow"
-                android:tint="@color/black" />
+            app:layout_collapseMode="pin"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
 
 
-            <TextView
-                android:id="@+id/txt_postUserName"
-                style="@style/TextAppearance.AppCompat.Headline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:text="Choose Status" />
-
-            <TextView
-                android:onClick="saveTheme"
-                android:gravity="right"
-                android:layout_gravity="right"
-                style="@style/TextAppearance.AppCompat.Headline"
+            <!--title layout-->
+            <LinearLayout
+                android:id="@+id/profileLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
-                android:text="Post" />
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal">
 
-        </LinearLayout>
-        <!--title layout-->
+                <ImageView
+                    android:id="@+id/back"
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="bottom"
+                    android:onClick="back_activity"
+                    android:src="@drawable/back_arrow"
+                    android:tint="@color/white" />
+
+
+                <TextView
+                    android:id="@+id/post_title"
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:text="Choose Status"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:gravity="right"
+                    android:onClick="saveTheme"
+                    android:text="Post"
+                    android:textColor="@color/box_2" />
+
+
+            </LinearLayout>
+            <!--title layout-->
+
+        </androidx.appcompat.widget.Toolbar>
 
 
         <com.airbnb.lottie.LottieAnimationView
-            android:layout_marginTop="20dp"
-            android:visibility="gone"
             android:id="@+id/status_loading_anim"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            app:lottie_rawRes="@raw/loading_anim"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
+            app:lottie_autoPlay="false"
             app:lottie_loop="true"
-            app:lottie_autoPlay="false"/>
-
-
+            app:lottie_rawRes="@raw/loading_anim" />
 
 
         <RelativeLayout
-            android:layout_marginTop="40dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
             android:id="@+id/lay_theme"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="40dp"
+            android:orientation="vertical"
             android:visibility="visible">
-
 
 
             <ImageView
                 android:id="@+id/theme"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:scaleType="fitXY"
-                android:background="@color/colorPrimary"/>
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                android:scaleType="fitXY" />
 
 
-            <EditText
-                android:layout_marginTop="100dp"
-                android:hint="What's on your mind?"
+            <com.autofit.et.lib.AutoFitEditText
+                android:id="@+id/theme_txt"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="top|center"
-                android:textSize="24sp"
-                android:maxHeight="300dp"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
-                android:id="@+id/theme_txt"
                 android:background="@android:color/transparent"
-                android:textColor="@color/black"/>
-        </RelativeLayout>
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:hint="@string/what_s_on_your_mind"
+                android:inputType="textMultiLine|textNoSuggestions"
+                android:isScrollContainer="false"
+                android:maxHeight="300dp"
+                android:maxLength="240"
+                android:textColor="@color/white"
+                android:textColorHint="@color/light_grey2"
+                android:textSize="50sp" />
 
+
+        </RelativeLayout>
 
 
     </LinearLayout>
 
 
-
-
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="40dp"
+        android:id="@+id/status_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/status_rv"
-        />
-
-
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp" />
 
 
 </RelativeLayout>

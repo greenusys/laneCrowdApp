@@ -41,6 +41,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.jakewharton.rxbinding2.view.RxView
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import com.skydoves.powermenu.OnMenuItemClickListener
 import com.skydoves.powermenu.PowerMenu
 import com.skydoves.powermenu.PowerMenuItem
@@ -842,6 +843,9 @@ class Show_Comment_Activity : AppCompatActivity(), KodeinAware {
         showVibration()
 
         this.total_shared=totalShare
+
+        DynamicToast.make(applicationContext!!, "You have shared this post",2).show()
+
 
         viewmodellike.sharePost(postId, userId)
 

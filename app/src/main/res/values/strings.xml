@@ -1,40 +1,41 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">LaneCrowd</string>
+    <string name="app_name" translatable="false">LaneCrowd</string>
 
 
-    <string name="block">Block</string>
-    <string name="unfriend">Unfriend</string>
+    <string name="block" translatable="false">Block</string>
+    <string name="unfriend" translatable="false">Unfriend</string>
 
 
-    <string name="edit">Edit</string>
-    <string name="delete">Delete</string>
-    <string name="share">Share</string>
+    <string name="edit" translatable="false">Edit</string>
+    <string name="delete" translatable="false">Delete</string>
+    <string name="share" translatable="false">Share</string>
 
-    <string name="runtimepermission_txt">This feature won\'t work without permission</string>
+    <string name="runtimepermission_txt" translatable="false">This feature won\'t work without permission</string>
 
     <string name="bbn_default_view_behavior" translatable="false" tools:ignore="UnusedResources">it.sephiroth.android.library.bottomnavigation.BottomBehavior</string>
 
 
-    <string name="home">Home</string>
-    <string name="notification">Notification</string>
-    <string name="friends">Friends</string>
-    <string name="photos">Photos</string>
-    <string name="videos">Videos</string>
-    <string name="pages">Pages</string>
-    <string name="activity">Activity</string>
-    <string name="setting_privacy">Setting &amp; Privacy</string>
-    <string name="rate_me">Rate Me</string>
-    <string name="logout">Logout</string>
+    <string name="home" translatable="false">Home</string>
+    <string name="notification" translatable="false">Notification</string>
+    <string name="friends" translatable="false">Friends</string>
+    <string name="photos" translatable="false">Photos</string>
+    <string name="videos" translatable="false">Videos</string>
+    <string name="pages" translatable="false">Pages</string>
+    <string name="activity" translatable="false">Activity</string>
+    <string name="setting_privacy" translatable="false">Setting &amp; Privacy</string>
+    <string name="rate_me" translatable="false">Rate Me</string>
+    <string name="logout" translatable="false">Logout</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    <string name="nav_header_title" translatable="false">Android Studio</string>
+    <string name="nav_header_subtitle" translatable="false">android.studio@android.com</string>
+    <string name="nav_header_desc" translatable="false">Navigation header</string>
+    <string name="action_settings" translatable="false">Settings</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="what_s_on_your_mind" translatable="false">What\'s on your mind?</string>
 
 
 </resources>

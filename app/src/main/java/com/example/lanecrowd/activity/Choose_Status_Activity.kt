@@ -3,12 +3,10 @@ package com.example.lanecrowd.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.media.MediaScannerConnection
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
@@ -21,7 +19,6 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,10 +26,8 @@ import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.example.lancrowd.activity.modal.Choose_Status_Modal
 import com.example.lanecrowd.R
 import com.example.lanecrowd.adapter.Choose_Status_Adapter
-import com.example.lanecrowd.util.ImageFilePath
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.AddPostVM
 import com.google.android.material.snackbar.Snackbar
@@ -44,8 +39,6 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 class Choose_Status_Activity : AppCompatActivity() {
@@ -57,7 +50,6 @@ class Choose_Status_Activity : AppCompatActivity() {
     var adapter: Choose_Status_Adapter? = null
     var status_loading_anim: LottieAnimationView? = null
 
-    var comment_list = ArrayList<Choose_Status_Modal>()
 
     lateinit var viewmodel: AddPostVM;
     internal var files = java.util.ArrayList<File>()
@@ -83,15 +75,6 @@ class Choose_Status_Activity : AppCompatActivity() {
 
 
 
-        comment_list.add(Choose_Status_Modal())
-        comment_list.add(Choose_Status_Modal())
-        comment_list.add(Choose_Status_Modal())
-        comment_list.add(Choose_Status_Modal())
-        comment_list.add(Choose_Status_Modal())
-        comment_list.add(Choose_Status_Modal())
-        comment_list.add(Choose_Status_Modal())
-        comment_list.add(Choose_Status_Modal())
-
 
         mainLayout = findViewById(R.id.mainLayout)
         theme = findViewById(R.id.theme)
@@ -99,7 +82,7 @@ class Choose_Status_Activity : AppCompatActivity() {
 
 
         status_rv = findViewById<RecyclerView>(R.id.status_rv)
-        adapter = Choose_Status_Adapter(comment_list,this)
+        adapter = Choose_Status_Adapter(this)
         status_rv!!.adapter = adapter
         status_rv!!.layoutManager = LinearLayoutManager(applicationContext, LinearLayout.HORIZONTAL, false)
         adapter!!.notifyDataSetChanged()
@@ -149,22 +132,19 @@ class Choose_Status_Activity : AppCompatActivity() {
 
     fun saveTheme(view: View) {
 
-
         hideSoftKeyBoard()
         checkPermissionDexter()
 
 
     }
 
+
+
     private fun showSnackBar(msg: String) {
 
-        val snackbar = Snackbar.make(findViewById(R.id.test), msg, Snackbar.LENGTH_SHORT)
-        snackbar.setBackgroundTint(
-            ContextCompat.getColor(applicationContext, R.color.red)
-        )
-        snackbar.setTextColor(
-            ContextCompat.getColor(applicationContext, R.color.white)
-        )
+        val snackbar = Snackbar.make(findViewById(R.id.test), msg, Snackbar.LENGTH_LONG)
+        snackbar.setBackgroundTint(ContextCompat.getColor(applicationContext, R.color.red))
+        snackbar.setTextColor(ContextCompat.getColor(applicationContext, R.color.white))
         snackbar.show()
 
     }
@@ -175,7 +155,7 @@ class Choose_Status_Activity : AppCompatActivity() {
 
         if (findViewById<EditText>(R.id.theme_txt).text.toString().length <= 0) {
 
-            showSnackBar("Please add text status")
+            showSnackBar("Please write text status")
         }
         else
         {

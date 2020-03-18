@@ -25,7 +25,6 @@ object URL {
 
     val themeImage = arrayOf<String>(
         "http://lanecrowd.com/assets/webimg/theme/2.jpg",
-        "http://lanecrowd.com/assets/webimg/theme/1.jpg",
         "http://lanecrowd.com/assets/webimg/theme/3.jpg",
         "http://lanecrowd.com/assets/webimg/theme/4.jpg",
         "http://lanecrowd.com/assets/webimg/theme/5.jpg",

@@ -2,6 +2,9 @@ package com.example.lanecrowd.activity
 
 
 import android.content.Intent
+import android.media.MediaMetadataRetriever
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableString
@@ -40,6 +43,7 @@ import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
+import java.util.concurrent.TimeUnit
 
 
 class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigationItemSelectedListener {
@@ -62,6 +66,8 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
+
+
 
         initViews()
         set_Up_Tab_Text_And_Icons()

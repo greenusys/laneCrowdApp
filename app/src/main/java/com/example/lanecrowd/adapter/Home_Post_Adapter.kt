@@ -1,5 +1,7 @@
 package com.example.lanecrowd.adapter
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -32,6 +34,7 @@ import com.example.lanecrowd.view_modal.FetchPostVm
 import com.like.LikeButton
 import com.like.OnLikeListener
 import com.mzelzoghbi.zgallery.activities.VideoPlayActivity
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import de.hdodenhof.circleimageview.CircleImageView
 
 
@@ -39,14 +42,15 @@ class Home_Post_Adapter(
     val storyLIst: ArrayList<Story_Modal>,
     val list: ArrayList<Home_Post_Modal>,
     val context: Context,
-    val activity: Home_Post_Fragment) : RecyclerView.Adapter<Home_Post_Adapter.ViewHolder>() {
+    val activity: Home_Post_Fragment
+) : RecyclerView.Adapter<Home_Post_Adapter.ViewHolder>() {
 
 
     private val TYPE_ITEM_STORY = 0
     private val TYPE_ITEM_WHATS = 1
     private val TYPE_ITEM_NORMAL = 2
 
-     var viewmodel: FetchPostVm
+    var viewmodel: FetchPostVm
 
     init {
         viewmodel = ViewModelProviders.of(activity).get(FetchPostVm::class.java)
@@ -110,14 +114,14 @@ class Home_Post_Adapter(
             val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             layoutManager.initialPrefetchItemCount = 8
             holder.story_rv.layoutManager = layoutManager
-            val storyAdapter = Story_Adapter(layoutManager,activity,holder.story_rv,storyLIst, context)
+            val storyAdapter =
+                Story_Adapter(layoutManager, activity, holder.story_rv, storyLIst, context)
             holder.story_rv.adapter = storyAdapter
             holder.story_rv.setRecycledViewPool(viewPool)
-        }
-        else if (position == 1)
+        } else if (position == 1)
             setWhatLayoutLIstener(holder)
         else {
-            //  println("elseeeee"+position)
+
             //set Comment Layout listener
             setCommentLayoutLIstener(holder, position)
 
@@ -135,27 +139,52 @@ class Home_Post_Adapter(
             //set Share Post Listener
             setSharePostListener(holder, position)
 
+            //set images and videos
             setPostMediaData(holder, position)
 
 
+            //set listener
             setPhotoVideoViewListener(position, holder)
+
+
+            //set copy listener
+            copyStatus(position, holder)
         }
 
+
+    }
+
+    private fun copyStatus(position: Int, holder: Home_Post_Adapter.ViewHolder) {
+
+
+
+        holder.postStatus.setOnLongClickListener{
+
+            var copiedText = list.get(position-2).post
+
+
+            var clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            var clip = ClipData.newPlainText("label",copiedText)
+            clipboard.setPrimaryClip(clip)
+
+            activity.showVibration()
+
+            DynamicToast.make(context, "Text copied").show()
+
+            return@setOnLongClickListener true
+        }
 
     }
 
     private fun setSharePostListener(holder: Home_Post_Adapter.ViewHolder, position: Int) {
 
 
-
         holder.shareIcon.setOnClickListener(View.OnClickListener {
 
 
-            list[position - 2].total_share = (Integer.parseInt(list[position - 2].total_share) + 1).toString() + ""
+            activity.showShareBottomSheet(position,list.get(position - 2).post_id,URL.userId)
 
-            notifyItemChanged(position,position)
 
-            activity.sharePost(list.get(position - 2).post_id, URL.userId)
 
         })
     }
@@ -168,32 +197,31 @@ class Home_Post_Adapter(
             println("checkImageee" + checkIsImage(position - 2))
             context.startActivity(
                 Intent(context, Profile_Activity::class.java)
-                    .putExtra("postUserId", list.get(position-2).user_id)
-                    .putExtra("postUserName", list.get(position-2).posted_by.capitalize())
+                    .putExtra("postUserId", list.get(position - 2).user_id)
+                    .putExtra("postUserName", list.get(position - 2).posted_by.capitalize())
 
 
             )
-
 
 
         })
 
         holder.iv_postImgA.setOnClickListener(View.OnClickListener {
 
-            if(!checkIsImage(position - 2) && list.get(position-2).post_files.size==1)
-                activity.startActivity(Intent(context, VideoPlayActivity::class.java)
-                    .putExtra("url", URL.videoPath+list.get(position - 2).post_files.get(0))
-                    .putExtra("name",  list.get(position-2).posted_by.capitalize())
+            if (!checkIsImage(position - 2) && list.get(position - 2).post_files.size == 1)
+                activity.startActivity(
+                    Intent(context, VideoPlayActivity::class.java)
+                        .putExtra("url", URL.videoPath + list.get(position - 2).post_files.get(0))
+                        .putExtra("name", list.get(position - 2).posted_by.capitalize())
                 )
-
             else
-            context.startActivity(
-                Intent(context, ShowPhotoActivity::class.java)
-                    .putExtra("isImage", checkIsImage(position - 2).toString())
-                    .putExtra("position", "0")
-                    .putExtra("name", list.get(position-2).posted_by.capitalize())
-                    .putStringArrayListExtra("files", list.get(position - 2).post_files)
-            )
+                context.startActivity(
+                    Intent(context, ShowPhotoActivity::class.java)
+                        .putExtra("isImage", checkIsImage(position - 2).toString())
+                        .putExtra("position", "0")
+                        .putExtra("name", list.get(position - 2).posted_by.capitalize())
+                        .putStringArrayListExtra("files", list.get(position - 2).post_files)
+                )
 
         })
 
@@ -203,7 +231,7 @@ class Home_Post_Adapter(
                 Intent(context, ShowPhotoActivity::class.java)
                     .putExtra("isImage", checkIsImage(position - 2).toString())
                     .putExtra("position", "1")
-                    .putExtra("name", list.get(position-2).posted_by.capitalize())
+                    .putExtra("name", list.get(position - 2).posted_by.capitalize())
                     .putStringArrayListExtra("files", list.get(position - 2).post_files)
             )
 
@@ -214,7 +242,7 @@ class Home_Post_Adapter(
                 Intent(context, ShowPhotoActivity::class.java)
                     .putExtra("isImage", checkIsImage(position - 2).toString())
                     .putExtra("position", "2")
-                    .putExtra("name", list.get(position-2).posted_by.capitalize())
+                    .putExtra("name", list.get(position - 2).posted_by.capitalize())
                     .putStringArrayListExtra("files", list.get(position - 2).post_files)
             )
 
@@ -226,7 +254,7 @@ class Home_Post_Adapter(
                 Intent(context, ShowPhotoActivity::class.java)
                     .putExtra("isImage", checkIsImage(position - 2).toString())
                     .putExtra("position", "3")
-                    .putExtra("name", list.get(position-2).posted_by.capitalize())
+                    .putExtra("name", list.get(position - 2).posted_by.capitalize())
                     .putStringArrayListExtra("files", list.get(position - 2).post_files)
             )
 
@@ -240,9 +268,10 @@ class Home_Post_Adapter(
         holder.whatmain_layout.setOnClickListener(View.OnClickListener {
             context.startActivity(
                 Intent(
-                    context, Add_Post_Activity::class.java)
+                    context, Add_Post_Activity::class.java
+                )
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    .putExtra("from","post")
+                    .putExtra("from", "post")
             )
 
         })
@@ -257,7 +286,7 @@ class Home_Post_Adapter(
         var isImage: Boolean
 
 
-         println("check_sayed"+list.get(position - 2).post_files.get(0))
+        println("check_sayed" + list.get(position - 2).post_files.get(0))
 
 
         //1 or more images exist
@@ -280,7 +309,7 @@ class Home_Post_Adapter(
                 println("mmmmm" + url + list.get(position - 2).post_files.get(0))
 
                 visibleOtherImageLayout(holder.media_layout)
-                goneOtherImageLayout( holder.threeImgLayout)
+                goneOtherImageLayout(holder.threeImgLayout)
                 visibleOtherImageLayout(holder.iv_postImgA)
 
                 set_Success_Glide_Data(
@@ -290,9 +319,6 @@ class Home_Post_Adapter(
                     holder.video_iconA,
                     isImage
                 )
-
-
-
 
 
             }
@@ -310,8 +336,8 @@ class Home_Post_Adapter(
                 }
 
                 visibleOtherImageLayout(holder.media_layout)
-                goneOtherImageLayout( holder.frame_postB)
-                goneOtherImageLayout( holder.frame_postC)
+                goneOtherImageLayout(holder.frame_postB)
+                goneOtherImageLayout(holder.frame_postC)
                 visibleOtherImageLayout(holder.iv_postImgA)
                 visibleOtherImageLayout(holder.iv_postImgB)
 
@@ -330,7 +356,6 @@ class Home_Post_Adapter(
                     holder.video_iconB,
                     isImage
                 )
-
 
 
             }
@@ -374,7 +399,6 @@ class Home_Post_Adapter(
                     holder.video_iconC,
                     isImage
                 )
-
 
 
             }
@@ -580,18 +604,20 @@ class Home_Post_Adapter(
         Glide.with(context)
             .load(
                 URL.profilePicPath + list.get(position - 2)
-                    .profile_pic).apply(
+                    .profile_pic
+            ).apply(
                 RequestOptions().placeholder(R.drawable.placeholder_profile)
             )
             .thumbnail(0.01f).into(holder.postProfilePic!!)
 
 
-
         //for change profile or cover pic
-        if(!list.get(position - 2).post_head.equals("")) {
-            var postHead ="<b>"+ list.get(position - 2).posted_by.capitalize()+"</b> "+  list.get(position - 2).post_head
+        if (!list.get(position - 2).post_head.equals("")) {
+            var postHead =
+                "<b>" + list.get(position - 2).posted_by.capitalize() + "</b> " + list.get(position - 2).post_head
 
-            holder.postUserName.text = HtmlCompat.fromHtml(postHead, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            holder.postUserName.text =
+                HtmlCompat.fromHtml(postHead, HtmlCompat.FROM_HTML_MODE_LEGACY)
         }
 
         //print only name
@@ -602,10 +628,12 @@ class Home_Post_Adapter(
         holder.postTime.text = list.get(position - 2).posted_on
 
 
-        if (!list.get(position - 2).post.equals(""))
+        if (!list.get(position - 2).post.equals("")) {
+
+            visibleOtherImageLayout(holder.postStatus)
             holder.postStatus.text = list.get(position - 2).post
-        else
-            goneOtherImageLayout( holder.postStatus)
+        } else
+            goneOtherImageLayout(holder.postStatus)
 
 
 
@@ -672,7 +700,8 @@ class Home_Post_Adapter(
                     .putExtra("post_position", position.toString())
                     .putExtra("isMyLike", list.get(position - 2).isMyLike.toString())
                     .putStringArrayListExtra("files", list.get(position - 2).post_files)
-           ,1 )
+                , 1
+            )
 
         })
 
@@ -694,7 +723,11 @@ class Home_Post_Adapter(
 
 
 
-        Glide.with(context).load(url).apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.AUTOMATIC))
+
+
+
+        Glide.with(context).load(url)
+            .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.AUTOMATIC))
             .listener(object : RequestListener<Drawable?> {
                 override fun onLoadFailed(
                     e: GlideException?,
@@ -702,7 +735,6 @@ class Home_Post_Adapter(
                     target: Target<Drawable?>,
                     isFirstResource: Boolean
                 ): Boolean {
-
 
 
                     loading_icon_gone.visibility = View.GONE

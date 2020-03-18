@@ -76,7 +76,6 @@ object PowerMenuUtils {
         return PowerMenu.Builder(context)
             .addItem(PowerMenuItem(context.getString(R.string.edit), false))
             .addItem(PowerMenuItem(context.getString(R.string.delete), false))
-            .addItem(PowerMenuItem(context.getString(R.string.share), false))
             .setAutoDismiss(true)
             .setLifecycleOwner(lifecycleOwner)
             .setAnimation(MenuAnimation.SHOWUP_TOP_LEFT)

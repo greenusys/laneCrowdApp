@@ -1,4 +1,4 @@
-package com.example.lanecrowd.activity
+package com.rahuljanagouda.statusstories
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -6,21 +6,20 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import com.example.lanecrowd.R
 import com.example.lanecrowd.Session_Package.SessionManager
+import com.example.lanecrowd.activity.Profile_Activity
+import com.example.lanecrowd.util.StoryStatusView
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.MySessionVM
 import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
@@ -42,56 +41,47 @@ import com.jakewharton.rxbinding2.view.RxView
 import de.hdodenhof.circleimageview.CircleImageView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import jp.shts.android.storiesprogressview.StoriesProgressView
+import kotlinx.android.synthetic.main.activity_view__story_.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
+import kotlin.time.seconds
+
+class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.UserInteractionListener {
+    private var image: ImageView? = null
+    private var counter = 0
+    private var storyStatusView: StoryStatusView? = null
 
 
-class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView.StoriesListener {
+    var files: ArrayList<String>? = null
+
+    var postUserId: String? = null
+    var name: String? = null
+    var imageva: String? = null
+
+    var pressTime = 0L
+    var limit = 500L
 
 
     var exoPlayerView: SimpleExoPlayerView? = null
     var progressBar: ProgressBar? = null
     var exoPlayer: SimpleExoPlayer? = null
-    var bandwidthMeter:BandwidthMeter?=null
-    var trackSelector:TrackSelector?=null
+    var bandwidthMeter: BandwidthMeter? = null
+    var trackSelector: TrackSelector? = null
 
-    private var storiesProgressView: StoriesProgressView? = null
-    private var image: ImageView? = null
-    private var counter = 0
-    private val resources = intArrayOf(
-        R.drawable.test,
-        R.drawable.login,
-        R.drawable.login_1,
-        R.drawable.test,
-        R.drawable.login_2,
-        R.drawable.test
-    )
-    private val durations = longArrayOf(
-        500L, 1000L, 1500L, 4000L, 5000L, 1000
-    )
-    var pressTime = 0L
-    var limit = 500L
+    override val kodein by kodein()
 
-    var files: ArrayList<String>? = null
+    private val session: SessionManager by instance()
+
+    //this factory method will create and return one object of SessionVM
+    var videomodelfactory: ViewModelProvider_Session? = null
+    var mySessionVM: MySessionVM? = null
 
     var send_reply_Button: ImageView? = null
     var reply_comment: EditText? = null
     var name_by: TextView? = null
     var image_by: CircleImageView? = null
     var user_image: CircleImageView? = null
-
-    var postUserId: String? = null
-    var name: String? = null
-    var imageva: String? = null
-    override val kodein by kodein()
-
-    private val session: SessionManager by  instance()
-
-    //this factory method will create and return one object of SessionVM
-    var videomodelfactory: ViewModelProvider_Session? = null
-    var mySessionVM: MySessionVM? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,12 +94,7 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
         name = intent.extras!!.getString("name")
         imageva = intent.extras!!.getString("imageva")
 
-
-
         initViews()
-
-
-
 
 
 
@@ -118,8 +103,7 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
     private fun initVideosViews() {
 
 
-
-         bandwidthMeter = DefaultBandwidthMeter()
+        bandwidthMeter = DefaultBandwidthMeter()
         trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
         exoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector)
 
@@ -130,19 +114,16 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
     private fun initViews() {
 
 
-
-
         //for video
         progressBar = findViewById(com.mzelzoghbi.zgallery.R.id.progressBar)
         exoPlayerView = findViewById(com.mzelzoghbi.zgallery.R.id.exo_player_view)
 
         initVideosViews()
 
+
+
         //this factory method will create and return one object
-        videomodelfactory =
-            ViewModelProvider_Session(
-                MySessionVM.instance
-            )
+        videomodelfactory = ViewModelProvider_Session(MySessionVM.instance)
         mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
 
 
@@ -155,60 +136,31 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
         setImageAndName()
 
 
-        storiesProgressView = findViewById<View>(R.id.stories) as StoriesProgressView
-        storiesProgressView!!.setStoriesCount(files!!.size)
-        storiesProgressView!!.setStoryDuration(3000L)
-        // or
-        // storiesProgressView.setStoriesCountWithDurations(durations);
-        storiesProgressView!!.setStoriesListener(this)
-
-        //storiesProgressView.startStories();
-        counter = 0
 
 
-        image = findViewById<View>(R.id.image) as ImageView
-
-
+        image = findViewById(R.id.image)
+        storyStatusView = findViewById(R.id.storiesStatus)
+        storyStatusView!!.setStoriesCount(files!!.size)
+        storyStatusView!!.setStoryDuration(3000)
+        storyStatusView!!.setUserInteractionListener(this)
+        storyStatusView!!.playStories()
+        // target = new MyProgressTarget<>(new BitmapImageViewTarget(image), imageProgressBar, textView);
+        image!!.setOnClickListener(View.OnClickListener { storyStatusView!!.skip() })
+        resume(false, "start")
+        loadImages()
 
 
 
 
-        setStoryImage(counter,files!!.get(counter),image)
-
-        pauseStoryProgressView(true,"start")
-        storiesProgressView!!.startStories(counter)
 
         // bind reverse view
-        val reverse = findViewById<View>(R.id.reverse)
-        reverse.setOnClickListener { storiesProgressView!!.reverse() }
-        reverse.setOnTouchListener(onTouchListener)
+        reverse.setOnClickListener { storyStatusView!!.reverse() }
         // bind skip view
-        val skip = findViewById<View>(R.id.skip)
-        skip.setOnClickListener { storiesProgressView!!.skip() }
+        skip.setOnClickListener { storyStatusView!!.skip() }
+
+        //set onhold listener
         skip.setOnTouchListener(onTouchListener)
-
-
-
-       /* //on text listener
-        val d2: Disposable = RxTextView.textChanges(findViewById(R.id.reply_comment))
-            .subscribe(object : Consumer<CharSequence?> {
-                @Throws(Exception::class)
-                override fun accept(charSequence: CharSequence?) { //Add your logic to work on the Charsequence
-
-
-
-                    println("ontextchange")
-                    //pause story view
-                    if(charSequence.toString().length>0)
-                        pauseStoryProgressView(true,"text")
-                  //  else
-                       // pauseStoryProgressView(false,"text")
-
-
-
-                }
-            })
-*/
+        reverse.setOnTouchListener(onTouchListener)
 
 
         val observable1 = RxView.clicks(send_reply_Button!!).map<Any> { o: Any? -> send_reply_Button }
@@ -221,9 +173,7 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
 
 
 
-
     }
-
 
     private fun setClickListener(observable1: Observable<Any>, observable2: Observable<Any>) {
 
@@ -232,16 +182,14 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { o ->
 
-              if(o==image_by)
-                  gotoUserProfile()
+                if (o == image_by)
+                    gotoUserProfile()
 
 
             }
 
 
     }
-
-
 
     private fun gotoUserProfile() {
         startActivity(
@@ -255,15 +203,13 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
         )
 
 
-
-
     }
+
 
     private fun setImageAndName() {
 
 
-
-        val user: HashMap<String, String?> = session!!.userDetails
+        val user: HashMap<String, String?> = session.userDetails
         setUseDataTOVIew(user)
 
 
@@ -277,25 +223,25 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
         })
 
 
-
-
     }
 
     private fun setUseDataTOVIew(result: HashMap<String, String?>) {
 
         //set profile pic's user name and image
-        name_by!!.setText(name)
+        name_by!!.text = name
 
 
-        setImageToGLide(URL.profilePicPath+imageva!!,image_by)
+        setImageToGLide(URL.profilePicPath + imageva!!, image_by)
 
 
         //set self image
-        setImageToGLide(URL.profilePicPath + result.get(SessionManager.KEY_PROFILE_PICTURE),user_image)
+        setImageToGLide(
+            URL.profilePicPath + result.get(SessionManager.KEY_PROFILE_PICTURE),
+            user_image
+        )
 
 
     }
-
 
 
     private fun setImageToGLide(url: String, image: CircleImageView?) {
@@ -309,13 +255,97 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
 
     private fun checkIsImage(position: Int): Boolean {
 
-        if(files!!.get(position).contains("jpg") || files!!.get(position).contains("png") || files!!.get(position).contains("jpeg"))
+        if (files!!.get(position).contains("jpg") || files!!.get(position).contains("png") || files!!.get(position).contains("jpeg"))
             return true
 
         return false
 
     }
 
+
+
+    private val onTouchListener = View.OnTouchListener { v, event ->
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                pressTime = System.currentTimeMillis()
+                resume(false, "down")
+                return@OnTouchListener false
+            }
+            MotionEvent.ACTION_UP -> {
+                val now = System.currentTimeMillis()
+                resume(true, "down")
+
+                return@OnTouchListener limit < now - pressTime
+            }
+        }
+        false
+    }
+
+
+    private fun loadImages() {
+
+
+        var url = ""
+
+        //if video
+        if (!checkIsImage(counter)) {
+
+            println("found_video")
+            //pause story
+
+
+            //visiBleExoPLayerGOneImage(true)
+
+
+            resume(false, "playvideo")
+            url = URL.storyVideoPath
+            playVideo(url + files!![counter])
+        }
+        //if image
+        else {
+
+            exoPlayer!!.stop()
+            exoPlayer!!.playWhenReady = true
+
+
+            println("found_image")
+
+            //visible image layout and gone video layout
+            visiBleExoPLayerGOneImage(false)
+
+            url = URL.storyImagePath
+
+
+            Glide.with(applicationContext).load(url + files!![counter])
+                .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.AUTOMATIC))
+                .listener(object : RequestListener<Drawable?> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any,
+                        target: com.bumptech.glide.request.target.Target<Drawable?>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        resume(true, "failed")
+
+
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any,
+                        target: com.bumptech.glide.request.target.Target<Drawable?>,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        resume(true, "success")
+
+                        return false
+                    }
+                }).thumbnail(0.01f).into(image!!)
+        }
+
+    }
 
     private fun playVideo(url: String) {
 
@@ -328,149 +358,47 @@ class View_Story_Activity : AppCompatActivity(),KodeinAware, StoriesProgressView
 
     }
 
-
-
     private fun visiBleExoPLayerGOneImage(value: Boolean) {
 
-            if(value)
-            {
-                exoPlayerView!!.visibility=View.VISIBLE
-
-            }else
-            {
-
-                image!!.visibility=View.VISIBLE
-            }
-    }
-
-
-    private fun setStoryImage(position: Int,path: String, layott: ImageView?) {
-
-
-        var url =""
-
-        //if video
-        if(!checkIsImage(position)) {
-            pauseStoryProgressView(true,"playvideo")
-            url = URL.storyVideoPath
-            playVideo(url+path)
-        }
-        //if image
-        else {
-            visiBleExoPLayerGOneImage(false)
-
-            url = URL.storyImagePath
-
-
-
-            Glide.with(applicationContext).load(url + path)
-                .listener(object : RequestListener<Drawable?> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any,
-                        target: Target<Drawable?>,
-                        isFirstResource: Boolean
-                    ): Boolean {
-
-                        pauseStoryProgressView(false, "failed")
-
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any,
-                        target: Target<Drawable?>,
-                        dataSource: DataSource,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        pauseStoryProgressView(false, "success")
-
-                        return false
-                    }
-                })
-                .apply(RequestOptions().placeholder(R.drawable.placeholder))
-
-                .thumbnail(0.01f).into(layott!!).waitForLayout()
-
-        }
-
-
-    }
-
-
-
-    private fun pauseStoryProgressView(value: Boolean,from:String)
-    {
-
-        println("pauseStoryProgressView "+from+" "+value)
-
         if (value) {
-            storiesProgressView!!.pause()
-        }
-        else {
-            storiesProgressView!!.resume()
-        }
+            exoPlayerView!!.visibility = View.VISIBLE
+            image!!.setImageResource(R.color.colorPrimaryDark)
 
+        } else {
+
+            exoPlayerView!!.visibility = View.GONE
+
+        }
     }
 
-
-    private val onTouchListener = View.OnTouchListener { v, event ->
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                pressTime = System.currentTimeMillis()
-               pauseStoryProgressView(true,"down")
-                return@OnTouchListener false
-            }
-            MotionEvent.ACTION_UP -> {
-                val now = System.currentTimeMillis()
-                pauseStoryProgressView(false,"up")
-
-                return@OnTouchListener limit < now - pressTime
-            }
-        }
-        false
+    private fun resume(b: Boolean, from: String) {
+        println("kaif_from$from"+b)
+        if (b)
+            storyStatusView!!.resume()
+        else
+            storyStatusView!!.pause()
     }
-
-
-
 
     override fun onNext() {
-
-try {
-    setStoryImage(++counter,files!!.get(counter),image)
-
-}catch (e:Exception)
-{
-    e.printStackTrace()
-}
-
+        resume(false, "next")
+        ++counter
+        loadImages()
     }
-
 
     override fun onPrev() {
         if (counter - 1 < 0) return
 
+        --counter
 
-       setStoryImage(--counter,files!!.get(counter),image)
-
+        resume(false, "next")
+        loadImages()
     }
 
-    override fun onComplete() {
-        println("onCOmpleteStory")
-        exoPlayer!!.stop()
-        exoPlayer!!.playWhenReady = true
-        onBackPressed()
-    }
-    override fun onDestroy() { // Very important !
-        storiesProgressView!!.destroy()
-        super.onDestroy()
-    }
 
     private fun playVideoURL(url: String) {
 
         try {
-             val videoURI = Uri.parse(url)
+            val videoURI = Uri.parse(url)
             val dataSourceFactory =
                 DefaultHttpDataSourceFactory("exoplayer_video")
             val extractorsFactory: ExtractorsFactory = DefaultExtractorsFactory()
@@ -478,22 +406,31 @@ try {
                 ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null)
             exoPlayerView!!.player = exoPlayer
             exoPlayer!!.prepare(mediaSource)
-            exoPlayer!!.setPlayWhenReady(true)
+            exoPlayer!!.playWhenReady = true
+
+            exoPlayer!!.duration
+
+
+            println("durationOfvideo"+exoPlayer!!.duration)
+
             exoPlayer!!.addListener(object : ExoPlayer.EventListener {
                 override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {}
                 override fun onTracksChanged(
                     trackGroups: TrackGroupArray,
-                    trackSelections: TrackSelectionArray
-                ) {
-                }
+                    trackSelections: TrackSelectionArray) {}
 
-                override fun onLoadingChanged(isLoading: Boolean) {}
+                override fun onLoadingChanged(isLoading: Boolean) {
+
+                    if(isLoading)
+                        resume(false, "loading")
+
+                }
                 override fun onPlayerStateChanged(
                     playWhenReady: Boolean,
                     playbackState: Int) {
                     if (playWhenReady == true && playbackState == SimpleExoPlayer.STATE_ENDED) {
-                        pauseStoryProgressView(false,"end")
-
+                        resume(true, "end")
+                        progressBar!!.visibility = View.GONE
                         println("kaif_complete")
                     }
 
@@ -503,15 +440,17 @@ try {
                         progressBar!!.visibility = View.GONE
                     }
 
-                    if (playbackState == SimpleExoPlayer.STATE_BUFFERING)
+                    if (playbackState == SimpleExoPlayer.STATE_BUFFERING) {
+                        println("buffering")
+                        resume(false, "end")
                         progressBar!!.visibility = View.VISIBLE
+                    }
                 }
 
                 override fun onPositionDiscontinuity() {}
                 override fun onPlayerError(error: ExoPlaybackException) { //Log.v(TAG, "Listener-onPlayerError...");
                     exoPlayer!!.stop()
-                    // exoPlayer.prepare(loopingSource);
-                    exoPlayer!!.setPlayWhenReady(true)
+                    exoPlayer!!.playWhenReady = true
                 }
 
                 override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {}
@@ -523,7 +462,28 @@ try {
     }
 
 
-    fun back(view: View) {
+
+
+    override fun onDestroy() {
+        storyStatusView!!.destroy()
+        super.onDestroy()
+    }
+
+
+
+    override fun onComplete() {
+        exoPlayer!!.stop()
+        exoPlayer!!.playWhenReady = true
         onBackPressed()
     }
+
+
+
+    fun back(view: View) {
+        storyStatusView!!.destroy()
+        exoPlayer!!.stop()
+        exoPlayer!!.playWhenReady = true
+        onBackPressed()
+    }
+
 }

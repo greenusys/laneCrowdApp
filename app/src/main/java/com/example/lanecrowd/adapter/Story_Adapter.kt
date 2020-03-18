@@ -1,6 +1,5 @@
 package com.example.lanecrowd.adapter
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -8,11 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,10 +23,10 @@ import com.example.lancrowd.activity.modal.Story_Modal
 import com.example.lanecrowd.Home_Fragment.Home_Post_Fragment
 import com.example.lanecrowd.R
 import com.example.lanecrowd.activity.Add_Post_Activity
-import com.example.lanecrowd.activity.View_Story_Activity
 import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.FetchPostVm
 import com.google.gson.JsonObject
+import com.rahuljanagouda.statusstories.View_Status_Activity
 import de.hdodenhof.circleimageview.CircleImageView
 import org.json.JSONArray
 import org.json.JSONObject
@@ -246,7 +243,7 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
 
             holder.main_layout.setOnClickListener(View.OnClickListener {
                 context.startActivity(
-                    Intent(context, View_Story_Activity::class.java)
+                    Intent(context, View_Status_Activity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         .putStringArrayListExtra("story_files", list.get(position-1).story_files)
                         .putExtra("name",list.get(position-1).posted_by.capitalize())
