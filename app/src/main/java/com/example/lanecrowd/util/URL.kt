@@ -2,8 +2,10 @@ package com.example.lanecrowd.util
 
 object URL {
 
+    //api
     val add_post = "http://www.lanecrowd.com/addPost"
     val add_story = "http://www.lanecrowd.com/addstories"
+
     val imagePath = "http://www.lanecrowd.com/assets/uploads/images/"
     val videoPath = "http://www.lanecrowd.com/assets/uploads/videos/"
     val profilePicPath = "http://lanecrowd.com/assets/uploads/images/"

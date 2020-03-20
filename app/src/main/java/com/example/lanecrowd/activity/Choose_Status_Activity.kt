@@ -179,7 +179,7 @@ class Choose_Status_Activity : AppCompatActivity() {
 
 
 
-                    viewmodel.addPostvm(from!!,"","",files,true,applicationContext).observe(this, Observer { resultPi ->
+                    viewmodel.addPostvm("",from!!,"","",files,true,applicationContext).observe(this, Observer { resultPi ->
 
                         println("add_post"+resultPi)
 

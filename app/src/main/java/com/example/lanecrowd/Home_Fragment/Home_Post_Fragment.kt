@@ -55,6 +55,7 @@ import com.skydoves.powermenu.PowerMenuItem
 import com.xw.repo.VectorCompatTextView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.android.synthetic.main.story_recyclerview.*
 import org.json.JSONArray
 import org.json.JSONObject
 import org.kodein.di.KodeinAware
@@ -577,6 +578,19 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
     }
 
+    private fun clearForStory() {
+
+        println("clearForStory")
+        story_list.clear()
+
+        story_rv!!.recycledViewPool.clear()
+        notifiyAdapter()
+
+
+
+
+    }
+
 
 
     private fun setRefreshingfalse(value: Boolean) {
@@ -657,8 +671,12 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
                     {
 
                         var postList: ArrayList<String> = ArrayList()
+                        var timeList: ArrayList<String> = ArrayList()
 
                         var item=data.getJSONObject(i);
+
+
+                        timeList = item.getString("story_time").split(",") as ArrayList<String>
 
 
                         //for post files
@@ -684,6 +702,7 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
                             item.getString("user_id"),
                             item.getString("story"),
                             postList,
+                            timeList,
                             item.getString("posted_by"),
                             item.getString("profile_pic"),
                             item.getString("posted_on")
@@ -697,6 +716,7 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
                 else
                 {
 
+                    clearForStory()
                 }
 
             } catch (e: Exception)

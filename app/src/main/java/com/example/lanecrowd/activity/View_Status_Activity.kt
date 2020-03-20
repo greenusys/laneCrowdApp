@@ -4,9 +4,13 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.view.MotionEvent
 import android.view.View
-import android.widget.*
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -45,15 +49,16 @@ import kotlinx.android.synthetic.main.activity_view__story_.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
-import kotlin.time.seconds
 
-class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.UserInteractionListener {
+class View_Status_Activity : AppCompatActivity(), KodeinAware,
+    StoryStatusView.UserInteractionListener {
     private var image: ImageView? = null
     private var counter = 0
     private var storyStatusView: StoryStatusView? = null
 
 
     var files: ArrayList<String>? = null
+    var story_times: ArrayList<String>? = null
 
     var postUserId: String? = null
     var name: String? = null
@@ -83,6 +88,21 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
     var image_by: CircleImageView? = null
     var user_image: CircleImageView? = null
 
+   // var firstURL="http://www.lanecrowd.com/assets/stories/videos/story-video-2020-03-18-12-38-411.mp4"
+    //var secondURL="http://www.lanecrowd.com/assets/stories/videos/story-video-2020-03-18-12-38-411.mp4"
+    //var thirdURL="https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
+
+
+    //var firstTime:Long=5000
+   // var secondTime:Long=5000
+    //var thirdTime:Long=3000
+
+   // var arr= arrayOf(firstURL,secondURL,thirdURL)
+  //  var time= arrayOf(firstTime,secondTime,thirdTime)
+
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view__story_)
@@ -90,12 +110,12 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
 
 
         files = intent.extras!!.getStringArrayList("story_files")
+        story_times = intent.extras!!.getStringArrayList("story_times")
         postUserId = intent.extras!!.getString("postUserId")
         name = intent.extras!!.getString("name")
         imageva = intent.extras!!.getString("imageva")
 
         initViews()
-
 
 
     }
@@ -121,7 +141,6 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
         initVideosViews()
 
 
-
         //this factory method will create and return one object
         videomodelfactory = ViewModelProvider_Session(MySessionVM.instance)
         mySessionVM = ViewModelProvider(this, videomodelfactory!!).get(MySessionVM::class.java)
@@ -136,21 +155,27 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
         setImageAndName()
 
 
-
-
         image = findViewById(R.id.image)
         storyStatusView = findViewById(R.id.storiesStatus)
         storyStatusView!!.setStoriesCount(files!!.size)
-        storyStatusView!!.setStoryDuration(3000)
         storyStatusView!!.setUserInteractionListener(this)
+
+
+
+
+
+       println("timeofstory"+story_times!![counter].toLong()*1000)
+
+        storyStatusView!!.setStoryDuration(story_times!![counter].toLong()*1000)
         storyStatusView!!.playStories()
-        // target = new MyProgressTarget<>(new BitmapImageViewTarget(image), imageProgressBar, textView);
+
         image!!.setOnClickListener(View.OnClickListener { storyStatusView!!.skip() })
+
+        //pause story view
         resume(false, "start")
+
+        //load first media
         loadImages()
-
-
-
 
 
         // bind reverse view
@@ -163,7 +188,8 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
         reverse.setOnTouchListener(onTouchListener)
 
 
-        val observable1 = RxView.clicks(send_reply_Button!!).map<Any> { o: Any? -> send_reply_Button }
+        val observable1 =
+            RxView.clicks(send_reply_Button!!).map<Any> { o: Any? -> send_reply_Button }
         val observable2 = RxView.clicks(image_by!!).map<Any> { o: Any? -> image_by }
 
 
@@ -172,7 +198,17 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
         setClickListener(observable1, observable2)
 
 
+    }
 
+
+    private fun pausePlayer() {
+        exoPlayer!!.setPlayWhenReady(false)
+        exoPlayer!!.getPlaybackState()
+    }
+
+    private fun startPlayer() {
+        exoPlayer!!.setPlayWhenReady(true)
+        exoPlayer!!.getPlaybackState()
     }
 
     private fun setClickListener(observable1: Observable<Any>, observable2: Observable<Any>) {
@@ -255,25 +291,34 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
 
     private fun checkIsImage(position: Int): Boolean {
 
-        if (files!!.get(position).contains("jpg") || files!!.get(position).contains("png") || files!!.get(position).contains("jpeg"))
+        println("posidf" + position)
+        if (files!!.get(position).contains("jpg") || files!!.get(position).contains("png") || files!!.get(
+                position
+            ).contains("jpeg")
+        )
             return true
-
         return false
 
     }
-
 
 
     private val onTouchListener = View.OnTouchListener { v, event ->
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 pressTime = System.currentTimeMillis()
+
+                //pause
                 resume(false, "down")
+                pausePlayer()
+
                 return@OnTouchListener false
             }
             MotionEvent.ACTION_UP -> {
                 val now = System.currentTimeMillis()
-                resume(true, "down")
+
+                //resume
+                resume(true, "up")
+                startPlayer()
 
                 return@OnTouchListener limit < now - pressTime
             }
@@ -297,12 +342,16 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
             //visiBleExoPLayerGOneImage(true)
 
 
-            resume(false, "playvideo")
+            //resume(false, "playvideo")
             url = URL.storyVideoPath
-            playVideo(url + files!![counter])
+            playVideo( url+files!![counter])
         }
         //if image
         else {
+
+
+            //pause images until its successfully loaded
+             resume(false, "image")
 
             exoPlayer!!.stop()
             exoPlayer!!.playWhenReady = true
@@ -316,7 +365,7 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
             url = URL.storyImagePath
 
 
-            Glide.with(applicationContext).load(url + files!![counter])
+            Glide.with(applicationContext).load( url+files!![counter])
                 .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.AUTOMATIC))
                 .listener(object : RequestListener<Drawable?> {
                     override fun onLoadFailed(
@@ -326,8 +375,6 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
                         isFirstResource: Boolean
                     ): Boolean {
                         resume(true, "failed")
-
-
                         return false
                     }
 
@@ -372,7 +419,8 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
     }
 
     private fun resume(b: Boolean, from: String) {
-        println("kaif_from$from"+b)
+        println("kaif_from$from" + b)
+
         if (b)
             storyStatusView!!.resume()
         else
@@ -380,9 +428,23 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
     }
 
     override fun onNext() {
-        resume(false, "next")
+
+
+
+        println("onnext_called")
         ++counter
-        loadImages()
+
+
+        storyStatusView!!.setStoryDuration(story_times!![counter].toLong()*1000)
+       // storyStatusView!!.playStories()
+       // resume(false, "next")
+
+
+
+        /*if (counter >= files!!.size)
+            onBackActivity()
+        else*/
+            loadImages()
     }
 
     override fun onPrev() {
@@ -390,7 +452,14 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
 
         --counter
 
-        resume(false, "next")
+
+        storyStatusView!!.setStoryDuration(story_times!![counter].toLong()*1000)
+        //storyStatusView!!.playStories()
+
+//        resume(false, "next")
+
+
+
         loadImages()
     }
 
@@ -408,41 +477,62 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
             exoPlayer!!.prepare(mediaSource)
             exoPlayer!!.playWhenReady = true
 
-            exoPlayer!!.duration
 
+            println("sallllu")
 
-            println("durationOfvideo"+exoPlayer!!.duration)
 
             exoPlayer!!.addListener(object : ExoPlayer.EventListener {
                 override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {}
                 override fun onTracksChanged(
                     trackGroups: TrackGroupArray,
-                    trackSelections: TrackSelectionArray) {}
+                    trackSelections: TrackSelectionArray
+                ) {
+                }
 
                 override fun onLoadingChanged(isLoading: Boolean) {
 
-                    if(isLoading)
-                        resume(false, "loading")
+                    /*if (isLoading)
+                        resume(false, "loading")*/
 
                 }
-                override fun onPlayerStateChanged(
-                    playWhenReady: Boolean,
-                    playbackState: Int) {
-                    if (playWhenReady == true && playbackState == SimpleExoPlayer.STATE_ENDED) {
+
+                override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+
+                    println("onplayerChanged")
+
+                    if (playbackState == SimpleExoPlayer.STATE_ENDED) {
+
                         resume(true, "end")
-                        progressBar!!.visibility = View.GONE
                         println("kaif_complete")
                     }
 
                     //resume
                     if (playWhenReady == true && playbackState == SimpleExoPlayer.STATE_READY) {
+
                         println("kaif_resume")
+
+
+                        //resume story
+
+                       // println("exoduratin" + exoPlayer!!.duration)
+
+
+                        //storyStatusView!!.setStoryDuration(exoPlayer!!.duration)
+                      //  storyStatusView!!.playStories()
+                       // storyStatusView!!.resume()
+                        resume(true, "resume")
+
+
                         progressBar!!.visibility = View.GONE
                     }
-
                     if (playbackState == SimpleExoPlayer.STATE_BUFFERING) {
                         println("buffering")
-                        resume(false, "end")
+
+
+                      /*  if (counter > 0)
+                        //pause story*/
+                            resume(false, "buffereing")
+
                         progressBar!!.visibility = View.VISIBLE
                     }
                 }
@@ -462,28 +552,44 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware, StoryStatusView.U
     }
 
 
-
-
     override fun onDestroy() {
-        storyStatusView!!.destroy()
+        onBackActivity()
         super.onDestroy()
     }
-
 
 
     override fun onComplete() {
         exoPlayer!!.stop()
         exoPlayer!!.playWhenReady = true
-        onBackPressed()
-    }
+       onBackPressed()
 
+
+
+    }
 
 
     fun back(view: View) {
+
+        onBackActivity()
+
+    }
+
+    private fun onBackActivity() {
+
+        println("onBackactivity_called")
+
         storyStatusView!!.destroy()
         exoPlayer!!.stop()
         exoPlayer!!.playWhenReady = true
-        onBackPressed()
+       finish()
+
     }
+
+
+    override fun onStop() {
+        super.onStop()
+         onBackActivity()
+    }
+
 
 }

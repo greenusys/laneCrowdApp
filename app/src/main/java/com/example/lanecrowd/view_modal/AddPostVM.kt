@@ -46,7 +46,7 @@ class AddPostVM : ViewModel() {
      }
 
 
-    fun addPostvm(from:String,imgageData:String,status:String,files:ArrayList<File>,isImage: Boolean?,context: Context): MutableLiveData<JSONObject> {
+    fun addPostvm(storyTime:String,from:String,imgageData:String,status:String,files:ArrayList<File>,isImage: Boolean?,context: Context): MutableLiveData<JSONObject> {
 
         addPostRes = MutableLiveData()
         this.context=context
@@ -61,14 +61,14 @@ class AddPostVM : ViewModel() {
 
 
 
-        addPost(from,isOnlyText,status,imgageData,URL.userId,files,isImage)
+        addPost(storyTime,from,isOnlyText,status,imgageData,URL.userId,files,isImage)
 
 
         return addPostRes as MutableLiveData<JSONObject>
 
     }
 
-    private fun addPost(from:String,isOnlyText:Boolean,post: String?, imgageData: String, user_id: String,
+    private fun addPost(storyTime:String,from:String,isOnlyText:Boolean,post: String?, imgageData: String, user_id: String,
                         files: ArrayList<File>, isImage: Boolean?) {
 
 
@@ -119,6 +119,9 @@ class AddPostVM : ViewModel() {
         builder.addFormDataPart(post_key, post)
         builder.addFormDataPart("imgageData", imgageData)
         builder.addFormDataPart("user_id", user_id)
+
+        if(!from.equals("post"))
+        builder.addFormDataPart("story_time", storyTime)
 
 
 

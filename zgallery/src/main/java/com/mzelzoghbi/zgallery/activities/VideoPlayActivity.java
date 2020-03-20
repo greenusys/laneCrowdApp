@@ -143,6 +143,16 @@ public class VideoPlayActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        exoPlayer.stop();
+
+        // exoPlayer.prepare(loopingSource);
+        exoPlayer.setPlayWhenReady(true);
+    }
+
     @Override
     protected void onDestroy() {
         exoPlayer.stop();

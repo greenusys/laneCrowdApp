@@ -18,6 +18,8 @@ class Profile_Detail_Modal(
 
 
     class Work_Detail(val position: String, val company_name: String, val description: String) : Serializable
+
+
     class School_Detail(val school: String, val description: String) : Serializable
     class University_Detail(val university: String,val course: String,val degree: String,val description: String,val graduated: String) : Serializable
     class Skill_Detail(val user_skill: String) : Serializable

@@ -132,8 +132,15 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
                     {
 
                         var postList: ArrayList<String> = ArrayList()
+                        var timeList: ArrayList<String> = ArrayList()
+
 
                         var item=data.getJSONObject(i);
+
+
+
+                        timeList = item.getString("story_time").split(",") as ArrayList<String>
+
 
 
                         //for post files
@@ -159,6 +166,7 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
                             item.getString("user_id"),
                             item.getString("story"),
                             postList,
+                            timeList,
                             item.getString("posted_by"),
                             item.getString("profile_pic"),
                             item.getString("posted_on")
@@ -225,7 +233,7 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
 
         if(position==0)
         {
-            setStoryImage(position, URL.profilePicPath + URL.profilePic, holder.user_image)
+            setStoryImage("",position, URL.profilePicPath + URL.profilePic, holder.user_image)
             holder.add_to_StoryLayout.setOnClickListener(View.OnClickListener {
 
                 context.startActivity(
@@ -246,6 +254,7 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
                     Intent(context, View_Status_Activity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         .putStringArrayListExtra("story_files", list.get(position-1).story_files)
+                        .putStringArrayListExtra("story_times", list.get(position-1).story_times)
                         .putExtra("name",list.get(position-1).posted_by.capitalize())
                         .putExtra("imageva",list.get(position-1).profile_pic)
                         .putExtra("postUserId",list.get(position-1).user_id)
@@ -257,7 +266,8 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
 
             holder.story_userName.setText(list.get(position-1).posted_by.capitalize())
 
-            setStoryImage(position, list.get(position-1).story_files.get(0), holder.story_image)
+            setStoryImage("profile",position, URL.profilePicPath+list.get(position-1).profile_pic, holder.profile_pic)
+            setStoryImage("",position, list.get(position-1).story_files.get(0), holder.story_image)
 
         }
 
@@ -273,17 +283,21 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
     }
 
 
-    private fun setStoryImage(position: Int,path: String, layott: CircleImageView?) {
+    private fun setStoryImage(from:String,position: Int,path: String, layott: CircleImageView?) {
 
         var url:String=""
 
 
-        if(position!=0) {
-            if (checkIsImage(position))
-                url = URL.storyImagePath
-            else
-                url = URL.storyVideoPath
+        if(!from.equals("profile")) {
+            if (position != 0) {
+                if (checkIsImage(position))
+                    url = URL.storyImagePath
+                else
+                    url = URL.storyVideoPath
+            }
         }
+        else
+            url=url
 
 
         println("Story_path"+url+path)
@@ -322,6 +336,7 @@ class Story_Adapter(var layoutManager:LinearLayoutManager,var activity:Home_Post
         val story_userName=view.findViewById<TextView>(R.id.story_userName)
         val add_to_StoryLayout=view.findViewById<RelativeLayout>(R.id.add_to_StoryLayout)
         val user_image=view.findViewById<CircleImageView>(R.id.user_image)
+        val profile_pic=view.findViewById<CircleImageView>(R.id.profile_pic)
 
     }
 }

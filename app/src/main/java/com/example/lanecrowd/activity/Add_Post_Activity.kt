@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,7 +47,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.time.ExperimentalTime
-import kotlin.time.seconds
 
 
 class Add_Post_Activity : RuntimePermissionsActivity() {
@@ -61,6 +61,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         var isImage: Boolean = false
     }
 
+
+    var storyTime:String=""
 
     private val REQ_PER_GALLERY = 10
     private val REQ_PER_CAMERA = 30
@@ -451,6 +453,13 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                         println("bbb2" + Uri.parse(rv_video_list[i]))
 
 
+
+                        if(i==cd.itemCount-1)
+                        storyTime=storyTime+"5"
+                        else
+                            storyTime=storyTime+"5"+","
+
+
                         format_path = data.toString()
 
                         files.add(
@@ -468,6 +477,10 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                     format_path = data.toString()
                     if (data.data != null) {
                         rv_video_list.add("" + data.data!!)
+
+                        storyTime=storyTime+"5"+
+
+
                         files.add(
                             File(
                                 ImageFilePath.getPath(
@@ -498,6 +511,10 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                 format_path = imageFilePath
                 println("camera_data_image" + imageFilePath)
                 //uris.add(Uri.parse(imageFilePath));
+
+
+                storyTime=storyTime+"5"+
+
                 rv_video_list.add(imageFilePath)
                 files.add(File(imageFilePath))
                 //files.add(new File(imageFilePath));
@@ -539,6 +556,13 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                             format_path = data.toString()
                             for (i in 0 until cd.itemCount) {
                                 rv_video_list.add("" + cd.getItemAt(i).uri)
+
+
+                                if(i==cd.itemCount-1)
+                                    storyTime=storyTime+getVideoDuration(Uri.parse(""+cd.getItemAt(i).uri))
+                                else
+                                    storyTime=storyTime+getVideoDuration(Uri.parse(""+cd.getItemAt(i).uri))+","
+
                                 files.add(
                                     File(
                                         ImageFilePath.getPath(
@@ -602,6 +626,10 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                        {
                            format_path = data.toString()
                            rv_video_list.add("" + data.data!!)
+
+                           storyTime=storyTime+getVideoDuration(Uri.parse(""+data.data))
+
+
                            files.add(
                                File(
                                    ImageFilePath.getPath(
@@ -819,11 +847,13 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         if (rv_video_list.size == 1) {
             format_path = ""
             gallery = false
+            storyTime=""
             camera = false
             disableCameraTextView(false, true)
 
         }
 
+        storyTime=""
         rv_video_list.removeAt(position)
         files.removeAt(position)
         notifyAdapter()
@@ -849,8 +879,18 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
                 visibleLoadingAnimation(true)
 
+
+
+
+                println("storyTime"+storyTime)
+
+
+                storyTime=""
+
+
                 //add post
                 viewmodel.addPostvm(
+                    storyTime,
                     from!!,
                     "",
                     findViewById<AutoFitEditText>(R.id.status_input).text.toString(),
@@ -883,6 +923,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
     }
+
+
 
 
     private fun visibleLoadingAnimation(value: Boolean) {

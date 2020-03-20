@@ -68,13 +68,10 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
         setContentView(R.layout.activity_home)
 
 
-
         initViews()
         set_Up_Tab_Text_And_Icons()
 
     }
-
-
 
 
 
