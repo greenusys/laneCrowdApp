@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -142,6 +143,7 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
             viewmodel.fetchPostTimelinetvm(postUserId!!,"0")
                 .observe(this, Observer { resultPi ->
 
+                    //storepostDataTOModal(resultPi, from)
 
                 })
         } catch (e: Exception) {
@@ -639,17 +641,17 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
 
             println("if_kaif_requestcode$requestCode")
             println("kaif_resultCode$resultCode")
-            println("kaif_data${data!!.data}")
+           // println("kaif_data${data!!.data}")
 
 
             if (requestCode == 2 && resultCode == RESULT_OK) { // upload cover pic
-                coverUri = data.data
+                coverUri = data!!.data
                 Glide.with(baseContext).load(coverUri).into(iv_cover_image_profile!!)
                 myCoverPhoto = File(ImageFilePath.getPath(baseContext, coverUri))
                 goneView(txt_doneChangeCover!!, true)
 
             } else if (requestCode == 1 && resultCode == RESULT_OK) {
-                profileUri = data.data
+                profileUri = data!!.data
                 Glide.with(baseContext).load(profileUri).into(iv_profile_image_profile!!)
                 myProfilePhoto = File(ImageFilePath.getPath(baseContext, profileUri))
                 goneView(txt_doneChangeProfile!!, true)
@@ -689,6 +691,7 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         var android = RequestBody.create(MediaType.parse("multipart/form-data"), "")
         //
 
+        disableLayout()
 
         try {
             viewmodel.changeProfileCoverPic(from, part, userId, android)
@@ -706,6 +709,23 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
 
     }
 
+
+    private fun disableLayout() {
+
+        getWindow().setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+
+    }
+
+    private fun enableLayout() {
+
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+
+
+    }
     private fun setAndUpdateProfileOrCoverPic(from: String, resultPi: RegisterResModal?) {
 
 
@@ -714,6 +734,8 @@ class Profile_Activity : RuntimePermissionsActivity(), KodeinAware {
         else
             goneView(txt_doneChangeCover, false)
 
+
+        enableLayout()
 
         visibleLoadingAnimation(false)
         println("changeApiResponse" + resultPi)

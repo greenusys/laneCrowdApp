@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
@@ -41,7 +42,10 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView
 import com.google.android.exoplayer2.upstream.BandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jakewharton.rxbinding2.view.RxView
+import com.xw.repo.VectorCompatTextView
 import de.hdodenhof.circleimageview.CircleImageView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -87,19 +91,6 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware,
     var name_by: TextView? = null
     var image_by: CircleImageView? = null
     var user_image: CircleImageView? = null
-
-   // var firstURL="http://www.lanecrowd.com/assets/stories/videos/story-video-2020-03-18-12-38-411.mp4"
-    //var secondURL="http://www.lanecrowd.com/assets/stories/videos/story-video-2020-03-18-12-38-411.mp4"
-    //var thirdURL="https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
-
-
-    //var firstTime:Long=5000
-   // var secondTime:Long=5000
-    //var thirdTime:Long=3000
-
-   // var arr= arrayOf(firstURL,secondURL,thirdURL)
-  //  var time= arrayOf(firstTime,secondTime,thirdTime)
-
 
 
 
@@ -207,6 +198,8 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware,
     }
 
     private fun startPlayer() {
+
+
         exoPlayer!!.setPlayWhenReady(true)
         exoPlayer!!.getPlaybackState()
     }
@@ -309,7 +302,7 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware,
 
                 //pause
                 resume(false, "down")
-                pausePlayer()
+
 
                 return@OnTouchListener false
             }
@@ -318,7 +311,7 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware,
 
                 //resume
                 resume(true, "up")
-                startPlayer()
+
 
                 return@OnTouchListener limit < now - pressTime
             }
@@ -374,7 +367,7 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware,
                         target: com.bumptech.glide.request.target.Target<Drawable?>,
                         isFirstResource: Boolean
                     ): Boolean {
-                        resume(true, "failed")
+                        resume(true, "failed"+e!!.cause+""+e!!.message)
                         return false
                     }
 
@@ -421,10 +414,14 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware,
     private fun resume(b: Boolean, from: String) {
         println("kaif_from$from" + b)
 
-        if (b)
+        if (b) {
+            startPlayer()
             storyStatusView!!.resume()
-        else
+        }
+        else {
+            pausePlayer()
             storyStatusView!!.pause()
+        }
     }
 
     override fun onNext() {
@@ -435,10 +432,12 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware,
         ++counter
 
 
+
+
         storyStatusView!!.setStoryDuration(story_times!![counter].toLong()*1000)
        // storyStatusView!!.playStories()
-       // resume(false, "next")
 
+        //resume(false, "next")
 
 
         /*if (counter >= files!!.size)
@@ -453,9 +452,12 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware,
         --counter
 
 
+
+
         storyStatusView!!.setStoryDuration(story_times!![counter].toLong()*1000)
         //storyStatusView!!.playStories()
 
+       // resume(false, "prev")
 //        resume(false, "next")
 
 
@@ -581,7 +583,7 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware,
         storyStatusView!!.destroy()
         exoPlayer!!.stop()
         exoPlayer!!.playWhenReady = true
-       finish()
+        finish()
 
     }
 
@@ -589,6 +591,56 @@ class View_Status_Activity : AppCompatActivity(), KodeinAware,
     override fun onStop() {
         super.onStop()
          onBackActivity()
+    }
+
+    fun showMenu(view: View) {
+
+        resume(false,"bottom")
+
+        var sheetDialog = BottomSheetDialog(this@View_Status_Activity)
+        val sheetView = LayoutInflater.from(this@View_Status_Activity).inflate(R.layout.photovideobottomsheet, null)
+        sheetDialog.setContentView(sheetView)
+
+        var save = sheetView.findViewById<VectorCompatTextView>(R.id.uploadPhoto)
+        var delete = sheetView.findViewById<VectorCompatTextView>(R.id.uploadVideo)
+
+
+
+
+
+
+
+
+        save.setCompoundDrawablesWithIntrinsicBounds(R.drawable.download_icon, 0, 0, 0);
+        delete.setCompoundDrawablesWithIntrinsicBounds(R.drawable.delete_icon, 0, 0, 0);
+
+
+        save.setText("Save photo")
+        delete.setText("Delete Photo")
+
+        val observable1 = RxView.clicks(save!!).map<Any> { o: Any? -> save }
+        val observable2 = RxView.clicks(delete!!).map<Any> { o: Any? -> delete }
+
+
+        val disposable = Observable.merge(observable1, observable2)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { o ->
+
+                sheetDialog.dismiss()
+
+
+                resume(true,"bottomDismiss")
+
+
+
+            }
+
+
+
+        sheetDialog.show()
+
+
+
     }
 
 

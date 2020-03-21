@@ -13,11 +13,11 @@ import android.os.StrictMode
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,6 +46,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 import kotlin.time.ExperimentalTime
 
 
@@ -62,7 +63,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
     }
 
 
-    var storyTime:String=""
+    var storyTime = ArrayList<String>()
 
     private val REQ_PER_GALLERY = 10
     private val REQ_PER_CAMERA = 30
@@ -455,10 +456,9 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
                         if(i==cd.itemCount-1)
-                        storyTime=storyTime+"5"
+                        storyTime.add("5")
                         else
-                            storyTime=storyTime+"5"+","
-
+                            storyTime.add("5,")
 
                         format_path = data.toString()
 
@@ -478,7 +478,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                     if (data.data != null) {
                         rv_video_list.add("" + data.data!!)
 
-                        storyTime=storyTime+"5"+
+
+                                storyTime.add("5,")
 
 
                         files.add(
@@ -513,7 +514,8 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                 //uris.add(Uri.parse(imageFilePath));
 
 
-                storyTime=storyTime+"5"+
+                        storyTime.add("5,")
+
 
                 rv_video_list.add(imageFilePath)
                 files.add(File(imageFilePath))
@@ -559,9 +561,13 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
                                 if(i==cd.itemCount-1)
-                                    storyTime=storyTime+getVideoDuration(Uri.parse(""+cd.getItemAt(i).uri))
+                                   // storyTime=storyTime+getVideoDuration(Uri.parse(""+cd.getItemAt(i).uri))
+                                    storyTime.add(getVideoDuration(Uri.parse(""+cd.getItemAt(i).uri)).toString())
+
                                 else
-                                    storyTime=storyTime+getVideoDuration(Uri.parse(""+cd.getItemAt(i).uri))+","
+                                    storyTime.add(getVideoDuration(Uri.parse(""+cd.getItemAt(i).uri)).toString()+",")
+
+                                // storyTime=storyTime+getVideoDuration(Uri.parse(""+cd.getItemAt(i).uri))+","
 
                                 files.add(
                                     File(
@@ -627,7 +633,9 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
                            format_path = data.toString()
                            rv_video_list.add("" + data.data!!)
 
-                           storyTime=storyTime+getVideoDuration(Uri.parse(""+data.data))
+                           //storyTime=storyTime+getVideoDuration(Uri.parse(""+data.data))
+                           storyTime.add(getVideoDuration(Uri.parse(""+data.data)).toString()+",")
+
 
 
                            files.add(
@@ -847,13 +855,12 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
         if (rv_video_list.size == 1) {
             format_path = ""
             gallery = false
-            storyTime=""
             camera = false
             disableCameraTextView(false, true)
 
         }
 
-        storyTime=""
+        storyTime.removeAt(position)
         rv_video_list.removeAt(position)
         files.removeAt(position)
         notifyAdapter()
@@ -882,15 +889,23 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
 
 
-                println("storyTime"+storyTime)
+
+                var times=""
+
+                for (i in 0 until storyTime.size)
+                    times=times+storyTime.get(i)
+
+                println("storyTime"+times)
 
 
-                storyTime=""
 
+
+
+                disableLayout()
 
                 //add post
                 viewmodel.addPostvm(
-                    storyTime,
+                    times,
                     from!!,
                     "",
                     findViewById<AutoFitEditText>(R.id.status_input).text.toString(),
@@ -905,6 +920,7 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
                     if (resultPi != null && resultPi.getString("status").equals("1")) {
                         visibleLoadingAnimation(false)
+                        storyTime.clear()
                         finish()
                     } else {
                         visibleLoadingAnimation(false)
@@ -924,7 +940,14 @@ class Add_Post_Activity : RuntimePermissionsActivity() {
 
     }
 
+    private fun disableLayout() {
 
+        getWindow().setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+
+    }
 
 
     private fun visibleLoadingAnimation(value: Boolean) {

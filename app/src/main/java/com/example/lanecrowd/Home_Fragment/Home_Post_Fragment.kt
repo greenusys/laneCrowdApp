@@ -17,6 +17,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -29,7 +30,6 @@ import com.airbnb.lottie.LottieAnimationView
 import com.example.lancrowd.activity.modal.Home_Post_Modal
 import com.example.lancrowd.activity.modal.RegisterResModal
 import com.example.lancrowd.activity.modal.Story_Modal
-import com.example.lanecrowd.view_modal.factory.ViewModelFactoryC
 import com.example.lanecrowd.R
 import com.example.lanecrowd.Session_Package.SessionManager
 import com.example.lanecrowd.activity.Add_Post_Activity
@@ -40,6 +40,7 @@ import com.example.lanecrowd.util.URL
 import com.example.lanecrowd.view_modal.FetchPostVm
 import com.example.lanecrowd.view_modal.LoginRegUserVM
 import com.example.lanecrowd.view_modal.MySessionVM
+import com.example.lanecrowd.view_modal.factory.ViewModelFactoryC
 import com.example.lanecrowd.view_modal.factory.ViewModelProvider_Session
 import com.github.ybq.android.spinkit.SpinKitView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -215,6 +216,8 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
 
 
+
+
         layoutManager = LinearLayoutManager(context)
         home_post_rv!!.layoutManager = layoutManager
         homePostAdapter = Home_Post_Adapter(story_list, home_post_list, context!!, this@Home_Post_Fragment)
@@ -222,8 +225,10 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
 
 
-        swiperefresh_Listener()
         initPostScrollListener()
+        swiperefresh_Listener()
+
+
 
 
         if (!isNetworkAvailable(context!!)) {
@@ -340,6 +345,9 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
     private fun initPostScrollListener() {
 
+
+
+
         home_post_rv!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
 
@@ -350,10 +358,16 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
                     isScrolling = true
                 }
 
+
+
+
             }
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
+
+
+
 
                 currentItems = layoutManager!!.childCount
                 totalItems = layoutManager!!.itemCount
@@ -367,28 +381,31 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
                 println("home_post_list"+home_post_list.size)
 
 
-                if(scrollOutItems>=5)
-               visibleFloatingButton(true)
-                else if(scrollOutItems<=3)
+                 if(scrollOutItems>=5)
+                    visibleFloatingButton(true)
+                 else if(scrollOutItems<=3)
                     visibleFloatingButton(false)
 
 
 
-                if (isScrolling && home_post_list.size>8 && (currentItems + scrollOutItems == totalItems)) {
-                    visibleLoadingMoreAnim(true)
+
+
+
+
+                if (isScrolling && home_post_list.size>8 && (currentItems + layoutManager!!.findLastVisibleItemPosition() <= totalItems)) {
 
                     println("load_more_called")
                     isScrolling = false
                     postCounting++
 
 
-
-
                     if (!isNetworkAvailable(context!!)) {
                         visible_no_internet_layout(true)
                     } else
 
+                        visibleLoadingMoreAnim(true)
                         Handler().postDelayed({
+
 
                             fetchPost(postCounting.toString(), "more")
 

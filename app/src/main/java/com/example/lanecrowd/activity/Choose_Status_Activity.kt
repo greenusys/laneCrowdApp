@@ -179,7 +179,7 @@ class Choose_Status_Activity : AppCompatActivity() {
 
 
 
-                    viewmodel.addPostvm("",from!!,"","",files,true,applicationContext).observe(this, Observer { resultPi ->
+                    viewmodel.addPostvm("5,",from!!,"","",files,true,applicationContext).observe(this, Observer { resultPi ->
 
                         println("add_post"+resultPi)
 
@@ -295,7 +295,7 @@ class Choose_Status_Activity : AppCompatActivity() {
             Log.i("TAG", "There was an issue saving the image.")
         }
 
-        scanGallery(context, pictureFile.absolutePath)
+        //scanGallery(context, pictureFile.absolutePath)
         return pictureFile
     }
 

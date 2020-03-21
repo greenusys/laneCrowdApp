@@ -35,24 +35,35 @@
         app:pressedTranslationZ="12dp"/>
 
 
-<LinearLayout
-    android:id="@+id/home_post"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
 
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:id="@+id/home_post"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:nestedScrollingEnabled="true"
         android:id="@+id/home_post_rv"
+        android:nestedScrollingEnabled="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+        </LinearLayout>
+
+    </LinearLayout>
 
 
 
 
-</LinearLayout>
+
 
     <LinearLayout
         android:layout_centerVertical="true"
