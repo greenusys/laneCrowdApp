@@ -5,14 +5,14 @@ import java.io.Serializable
 
 
 class Profile_Detail_Modal(
-    val work_details: ArrayList<Work_Detail>,
-    val school_details: ArrayList<School_Detail>,
-    val user_university_details: ArrayList<University_Detail>,
-    val user_skills: ArrayList<University_Detail>,
-    val basic_info: ArrayList<Basic_Detail>,
-    val check_friend: ArrayList<Check_Friend_Detail>,
-    val ReqStatus: ArrayList<Request_Status_Detail>,
-    val relationship_status: ArrayList<Relation_Status_Detail>) : Serializable {
+    var work_details: ArrayList<Work_Detail> = ArrayList<Work_Detail>(),
+    var school_details: ArrayList<School_Detail> = ArrayList<School_Detail>(),
+    var user_university_details: ArrayList<University_Detail> = ArrayList<University_Detail>(),
+    var user_skills: ArrayList<University_Detail> = ArrayList<University_Detail>(),
+    var basic_info: ArrayList<Basic_Detail> = ArrayList<Basic_Detail>(),
+    var check_friend: ArrayList<Check_Friend_Detail> = ArrayList<Check_Friend_Detail>(),
+    var ReqStatus: ArrayList<Request_Status_Detail> = ArrayList<Request_Status_Detail>(),
+    var relationship_status: ArrayList<Relation_Status_Detail> = ArrayList<Relation_Status_Detail>()) : Serializable {
 
 
 

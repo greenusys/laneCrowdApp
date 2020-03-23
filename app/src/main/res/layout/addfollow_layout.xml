@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:id="@+id/addFollowLayout"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/follow_friend"
+            android:drawableLeft="@drawable/followed_by__icon"
+            android:layout_margin="10dp"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_weight="1"
+            android:background="@drawable/button_round"
+            android:gravity="center"
+            android:text="Follow"
+            android:textAllCaps="true"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/add_friend"
+            android:visibility="visible"
+            android:drawableLeft="@drawable/friend_icon_2"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_round"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Add Friend"
+            android:textAllCaps="true"
+            android:textColor="@color/white" />
+
+        <!--//menu textview-->
+        <TextView
+            android:id="@+id/menu_friend"
+            android:visibility="gone"
+            android:drawableLeft="@drawable/friend_icon_2"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_round"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:textColor="@color/white" />
+
+
+
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

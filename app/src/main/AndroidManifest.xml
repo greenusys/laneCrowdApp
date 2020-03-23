@@ -39,9 +39,7 @@
         <activity android:name=".activity.Test2" />
         <activity android:name=".activity.Verify_OTP_Activity" />
         <activity android:name=".activity.ShowPhotoActivity" />
-        <activity
-            android:name=".activity.View_Story_Activity"
-            android:theme="@style/AppThemeMat"></activity>
+
         <activity
             android:name=".activity.Choose_Status_Activity"
             android:theme="@style/AppThemeMat" />
@@ -62,7 +60,15 @@
             android:theme="@style/Apptheme2" />
         <activity
             android:name=".activity.Profile_Activity"
-            android:theme="@style/AppThemeMat"></activity>
+            android:theme="@style/AppThemeMat">
+
+              <intent-filter>
+              <action android:name="android.intent.action.MAIN" />
+
+              <category android:name="android.intent.category.LAUNCHER" />
+          </intent-filter>
+
+        </activity>
         <activity
             android:name=".activity.Post_Activity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -85,11 +91,11 @@
             android:name=".activity.Login_Activity"
             android:theme="@style/MateriaApptheme"
             android:windowSoftInputMode="stateHidden">
-            <intent-filter>
+          <!--  <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
     </application>
 

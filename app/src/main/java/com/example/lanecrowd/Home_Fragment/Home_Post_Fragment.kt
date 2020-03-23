@@ -392,7 +392,7 @@ class Home_Post_Fragment : Fragment(),KodeinAware,SearchView.OnQueryTextListener
 
 
 
-                if (isScrolling && home_post_list.size>8 && (currentItems + layoutManager!!.findLastVisibleItemPosition() <= totalItems)) {
+                    if (isScrolling && home_post_list.size>8 && (currentItems + scrollOutItems == totalItems)) {
 
                     println("load_more_called")
                     isScrolling = false

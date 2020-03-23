@@ -85,6 +85,11 @@
                 android:orientation="vertical"
                 android:paddingBottom="10dp">
 
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
@@ -186,6 +191,10 @@
                 </FrameLayout>
 
 
+
+</LinearLayout>
+
+
                 <com.airbnb.lottie.LottieAnimationView
                     android:visibility="gone"
                     android:id="@+id/upload_loading_animLogin"
@@ -260,6 +269,7 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="10dp"
                     android:background="@color/light_grey" />
+
 
                 <LinearLayout
                     android:id="@+id/userInfoLayout"

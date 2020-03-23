@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:elevation="50dp"
+    android:focusableInTouchMode="true"
+    android:orientation="horizontal"
+    app:cardCornerRadius="20dp">
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:elevation="50dp"
+        app:cardBackgroundColor="@color/light_grey3"
+        app:cardCornerRadius="20dp">
+
+
+        <com.xw.repo.VectorCompatTextView
+            android:id="@+id/uploadPhoto"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:drawablePadding="20dp"
+            android:drawableTint="@color/colorPrimary"
+            android:gravity="center_vertical"
+            android:text="Photo"
+            app:drawableHeight="40dp"
+            app:drawableLeftCompat="@drawable/photo_icon"
+            app:drawableWidth="40dp" />
+
+
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:elevation="50dp"
+        app:cardBackgroundColor="@color/light_grey3"
+        app:cardCornerRadius="30dp">
+
+
+        <com.xw.repo.VectorCompatTextView
+            android:id="@+id/videos"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:drawablePadding="20dp"
+            android:drawableTint="@color/colorPrimary"
+            android:gravity="center_vertical"
+            android:text="Videos"
+            app:drawableHeight="40dp"
+            app:drawableLeftCompat="@drawable/video_icon"
+            app:drawableWidth="40dp" />
+
+
+    </androidx.cardview.widget.CardView>
+
+
+</LinearLayout>

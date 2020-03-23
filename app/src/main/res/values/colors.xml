@@ -14,7 +14,8 @@
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#fff</color>
 
     <color name="light_grey">#C7C5C5</color>
-    <color name="light_grey2">#E1DDDD</color>
+    <color name="light_grey2">#C7C5C5</color>
+    <color name="light_grey3">#F3F1F1</color>
     <color name="dark_grey">#8D8C8C</color>
     <color name="dark_grey2">#827C7C</color>
     <color name="light_yellow">#B4C621</color>
